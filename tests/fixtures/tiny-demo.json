@@ -251,11 +251,62 @@
       },
       {
         "label": "Harmony",
-        "body": "Same loop again."
+        "body": "Same loop again.",
+        "insight": {
+          "layer": "harmony",
+          "title": "I\u2013V\u2013vi\u2013IV sketch",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "F",
+              "text": "I"
+            },
+            {
+              "step": 4,
+              "kind": "chord",
+              "chord": "C",
+              "text": "V"
+            },
+            {
+              "step": 8,
+              "kind": "chord",
+              "chord": "Dm",
+              "text": "vi"
+            },
+            {
+              "step": 12,
+              "kind": "chord",
+              "chord": "Bb",
+              "text": "IV"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "Lift without new changes \u2014 do not invent a fill."
+        "body": "Lift without new changes \u2014 do not invent a fill.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "sync_oct",
+          "title": "No invented fill",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 12,
+              "kind": "note",
+              "midi": 41,
+              "text": "lift, do not fill"
+            }
+          ]
+        }
       }
     ],
     "verse": [

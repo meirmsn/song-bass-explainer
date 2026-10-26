@@ -1186,12 +1186,44 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 .card-mini-body { font-size:11px; line-height:1.3; color:#9ca3af; }
 /* Phone ≤640px: fixed no-scroll score stack; cards live in bottom sheet. iPad/desktop keep 2-col. */
 @media (max-width:640px) {
-  .shell { height:100dvh; max-height:100dvh; overflow:hidden; padding-bottom:56px; border-radius:0; border-left:0; border-right:0; }
-  .grid { grid-template-columns:1fr; }
+  .shell { height:100dvh; max-height:100dvh; overflow:hidden; gap:4px; padding:6px 8px; padding-bottom:56px; border-radius:0; border-left:0; border-right:0; }
+  .shell[data-phone="1"] { /* marker for tests / JS */ }
+  .grid { grid-template-columns:1fr; gap:4px; }
   .grid > .cards { display:none; }
-  .meta .title { font-size:16px; }
+  .credit-line { display:none; }
+  .header {
+    flex-direction:column; align-items:stretch; justify-content:flex-start;
+    flex-wrap:nowrap; gap:4px; flex:0 0 auto;
+  }
+  .meta {
+    flex-wrap:nowrap; width:100%; gap:6px; align-items:center;
+    overflow:hidden; min-width:0;
+  }
+  .meta .title { font-size:15px; flex:1 1 auto; min-width:0; }
   .meta .sub:not(.sec-slot) { display:none; }
-  .header { flex-wrap:wrap; }
+  .meta .stat[data-meta="barbeat"],
+  .meta .clock,
+  .meta .loop-slot { font-size:11px; }
+  .meta .sec-slot { min-width:0; max-width:9ch; font-size:11px; }
+  .meta .badge {
+    flex:0 0 auto; max-width:11ch; overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; font-size:10px; padding:2px 7px;
+  }
+  .transport {
+    width:100%; flex-wrap:nowrap; gap:4px; overflow-x:auto; overflow-y:hidden;
+    -webkit-overflow-scrolling:touch; padding-bottom:2px;
+  }
+  .icon-btn { width:36px; height:36px; flex:0 0 auto; }
+  .rate-strip { margin-left:2px; flex:0 0 auto; }
+  .rate-btn { min-width:32px; height:26px; padding:0 5px; font-size:10px; }
+  .timeline { flex:0 0 auto; }
+  .timeline svg { max-height:88px !important; }
+  .layers { gap:3px; }
+  .layer.chords { flex:0 0 68px; }
+  .layer-head { font-size:10px; padding:1px 6px; }
+  .layer-head.with-ch-strip { gap:2px; padding-top:2px; padding-bottom:2px; }
+  .layer-body { padding:1px 2px; }
+  .ch-btn { min-width:26px; height:20px; padding:0 5px; font-size:9px; }
 }
 .phone-cards-peek {
   display:none; position:fixed; left:0; right:0; bottom:0; z-index:40;
@@ -1211,7 +1243,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 }
 .cards-drawer {
   display:none; position:fixed; left:0; right:0; bottom:0; z-index:60;
-  max-height:min(72vh, 560px); box-sizing:border-box;
+  max-height:min(85vh, 640px); box-sizing:border-box;
   padding:0 10px calc(10px + env(safe-area-inset-bottom, 0px));
   border-top:1px solid #374151; border-radius:16px 16px 0 0;
   background:#0b0f14; color:#e5e7eb;
@@ -1237,6 +1269,17 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
   flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch;
   border:0; border-radius:0; padding:4px 2px 8px;
 }
+/* Keep lean-B insight schematic visible in the drawer (do not flex-crush to 0). */
+.cards-drawer .card-body { max-height:3.6em; font-size:13px; line-height:1.35; flex:0 0 auto; }
+.cards-drawer .card-insight {
+  flex:1 0 auto; min-height:152px; overflow:hidden;
+}
+.cards-drawer .card-insight-svg { flex:1 1 auto; min-height:110px; width:100%; }
+.cards-drawer .card-insight-chords { min-height:88px; }
+.cards-drawer .card-grid { flex:0 0 auto; }
+.cards-drawer .card-actions { flex:0 0 auto; }
+.cards-drawer .cards-head { flex:0 0 auto; }
+.cards-drawer .card-label { flex:0 0 auto; }
 @media (max-width:640px) {
   .phone-cards-peek { display:block; }
   .phone-cards-peek[hidden], .cards-drawer-backdrop[hidden], .cards-drawer[hidden] { display:none !important; }
@@ -1983,34 +2026,60 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     }
 
     function makeTimeline() {
-      const svg = svgEl("svg", { viewBox: "0 0 1000 72", width: "100%", role: "img", "aria-label": "Section timeline", style: { display: "block", maxHeight: "72px" } });
+      const phone = isPhoneLayout();
+      const vh = phone ? 88 : 72;
+      const svg = svgEl("svg", {
+        viewBox: "0 0 1000 " + vh,
+        width: "100%",
+        role: "img",
+        "aria-label": "Section timeline",
+        "data-timeline-phone": phone ? "1" : "0",
+        style: { display: "block", maxHeight: vh + "px" },
+      });
       const X = (time) => (time / DURATION) * 1000;
       const dimOthers = loopOn;
+      const nameFs = phone ? 15 : 11;
+      const nameFsShort = phone ? 13 : 10;
+      const barFs = phone ? 12 : 10;
+      const barY = phone ? 18 : 20;
+      const barH = phone ? 44 : 36;
+      const labelY = phone ? 14 : 14;
+      const barLabelY = phone ? 82 : 66;
       SECS.forEach((s, i) => {
         const x0 = X(secStart(s)), w = X(secEnd(s)) - x0;
         const active = i === secIdx;
         const opacity = dimOthers ? (active ? 1 : 0.22) : (active ? 1 : 0.55);
         const g = svgEl("g", { style: { cursor: "pointer" }, "data-section": String(i) });
-        g.appendChild(svgEl("rect", { x: x0, y: 20, width: Math.max(w - 2, 1), height: 36, rx: 4, fill: CAT[s.ci % CAT.length], opacity }));
-        if (w >= 42) g.appendChild(svgEl("text", { x: x0 + 5, y: 14, "font-size": 11, "font-weight": 600, fill: dimOthers && !active ? "#6b7280" : "#e5e7eb" }, [document.createTextNode(s.name)]));
-        else if (w >= 22) g.appendChild(svgEl("text", { x: x0 + 3, y: 14, "font-size": 10, "font-weight": 600, fill: dimOthers && !active ? "#6b7280" : "#e5e7eb" }, [document.createTextNode(s.name.slice(0, 3))]));
-        if (w >= 28) g.appendChild(svgEl("text", { x: x0 + 4, y: 66, "font-size": 10, fill: "#6b7280" }, [document.createTextNode("bar " + s.first)]));
+        g.appendChild(svgEl("rect", { x: x0, y: barY, width: Math.max(w - 2, 1), height: barH, rx: 4, fill: CAT[s.ci % CAT.length], opacity }));
+        const nameFill = dimOthers && !active ? "#6b7280" : "#e5e7eb";
+        // Phone: always paint a readable label (abbr when narrow); desktop keeps prior thresholds.
+        if (phone) {
+          const label = w >= 70 ? s.name : (w >= 36 ? s.name.slice(0, 4) : s.name.slice(0, 2));
+          const fs = w >= 70 ? nameFs : nameFsShort;
+          g.appendChild(svgEl("text", { x: x0 + 4, y: labelY, "font-size": fs, "font-weight": 700, fill: nameFill, "data-tl-label": label }, [document.createTextNode(label)]));
+          if (w >= 40) g.appendChild(svgEl("text", { x: x0 + 4, y: barLabelY, "font-size": barFs, "font-weight": 600, fill: "#9ca3af" }, [document.createTextNode(String(s.first))]));
+        } else {
+          if (w >= 42) g.appendChild(svgEl("text", { x: x0 + 5, y: labelY, "font-size": nameFs, "font-weight": 600, fill: nameFill }, [document.createTextNode(s.name)]));
+          else if (w >= 22) g.appendChild(svgEl("text", { x: x0 + 3, y: labelY, "font-size": nameFsShort, "font-weight": 600, fill: nameFill }, [document.createTextNode(s.name.slice(0, 3))]));
+          if (w >= 28) g.appendChild(svgEl("text", { x: x0 + 4, y: barLabelY, "font-size": barFs, fill: "#6b7280" }, [document.createTextNode("bar " + s.first)]));
+        }
         svg.appendChild(g);
       });
       if (loopOn) {
         const cur = SECS[secIdx];
         const secXs = X(secStart(cur)), secXe = X(secEnd(cur));
         const g = svgEl("g", { "pointer-events": "none" });
-        g.appendChild(svgEl("rect", { x: secXs, y: 18, width: Math.max(secXe - secXs, 2), height: 40, fill: "none", stroke: "#e5e7eb", "stroke-width": 1.5, opacity: 0.55 }));
+        g.appendChild(svgEl("rect", { x: secXs, y: barY - 2, width: Math.max(secXe - secXs, 2), height: barH + 4, fill: "none", stroke: "#e5e7eb", "stroke-width": 1.5, opacity: 0.55 }));
         const partial = lo > cur.first || hi < cur.end - 1;
         if (partial) {
           const xs = X(BARS[lo].t), xe = X(barTime(hi + 1));
-          g.appendChild(svgEl("rect", { x: xs, y: 18, width: Math.max(xe - xs, 2), height: 40, fill: NEG, opacity: 0.34, stroke: NEG, "stroke-width": 2 }));
+          g.appendChild(svgEl("rect", { x: xs, y: barY - 2, width: Math.max(xe - xs, 2), height: barH + 4, fill: NEG, opacity: 0.34, stroke: NEG, "stroke-width": 2 }));
         }
         svg.appendChild(g);
       }
       const xp = X(Math.min(t, DURATION));
-      svg.appendChild(svgEl("line", { x1: xp, x2: xp, y1: 8, y2: 68, stroke: NEG, "stroke-width": 2.5 }));
+      const y1 = phone ? 6 : 8, y2 = phone ? 84 : 68;
+      svg.appendChild(svgEl("line", { x1: xp, x2: xp, y1, y2, stroke: NEG, "stroke-width": 2.5 }));
       svg.appendChild(svgEl("polygon", { points: (xp - 5) + ",2 " + (xp + 5) + ",2 " + xp + ",10", fill: NEG }));
       return svg;
     }
@@ -2619,7 +2688,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       const card = deck[cardIdx % deck.length];
 
       root.replaceChildren();
-      const shell = el("div", { className: "shell" });
+      const phoneLayout = isPhoneLayout();
+      const shell = el("div", { className: "shell", "data-phone": phoneLayout ? "1" : "0" });
 
       const header = el("div", { className: "header" });
       const meta = el("div", { className: "meta" });
@@ -2631,16 +2701,27 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       meta.appendChild(el("span", { className: "sub sec-slot", "data-meta": "section" }, [sec.name]));
       meta.appendChild(el("span", { className: "stat loop-slot", "data-meta": "loop" }, [fmtLoopLabel(lo, hi, loopOn)]));
       meta.appendChild(el("span", { className: "sub", title: "Keyboard: Space play/pause · ← loop/section start (again = prev) · → next section · Esc clear bar selection · L toggle loop" }, ["Space · ← → · Esc · L"]));
+      const phoneChrome = isPhoneLayout();
       const badgeText = stemLoading
-        ? "Loading stems…"
+        ? (phoneChrome ? "loading…" : "Loading stems…")
         : (muteBassSupported
-          ? (listenMode === "solo" ? "stems · bass solo"
-            : listenMode === "mute" ? "stems · bass muted"
-            : listenMode === "db" ? "stems · drums+bass"
-            : listenMode === "drums" ? "stems · drums solo"
-            : "stems · full")
-          : "demo · no audio");
-      meta.appendChild(el("span", { className: "badge" + (stemLoading ? " loading" : ""), "data-meta": "badge" }, [badgeText]));
+          ? (phoneChrome
+            ? (listenMode === "solo" ? "solo"
+              : listenMode === "mute" ? "muted"
+              : listenMode === "db" ? "D+B"
+              : listenMode === "drums" ? "drums"
+              : "stems")
+            : (listenMode === "solo" ? "stems · bass solo"
+              : listenMode === "mute" ? "stems · bass muted"
+              : listenMode === "db" ? "stems · drums+bass"
+              : listenMode === "drums" ? "stems · drums solo"
+              : "stems · full"))
+          : (phoneChrome ? "demo" : "demo · no audio"));
+      meta.appendChild(el("span", {
+        className: "badge" + (stemLoading ? " loading" : ""),
+        "data-meta": "badge",
+        title: muteBassSupported ? ("Listen: " + (listenMode || "full")) : "Demo (no stems)",
+      }, [badgeText]));
       header.appendChild(meta);
 
       const transport = el("div", { className: "transport" });
@@ -2805,7 +2886,16 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           "aria-label": "Open flashcards",
           "aria-expanded": cardsDrawerOpen ? "true" : "false",
         });
-        peek.appendChild(el("div", { className: "phone-cards-peek-kicker" }, ["Flashcards"]));
+        const peekInsight = card.insight && typeof card.insight === "object" ? card.insight : null;
+        const peekLayer = peekInsight ? (peekInsight.layer || "figure") : "";
+        // Kicker hints that opening the drawer reveals the lean-B schematic (not prose-only).
+        peek.appendChild(el("div", {
+          className: "phone-cards-peek-kicker",
+          "data-peek-insight": peekInsight ? "1" : "0",
+          "data-insight-layer": peekLayer || "",
+        }, [
+          peekLayer ? ("Flashcards · " + String(peekLayer) + " schematic") : "Flashcards",
+        ]));
         const peekRow = el("div", { className: "phone-cards-peek-row" });
         peekRow.appendChild(el("span", { className: "phone-cards-peek-label" }, [card.label + " · " + sec.name]));
         peekRow.appendChild(el("span", { className: "phone-cards-peek-count" }, [((cardIdx % deck.length) + 1) + "/" + deck.length + " · open"]));

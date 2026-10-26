@@ -1997,6 +1997,85 @@ describe("phone layout — cards bottom drawer", () => {
     const labels = [...document.querySelectorAll("[data-cards-drawer] [data-insight-label]")].map((n) => n.getAttribute("data-insight-label"));
     expect(labels.length).toBeGreaterThan(0);
   });
+
+  it("phone drawer keeps lean-B insight schematic with the active card (not prose-only)", async () => {
+    const api = await bootPlayer({ width: 390, height: 844 });
+    api.pickSection(2);
+    api.openCardsDrawer();
+    // Every deck card must expose insight payload + schematic panel beside/with the card.
+    for (let i = 0; i < 4; i++) {
+      api.setCard(i);
+      await api.waitTick(20);
+      const st = api.getState();
+      expect(st.cardsDrawerOpen).toBe(true);
+      expect(st.activeCardInsight).toBeTruthy();
+      expect(st.hasInsightPanel).toBe(true);
+      const panel = document.querySelector("[data-cards-drawer] .card-insight");
+      expect(panel).toBeTruthy();
+      expect(panel.getAttribute("data-insight-layer")).toBeTruthy();
+      // Schematic SVG (pocket/figure/missable) or harmony chord chips — never empty.
+      const hasSvg = Boolean(panel.querySelector("svg.card-insight-svg, svg[aria-label]"));
+      const hasChords = Boolean(panel.querySelector(".card-insight-chords"));
+      expect(hasSvg || hasChords).toBe(true);
+    }
+    // Stylesheet must pin a min-height so flex cannot crush the schematic in the drawer.
+    const css = document.getElementById("bass-player-styles")?.textContent || "";
+    expect(css).toMatch(/\.cards-drawer \.card-insight[^{]*\{[^}]*min-height:\s*152px/);
+    expect(css).toMatch(/\.cards-drawer \.card-insight-svg[^{]*\{[^}]*min-height:\s*110px/);
+  });
+
+  it("phone chrome: title/meta stay in header, timeline labels larger, stems badge short", async () => {
+    const api = await bootPlayer({ privateMode: false, withStems: true, width: 390, height: 844 });
+    api.pickSection(2);
+    expect(api.getState().isPhoneLayout).toBe(true);
+    const shell = document.querySelector(".shell");
+    expect(shell?.getAttribute("data-phone")).toBe("1");
+    const header = document.querySelector(".header");
+    const meta = document.querySelector(".meta");
+    const title = document.querySelector(".meta .title");
+    expect(header && meta && title).toBeTruthy();
+    expect(header.contains(meta)).toBe(true);
+    expect(header.contains(title)).toBe(true);
+    expect((title.textContent || "").length).toBeGreaterThan(0);
+
+    const badge = document.querySelector('[data-meta="badge"]');
+    expect(badge).toBeTruthy();
+    // Short chip — no awkward "stems · full" wrap on ~390px.
+    expect(badge.textContent.trim().length).toBeLessThanOrEqual(8);
+    expect(badge.textContent).toMatch(/stems|solo|muted|D\+B|drums|demo|loading/i);
+
+    const tl = document.querySelector('svg[aria-label="Section timeline"]');
+    expect(tl).toBeTruthy();
+    expect(tl.getAttribute("data-timeline-phone")).toBe("1");
+    const vb = (tl.getAttribute("viewBox") || "").split(/\s+/).map(Number);
+    expect(vb[3]).toBeGreaterThanOrEqual(88);
+    const labelFs = [...tl.querySelectorAll("text[data-tl-label], text")].map((n) => Number(n.getAttribute("font-size") || 0));
+    expect(Math.max(...labelFs)).toBeGreaterThanOrEqual(13);
+
+    // Peek advertises schematic; drawer holds the real insight panel.
+    const peekKicker = document.querySelector(".phone-cards-peek-kicker");
+    expect(peekKicker?.getAttribute("data-peek-insight")).toBe("1");
+    expect(peekKicker?.textContent || "").toMatch(/schematic/i);
+
+    const css = document.getElementById("bass-player-styles")?.textContent || "";
+    expect(css).toMatch(/@media \(max-width:640px\)[\s\S]*\.header\s*\{[^}]*flex-direction:\s*column/);
+    expect(css).toMatch(/@media \(max-width:640px\)[\s\S]*\.meta \.badge/);
+    expect(css).toMatch(/@media \(max-width:640px\)[\s\S]*\.layer\.chords\s*\{[^}]*flex:\s*0 0 68px/);
+  });
+
+  it("desktop 2-col unchanged at 1280 — cards in grid, no phone timeline/badge shortening", async () => {
+    const api = await bootPlayer({ privateMode: false, withStems: true, width: 1280, height: 800 });
+    expect(api.getState().isPhoneLayout).toBe(false);
+    expect(document.querySelector(".shell")?.getAttribute("data-phone")).toBe("0");
+    expect(document.querySelector(".grid > [data-cards-panel]")).toBeTruthy();
+    expect(document.querySelector("[data-cards-drawer]")).toBeNull();
+    const badge = document.querySelector('[data-meta="badge"]');
+    expect(badge?.textContent || "").toMatch(/stems ·/);
+    const tl = document.querySelector('svg[aria-label="Section timeline"]');
+    expect(tl?.getAttribute("data-timeline-phone")).toBe("0");
+    const vb = (tl.getAttribute("viewBox") || "").split(/\s+/).map(Number);
+    expect(vb[3]).toBe(72);
+  });
 });
 
 
