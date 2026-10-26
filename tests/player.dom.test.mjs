@@ -126,7 +126,12 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
       this.startedAt = when;
       this.startOffset = offset == null ? 0 : offset;
     }
-    stop() { this.stopped = true; }
+    // stop(0) is all-notes-off. A future when is the note's own scheduled end.
+    stop(when) {
+      this._stopCount = (this._stopCount || 0) + 1;
+      this._lastStopWhen = when;
+      this.stopped = !(typeof when === "number" && when > 0);
+    }
   }
   class FakeParam {
     constructor(v = 0) { this.value = v; }
@@ -139,11 +144,18 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
       this.type = "sine";
       this.frequency = new FakeParam(440);
       this._started = false;
+      this._stopped = false;
+      this._stopCount = 0;
     }
     connect() { return this; }
     disconnect() {}
     start() { this._started = true; }
-    stop() {}
+    // stop(0) is all-notes-off. A future when is the note's own scheduled end.
+    stop(when) {
+      this._stopCount += 1;
+      this._lastStopWhen = when;
+      this._stopped = !(typeof when === "number" && when > 0);
+    }
   }
   class FakeBiquad {
     constructor() {
@@ -1717,6 +1729,331 @@ describe("bass-midi-tone: plain clear bass voice (not harsh synth grit)", () => 
     expect(foundOctave).toBe(true);
     expect(N.BASS_MIDI_VOICE.octaveSemitones).toBe(12);
     api.pause();
+  });
+});
+
+describe("midi-section-advance: auto section change while playing", () => {
+  afterEach(() => {
+    teardownPlayer();
+  });
+
+  async function waitUntil(pred, { timeoutMs = 4000, stepMs = 40 } = {}) {
+    const t0 = Date.now();
+    while (Date.now() - t0 < timeoutMs) {
+      if (await pred()) return true;
+      await new Promise((r) => setTimeout(r, stepMs));
+    }
+    return false;
+  }
+
+  it("auto-advance (loop off, MIDI-only) reschedules bass MIDI; cancels old voices", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: false });
+    api.pickSection(0);
+    api.setLoop(false);
+    api.setMidiBass(true);
+    api.setMidiDrums(false);
+    // Start mid-section so notes still schedule, then let clock cross t=4.0 into B
+    api.seek(2.5);
+    api.play();
+    await api.waitTick(100);
+    const gen0 = api.getState().midiScheduleGen;
+    expect(gen0).toBeGreaterThan(0);
+    const ctx = window.__LAST_AUDIO_CTX__;
+    expect(ctx).toBeTruthy();
+    const oscBefore = ctx._oscillators.slice();
+    expect(oscBefore.length).toBeGreaterThan(0);
+
+    const advanced = await waitUntil(() => api.getState().secIdx >= 1, { timeoutMs: 5000 });
+    expect(advanced).toBe(true);
+    expect(api.getState().secIdx).toBeGreaterThanOrEqual(1);
+    expect(api.getState().midiScheduleGen).toBeGreaterThan(gen0);
+    // Prior oscillators must be stopped (no drone / note pile-up across the boundary)
+    expect(oscBefore.some((o) => o._stopped)).toBe(true);
+    // New schedule created fresh oscillators for the new section
+    expect(ctx._oscillators.length).toBeGreaterThan(oscBefore.length);
+    expect(api.getState().playing).toBe(true);
+    expect(api.getState().midiBass).toBe(true);
+    api.pause();
+  });
+
+  it("auto-advance with bass+drums MIDI both reschedule", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: false });
+    api.pickSection(0);
+    api.setLoop(false);
+    api.setMidiBass(true);
+    api.setMidiDrums(true);
+    api.seek(3.7);
+    api.play();
+    await api.waitTick(60);
+    const gen0 = api.getState().midiScheduleGen;
+    const advanced = await waitUntil(() => api.getState().secIdx >= 1);
+    expect(advanced).toBe(true);
+    expect(api.getState().midiScheduleGen).toBeGreaterThan(gen0);
+    expect(api.getState().midiBass).toBe(true);
+    expect(api.getState().midiDrums).toBe(true);
+    api.pause();
+  });
+
+  it("seek across section while playing (MIDI-only) reschedules", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: false });
+    api.pickSection(0);
+    api.setLoop(false);
+    api.setMidiBass(true);
+    api.play();
+    await api.waitTick(60);
+    const gen0 = api.getState().midiScheduleGen;
+    const ctx = window.__LAST_AUDIO_CTX__;
+    const oscBefore = ctx._oscillators.slice();
+    // Jump into chorus (bar 16 → t=8.0)
+    api.seek(8.0);
+    await api.waitTick(40);
+    expect(api.getState().secIdx).toBe(2);
+    expect(api.getState().patternId).toBe("sync_oct");
+    expect(api.getState().midiScheduleGen).toBeGreaterThan(gen0);
+    expect(oscBefore.some((o) => o._stopped)).toBe(true);
+    const f41 = window.__BASS_NOTATION__.midiToFreq(41);
+    const fresh = ctx._oscillators.filter((o) => !oscBefore.includes(o) && !o._stopped);
+    expect(fresh.some((o) => Math.abs(o.frequency.value - f41) < 0.05)).toBe(true);
+    api.pause();
+  });
+
+  it("pickSection while playing (MIDI-only) reschedules new section", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: false });
+    api.pickSection(0);
+    api.setMidiBass(true);
+    api.play();
+    await api.waitTick(60);
+    const gen0 = api.getState().midiScheduleGen;
+    const ctx = window.__LAST_AUDIO_CTX__;
+    const oscBefore = ctx._oscillators.slice();
+    api.pickSection(2);
+    await api.waitTick(40);
+    expect(api.getState().secIdx).toBe(2);
+    expect(api.getState().patternId).toBe("sync_oct");
+    expect(api.getState().midiScheduleGen).toBeGreaterThan(gen0);
+    expect(oscBefore.some((o) => o._stopped)).toBe(true);
+    expect(api.getState().playing).toBe(true);
+    api.pause();
+  });
+
+  it("auto-advance with stems+MIDI keeps stems continuous and reschedules MIDI", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    api.pickSection(0);
+    api.setLoop(false);
+    api.setMidiBass(true);
+    api.setMidiDrums(true);
+    await api.ensureAudio();
+    api.seek(3.7);
+    api.play();
+    await api.waitTick(80);
+    expect(api.getState().usingAudio).toBe(true);
+    const gen0 = api.getState().midiScheduleGen;
+    const ctx = window.__LAST_AUDIO_CTX__;
+    const srcBefore = ctx._sources.filter((s) => !s.stopped).length;
+    // Advance fake audio clock past section A end (t=4.0)
+    const started = ctx.currentTime;
+    ctx.currentTime = started + 0.6; // song t ≈ 3.7 + 0.6 = 4.3 → section B
+    const advanced = await waitUntil(() => api.getState().secIdx >= 1, { timeoutMs: 2000 });
+    expect(advanced).toBe(true);
+    expect(api.getState().midiScheduleGen).toBeGreaterThan(gen0);
+    // Stem BufferSources should still be the live ones (not force-stopped for section change)
+    const liveSources = ctx._sources.filter((s) => !s.stopped).length;
+    expect(liveSources).toBeGreaterThan(0);
+    expect(api.getState().usingAudio).toBe(true);
+    expect(api.getState().playing).toBe(true);
+    api.pause();
+  });
+
+  it("stem listen modes + MIDI still reschedule on pickSection (S / M / D&B)", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    await api.ensureAudio();
+    // setListenMode toggles off when the same mode is passed again — set each mode once.
+    const forceListen = (mode) => {
+      const cur = api.getState().listenMode;
+      if (mode === "full") {
+        if (cur !== "full") api.setListenMode(cur);
+      } else if (cur !== mode) {
+        api.setListenMode(mode);
+      }
+    };
+    for (const mode of ["solo", "mute", "db", "drums", "full"]) {
+      forceListen(mode);
+      expect(api.getState().listenMode).toBe(mode);
+      api.setMidiBass(true);
+      api.setMidiDrums(mode === "drums" || mode === "db" || mode === "full");
+      api.pickSection(0);
+      api.play();
+      await api.waitTick(50);
+      const gen0 = api.getState().midiScheduleGen;
+      api.pickSection(2);
+      await api.waitTick(40);
+      expect(api.getState().secIdx).toBe(2);
+      expect(api.getState().midiScheduleGen).toBeGreaterThan(gen0);
+      expect(api.getState().listenMode).toBe(mode);
+      expect(api.getState().stemSourcePlaybackRate).toBe(1);
+      api.pause();
+      await api.waitTick(20);
+    }
+  });
+
+  it("slowed tempo (0.75) auto-advance still reschedules MIDI (WSOLA path intact)", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    await api.ensureAudio();
+    api.pickSection(0);
+    api.setLoop(false);
+    api.setMidiBass(true);
+    api.setPlaybackRate(0.75);
+    expect(api.getState().playbackRate).toBe(0.75);
+    api.seek(3.7);
+    api.play();
+    await api.waitTick(80);
+    const gen0 = api.getState().midiScheduleGen;
+    const ctx = window.__LAST_AUDIO_CTX__;
+    // At 0.75 rate, song advances slower: deltaSong = deltaWall * 0.75 → need ~0.8s wall for +0.6 song
+    ctx.currentTime = ctx.currentTime + 1.0;
+    const advanced = await waitUntil(() => api.getState().secIdx >= 1, { timeoutMs: 2500 });
+    expect(advanced).toBe(true);
+    expect(api.getState().midiScheduleGen).toBeGreaterThan(gen0);
+    expect(api.getState().playbackRate).toBe(0.75);
+    api.pause();
+  });
+
+  it("subsection then clear + next section via pick while MIDI playing", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: false });
+    api.pickSection(0);
+    api.setLoopBars(2, 4);
+    expect(api.getState().lo).toBe(2);
+    expect(api.getState().hi).toBe(4);
+    api.setMidiBass(true);
+    api.play();
+    await api.waitTick(50);
+    const gen0 = api.getState().midiScheduleGen;
+    api.clearSubsection();
+    await api.waitTick(30);
+    expect(api.getState().lo).toBe(0);
+    expect(api.getState().midiScheduleGen).toBeGreaterThan(gen0);
+    const gen1 = api.getState().midiScheduleGen;
+    api.nextSection();
+    await api.waitTick(30);
+    expect(api.getState().secIdx).toBe(1);
+    expect(api.getState().midiScheduleGen).toBeGreaterThan(gen1);
+    api.pause();
+  });
+
+  it("loop on within section does not spuriously change secIdx; wrap still schedules", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: false });
+    api.pickSection(1);
+    api.setLoop(true);
+    api.setMidiBass(true);
+    api.seek(7.7); // near end of section B (ends at t=8)
+    api.play();
+    await api.waitTick(60);
+    const gen0 = api.getState().midiScheduleGen;
+    // Wait long enough that without loop we'd leave the section
+    await api.waitTick(500);
+    expect(api.getState().secIdx).toBe(1);
+    expect(api.getState().loopOn).toBe(true);
+    // Loop wrap should have rescheduled at least once
+    expect(api.getState().midiScheduleGen).toBeGreaterThanOrEqual(gen0);
+    api.pause();
+  });
+
+  function loadDemo(rel) {
+    return JSON.parse(readFileSync(join(root, rel), "utf8"));
+  }
+
+  /** First N sections of a public demo, so auto-advance crosses a real pattern boundary. */
+  function applyPublicSlice(payload, demo, sections = 2) {
+    const last = demo.secs[sections - 1];
+    const nbars = last.end;
+    payload.title = demo.title;
+    payload.artist = demo.artist;
+    payload.bpm = demo.bpm;
+    payload.keys = demo.keys;
+    payload.timeSig = demo.timeSig;
+    payload.raw = demo.raw.slice(0, nbars);
+    payload.nbars = nbars;
+    payload.duration = demo.raw[nbars][1];
+    payload.secs = demo.secs.slice(0, sections).map((s) => ({ ...s }));
+    payload.patterns = {};
+    for (const s of payload.secs) {
+      const byId = demo.patterns[s.id];
+      const byKind = demo.patterns[s.kind];
+      if (byId) payload.patterns[s.id] = byId;
+      if (byKind) payload.patterns[s.kind] = byKind;
+    }
+    payload.drumHits = (demo.drumHits || []).filter((h) => h.bar < nbars);
+    payload.cards = demo.cards || payload.cards;
+  }
+
+  it("public demos: Make Funk and Maple Leaf Rag auto-advance reschedule new pattern MIDI", async () => {
+    const cases = [
+      {
+        file: "../work/demo-make-funk/demo-data.json",
+        nextPat: "a1_bass",
+        distinctMidi: 31,
+        keySig: null,
+        drums: true,
+      },
+      {
+        file: "../work/demo-maple-leaf-rag/demo-data.json",
+        nextPat: "a2_lh",
+        distinctMidi: 44,
+        keySig: { kind: "flat", count: "4" },
+        drums: false,
+      },
+    ];
+    for (const c of cases) {
+      const demoSong = loadDemo(c.file);
+      const boundary = demoSong.raw[demoSong.secs[1].first][1];
+      const api = await bootPlayer({
+        privateMode: false,
+        withStems: false,
+        mutatePayload: (p) => applyPublicSlice(p, demoSong, 2),
+      });
+      const N = window.__BASS_NOTATION__;
+      api.pickSection(0);
+      api.setLoop(false);
+      api.setMidiBass(true);
+      api.setMidiDrums(true);
+      api.seek(Math.max(0, boundary - 0.18));
+      api.play();
+      await api.waitTick(80);
+      const gen0 = api.getState().midiScheduleGen;
+      const ctx = window.__LAST_AUDIO_CTX__;
+      const oscBefore = ctx._oscillators.slice();
+      const srcBefore = new Set(ctx._sources);
+      expect(gen0).toBeGreaterThan(0);
+      const advanced = await waitUntil(() => api.getState().secIdx >= 1, { timeoutMs: 4000 });
+      expect(advanced).toBe(true);
+      expect(api.getState().patternId).toBe(c.nextPat);
+      expect(api.getState().midiScheduleGen).toBeGreaterThan(gen0);
+      // Prior voices, when any were still queued, must be cancelled (stop(0)), not left ringing.
+      if (oscBefore.length) expect(oscBefore.every((o) => o._stopped)).toBe(true);
+      const f = N.midiToFreq(c.distinctMidi);
+      const fresh = ctx._oscillators.filter((o) => !oscBefore.includes(o) && !o._stopped);
+      expect(fresh.some((o) => Math.abs(o.frequency.value - f) < 0.05)).toBe(true);
+      const bass = document.querySelector('svg[aria-label="Bass staff"]');
+      const drums = document.querySelector('svg[aria-label="Drum staff"]');
+      expect(bass.querySelector("[data-time-sig]")?.getAttribute("data-time-sig")).toBe("4/4");
+      expect(drums.querySelector("[data-time-sig]")?.getAttribute("data-time-sig")).toBe("4/4");
+      expect(drums.querySelector("[data-key-sig]")).toBeNull();
+      if (c.keySig) {
+        const ks = bass.querySelector("[data-key-sig]");
+        expect(ks?.getAttribute("data-key-kind")).toBe(c.keySig.kind);
+        expect(ks?.getAttribute("data-key-count")).toBe(c.keySig.count);
+      } else {
+        expect(bass.querySelector("[data-key-sig]")).toBeNull();
+      }
+      if (c.drums) {
+        const freshSrc = ctx._sources.filter((s) => !srcBefore.has(s) && !s.stopped);
+        expect(freshSrc.length).toBeGreaterThan(0);
+      }
+      expect(api.getState().playing).toBe(true);
+      expect(api.getState().playbackRate).toBe(1);
+      api.pause();
+      teardownPlayer();
+    }
   });
 });
 

@@ -1548,6 +1548,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let bassGain = null, noBassGain = null, drumsGain = null;
     let midiBassGain = null, midiDrumsGain = null;
     let midiNodes = [];
+    let midiScheduleGen = 0;
     let audioReady = false;
     let stemLoading = false;
     let audioStartedAt = 0;
@@ -1702,6 +1703,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     function scheduleMidi(atSongTime) {
       cancelMidi();
       if (!midiBass && !midiDrums) return;
+      midiScheduleGen += 1;
       ensureMidiGraph();
       const { pat, hat16, rhythmOut, drumsOut } = currentPatAndHat();
       // Full rhythm-out: neither bass nor drums MIDI. Drums-out alone still allows bass MIDI.
@@ -1753,6 +1755,19 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     function toggleMidi(which) {
       if (which === "bass") setMidi("bass", !midiBass);
       else if (which === "drums") setMidi("drums", !midiDrums);
+    }
+    /** Cancel old MIDI voices and schedule the current section/view from song time.
+     *  Used on section boundaries (auto-advance and MIDI-only seeks) without restarting stems. */
+    function rescheduleMidiForTransport(atSongTime) {
+      if (!playing) return;
+      if (!midiBass && !midiDrums) return;
+      try {
+        ensureMidiGraph();
+        if (audioCtx && audioCtx.state === "suspended" && audioCtx.resume) audioCtx.resume();
+        scheduleMidi(atSongTime != null ? atSongTime : t);
+      } catch (err) {
+        console.warn("midi reschedule failed", err);
+      }
     }
     function setListenMode(mode) {
       const next = mode === listenMode ? "full" : mode;
@@ -2166,7 +2181,9 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       lo = SECS[i].first;
       hi = SECS[i].end - 1;
       // While playing with stems, restart audio at the new section time (visual t alone is overwritten by audio clock).
+      // MIDI-only (no stems / audio not ready): still cancel+reschedule so the new section is audible.
       if (playing && audioReady) startStemNodes(t);
+      else if (playing) rescheduleMidiForTransport(t);
       render();
     }
     function clearSubsection() {
@@ -2178,6 +2195,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       loopOn = true;
       t = BARS[lo].t;
       if (playing && audioReady) startStemNodes(t);
+      else if (playing) rescheduleMidiForTransport(t);
       render();
     }
     function nextSection() {
@@ -2204,6 +2222,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         if (i !== secIdx) applySection(i, false);
       }
       if (playing && audioReady) startStemNodes(t);
+      else if (playing) rescheduleMidiForTransport(t);
       render();
     }
     function onLoopBars(a, b) {
@@ -2212,6 +2231,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       hi = Math.min(sec.end - 1, Math.max(a, b));
       loopOn = true; t = BARS[lo].t;
       if (playing && audioReady) startStemNodes(t);
+      else if (playing) rescheduleMidiForTransport(t);
       render();
     }
     function onPause() {
@@ -2280,7 +2300,12 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           }
           if (playing && !loopOn) {
             const i = secIndexOfBar(barAt(t));
-            if (i !== secIdx) applySection(i, false);
+            if (i !== secIdx) {
+              // Section patterns/view changed — cancel old MIDI voices and schedule the new section.
+              // Do NOT restart stem BufferSources here (continuous song audio must keep playing).
+              applySection(i, false);
+              rescheduleMidiForTransport(t);
+            }
           }
           render();
         }, 50);
@@ -3322,7 +3347,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           t, playing, loopOn, secIdx, cardIdx, lo, hi,
           usingAudio, audioReady, stemLoading, muteBass, muteBassSupported, privateMode, activeSongId,
           songCatalog,
-          listenMode, drumsSupported, midiBass, midiDrums, playbackRate,
+          listenMode, drumsSupported, midiBass, midiDrums, midiScheduleGen, midiNodeCount: midiNodes.length, playbackRate,
           pitchPreserveMode, stemSourcePlaybackRate: lastStemSourcePlaybackRate, stemTempoUsesRawPlaybackRate: stemTempoUsesRawPlaybackRate(),
           stretchWindowSongSec: STRETCH_WINDOW_SONG_S,
           stretchWindowSongStart, stretchWindowSongEnd,
