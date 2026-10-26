@@ -1095,40 +1095,48 @@
     else head.appendChild(el("div", { className: "card-insight-title" }, [layer]));
     const midiStrip = el("div", { className: "card-insight-midi-strip", "data-insight-midi-strip": "1" });
     // Play is the primary affordance; Bass/Drums (or Chords) are independent toggles (default ON).
-    midiStrip.appendChild(el("button", {
-      type: "button",
+    // Icons: classic triangle play / stop square; tiny bass guitar; drum kit; chord triad bars.
+    const ICON_PLAY = '<svg class="card-insight-icon" data-icon="play" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><polygon points="2.5,1 10.5,6 2.5,11" fill="currentColor"/></svg>';
+    const ICON_STOP = '<svg class="card-insight-icon" data-icon="stop" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1" fill="currentColor"/></svg>';
+    const ICON_BASS = '<svg class="card-insight-icon" data-icon="bass" width="14" height="12" viewBox="0 0 14 12" aria-hidden="true"><ellipse cx="4.2" cy="6.2" rx="3.2" ry="3.6" fill="currentColor" opacity=".92"/><rect x="6.8" y="5.2" width="5.2" height="1.8" rx=".4" fill="currentColor"/><rect x="11.6" y="4.2" width="1.6" height="3.8" rx=".3" fill="currentColor"/><circle cx="3.2" cy="5.4" r=".55" fill="#0a0e13"/><circle cx="4.6" cy="7.2" r=".45" fill="#0a0e13"/></svg>';
+    const ICON_DRUMS = '<svg class="card-insight-icon" data-icon="drums" width="14" height="12" viewBox="0 0 14 12" aria-hidden="true"><ellipse cx="7" cy="7.6" rx="4.6" ry="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/><ellipse cx="7" cy="5.4" rx="4.6" ry="2.2" fill="currentColor" opacity=".88"/><line x1="2.4" y1="5.4" x2="2.4" y2="7.6" stroke="currentColor" stroke-width="1.1"/><line x1="11.6" y1="5.4" x2="11.6" y2="7.6" stroke="currentColor" stroke-width="1.1"/><line x1="3.2" y1="1.6" x2="6.2" y2="5" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/><line x1="10.8" y1="1.6" x2="7.8" y2="5" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/></svg>';
+    const ICON_CHORDS = '<svg class="card-insight-icon" data-icon="chords" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="1.5" y="2" width="1.4" height="8" rx=".3" fill="currentColor"/><rect x="5.3" y="4" width="1.4" height="6" rx=".3" fill="currentColor"/><rect x="9.1" y="3" width="1.4" height="7" rx=".3" fill="currentColor"/></svg>';
+    function insightIconBtn(attrs, iconHtml, visibleLabel) {
+      const b = el("button", Object.assign({ type: "button", className: "ch-btn card-insight-midi" }, attrs));
+      b.innerHTML = iconHtml + (visibleLabel
+        ? '<span class="card-insight-midi-label">' + visibleLabel + '</span>'
+        : '');
+      return b;
+    }
+    const playBtn0 = insightIconBtn({
       className: "ch-btn card-insight-midi play-btn",
       "data-transport": "insight-midi-play",
       "data-insight-play": "1",
-      "aria-label": "Play or stop this card’s claim-window MIDI",
+      "aria-label": "Play card claim-window MIDI",
       title: "Play — loop this card’s claim window (pauses the main player)",
-    }, ["Play"]));
+    }, ICON_PLAY, null);
+    playBtn0.__insightIcons = { play: ICON_PLAY, stop: ICON_STOP };
+    midiStrip.appendChild(playBtn0);
     if (isHarmony) {
-      midiStrip.appendChild(el("button", {
-        type: "button",
-        className: "ch-btn card-insight-midi",
+      midiStrip.appendChild(insightIconBtn({
         "data-transport": "insight-midi-tog",
         "data-insight-voice": "chords",
         "aria-label": "Toggle chords voice for card MIDI",
         title: "Chords — include chord pads when playing",
-      }, ["Chords"]));
+      }, ICON_CHORDS, "Chords"));
     } else {
-      midiStrip.appendChild(el("button", {
-        type: "button",
-        className: "ch-btn card-insight-midi",
+      midiStrip.appendChild(insightIconBtn({
         "data-transport": "insight-midi-tog",
         "data-insight-voice": "bass",
         "aria-label": "Toggle bass voice for card MIDI",
         title: "Bass — include bass line when playing",
-      }, ["Bass"]));
-      midiStrip.appendChild(el("button", {
-        type: "button",
-        className: "ch-btn card-insight-midi",
+      }, ICON_BASS, "Bass"));
+      midiStrip.appendChild(insightIconBtn({
         "data-transport": "insight-midi-tog",
         "data-insight-voice": "drums",
         "aria-label": "Toggle drums voice for card MIDI",
         title: "Drums — include drums when playing",
-      }, ["Drums"]));
+      }, ICON_DRUMS, "Drums"));
     }
     head.appendChild(midiStrip);
     wrap.appendChild(head);
@@ -1558,9 +1566,11 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 .card-insight-head { display:flex; align-items:center; justify-content:space-between; gap:6px; flex:0 0 auto; }
 .card-insight-title { font-size:10px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; color:#93c5fd; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .card-insight-midi-strip { display:inline-flex; align-items:center; gap:3px; flex:0 0 auto; flex-wrap:wrap; }
-.card-insight-midi { min-width:36px; height:22px; padding:0 6px; font-size:9px; font-weight:800; letter-spacing:.02em; }
+.card-insight-midi { min-width:36px; height:22px; padding:0 5px; font-size:9px; font-weight:800; letter-spacing:.02em; display:inline-flex; align-items:center; justify-content:center; gap:3px; }
+.card-insight-midi .card-insight-icon { display:block; flex:0 0 auto; pointer-events:none; }
+.card-insight-midi .card-insight-midi-label { line-height:1; pointer-events:none; }
 .card-insight-midi.on { background:#1e3a5f; border-color:#3b82f6; color:#93c5fd; }
-.card-insight-midi.play-btn { min-width:44px; background:#14532d; border-color:#22c55e; color:#86efac; }
+.card-insight-midi.play-btn { min-width:28px; padding:0 7px; background:#14532d; border-color:#22c55e; color:#86efac; }
 .card-insight-midi.play-btn.on { background:#3f1d1d; border-color:#ef4444; color:#fca5a5; }
 .card-insight-svg { flex:1; min-height:0; width:100%; }
 .card-insight-chords { flex:1; min-height:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; align-content:center; }
@@ -4125,11 +4135,19 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       if (insightView) {
         const playBtn = insightView.querySelector("[data-insight-play]");
         if (playBtn) {
+          const icons = playBtn.__insightIcons || {};
+          const iconPlay = icons.play || '<svg class="card-insight-icon" data-icon="play" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><polygon points="2.5,1 10.5,6 2.5,11" fill="currentColor"/></svg>';
+          const iconStop = icons.stop || '<svg class="card-insight-icon" data-icon="stop" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1" fill="currentColor"/></svg>';
           if (insightMidiPlaying) {
             playBtn.classList.add("on");
-            playBtn.textContent = "Stop";
+            playBtn.innerHTML = iconStop;
             playBtn.setAttribute("aria-label", "Stop card MIDI");
             playBtn.title = "Stop — end looping card MIDI";
+          } else {
+            playBtn.classList.remove("on");
+            playBtn.innerHTML = iconPlay;
+            playBtn.setAttribute("aria-label", "Play card claim-window MIDI");
+            playBtn.title = "Play — loop this card’s claim window (pauses the main player)";
           }
         }
         const bassBtn = insightView.querySelector('[data-insight-voice="bass"]');
