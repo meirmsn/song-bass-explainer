@@ -1,0 +1,19 @@
+{
+  "schema": "bass.drums.v1",
+  "source": "drums stem near-silent (piano ragtime; demucs put kit energy ~0); NO invented hits",
+  "bpm": 112,
+  "nbars": 73,
+  "midi": {
+    "kick": 36,
+    "snare": 38,
+    "hat": 42
+  },
+  "drumsOutBars": [
+    [
+      0,
+      72
+    ]
+  ],
+  "hits": [],
+  "caveat": "Maple Leaf Rag is piano; htdemucs bass/drums stems empty. drumHits intentionally []."
+}

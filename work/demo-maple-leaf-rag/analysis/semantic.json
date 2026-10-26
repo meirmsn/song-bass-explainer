@@ -1,0 +1,2094 @@
+{
+  "schema": "bass.semantic.v1",
+  "status": "ok",
+  "source": "generic analyzer (librosa features + heuristics)",
+  "song": "Maple Leaf Rag",
+  "artist": "Scott Joplin",
+  "cards": {
+    "intro": [
+      {
+        "label": "Drums",
+        "body": "Auto-grid 112 BPM 4/4 (medium). Kit not separated in this pass \u2014 listen for pulse against the bar line."
+      },
+      {
+        "label": "Bass",
+        "body": "Estimated bass PC per beat from low chroma. Try a C pedal or root\u20135 outline; verify by ear (confidence low-medium)."
+      },
+      {
+        "label": "Harmony",
+        "body": "Key guess Cm. This section chroma favors: Ab\u00d72, Abm\u00d72. Labels are template matches, not human transcription."
+      },
+      {
+        "label": "Feel",
+        "body": "moderate, dark/warm spectrum. Section bars 0\u20133. Use Mute Bass (private) to check the estimate."
+      }
+    ],
+    "verse": [
+      {
+        "label": "Drums",
+        "body": "Auto-grid 112 BPM 4/4 (medium). Kit not separated in this pass \u2014 listen for pulse against the bar line."
+      },
+      {
+        "label": "Bass",
+        "body": "Estimated bass PC per beat from low chroma. Try a C pedal or root\u20135 outline; verify by ear (confidence low-medium)."
+      },
+      {
+        "label": "Harmony",
+        "body": "Key guess Cm. This section chroma favors: Ab\u00d72, Abm\u00d72. Labels are template matches, not human transcription."
+      },
+      {
+        "label": "Feel",
+        "body": "moderate, dark/warm spectrum. Section bars 8\u201311. Use Mute Bass (private) to check the estimate."
+      }
+    ],
+    "bridge": [
+      {
+        "label": "Drums",
+        "body": "Auto-grid 112 BPM 4/4 (medium). Kit not separated in this pass \u2014 listen for pulse against the bar line."
+      },
+      {
+        "label": "Bass",
+        "body": "Estimated bass PC per beat from low chroma. Try a C pedal or root\u20135 outline; verify by ear (confidence low-medium)."
+      },
+      {
+        "label": "Harmony",
+        "body": "Key guess Cm. This section chroma favors: Ab\u00d74. Labels are template matches, not human transcription."
+      },
+      {
+        "label": "Feel",
+        "body": "moderate, dark/warm spectrum. Section bars 12\u201315. Use Mute Bass (private) to check the estimate."
+      }
+    ],
+    "tag": [
+      {
+        "label": "Drums",
+        "body": "Auto-grid 112 BPM 4/4 (medium). Kit not separated in this pass \u2014 listen for pulse against the bar line."
+      },
+      {
+        "label": "Bass",
+        "body": "Estimated bass PC per beat from low chroma. Try a C pedal or root\u20135 outline; verify by ear (confidence low-medium)."
+      },
+      {
+        "label": "Harmony",
+        "body": "Key guess Cm. This section chroma favors: Ab\u00d72, Fm\u00d71, Eb\u00d71. Labels are template matches, not human transcription."
+      },
+      {
+        "label": "Feel",
+        "body": "moderate, dark/warm spectrum. Section bars 68\u201372. Use Mute Bass (private) to check the estimate."
+      }
+    ]
+  },
+  "patterns": {
+    "s0": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s1": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s2": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s3": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s4": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s5": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s6": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s7": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s8": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s9": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s10": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s11": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s12": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s13": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s14": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s15": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s16": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "s17": [
+      {
+        "id": "pedal",
+        "name": "Pedal on C",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 2,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 36
+          },
+          {
+            "step": 10,
+            "midi": 36
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 14,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 18,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 26,
+            "midi": 36
+          },
+          {
+            "step": 28,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 36
+          }
+        ]
+      },
+      {
+        "id": "r5",
+        "name": "Root\u20135 outline",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36
+          },
+          {
+            "step": 4,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 43
+          },
+          {
+            "step": 12,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 24,
+            "midi": 43
+          },
+          {
+            "step": 28,
+            "midi": 36
+          }
+        ]
+      }
+    ]
+  },
+  "global": {
+    "bpm": 112,
+    "key_guess": "Cm",
+    "tempo_feel": "medium",
+    "density": "moderate",
+    "timbre": "dark/warm",
+    "top_chords": [
+      [
+        "Ab",
+        30
+      ],
+      [
+        "Fm",
+        9
+      ],
+      [
+        "Db",
+        7
+      ],
+      [
+        "Abm",
+        6
+      ],
+      [
+        "Bbm",
+        6
+      ]
+    ]
+  },
+  "confidence": "low-medium \u2014 automatic; not song-specific lore",
+  "web": null
+}

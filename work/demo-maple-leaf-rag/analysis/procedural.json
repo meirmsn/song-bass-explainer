@@ -1,0 +1,534 @@
+{
+  "schema": "bass.procedural.v1",
+  "status": "ok",
+  "title": "Maple Leaf Rag",
+  "artist": "Scott Joplin",
+  "bpm": 112,
+  "timeSig": "4/4",
+  "keys": "Ab",
+  "duration": 154.008,
+  "nbars": 73,
+  "raw": [
+    [
+      0,
+      0.09,
+      "Eb7",
+      "Ab.Ab.A.G"
+    ],
+    [
+      1,
+      2.21,
+      "Eb7",
+      "Ab.B.Bb.Eb"
+    ],
+    [
+      2,
+      4.41,
+      "Abm",
+      "E.Eb.E.Eb"
+    ],
+    [
+      3,
+      6.64,
+      "Abm",
+      "Ab.Ab.Ab.G"
+    ],
+    [
+      4,
+      8.71,
+      "Fm7",
+      "G.G.Ab.Ab"
+    ],
+    [
+      5,
+      10.8,
+      "Ab",
+      "B.Ab.Ab.Ab"
+    ],
+    [
+      6,
+      12.89,
+      "Fm7",
+      "B.B.B.Ab"
+    ],
+    [
+      7,
+      14.98,
+      "Ab",
+      "B.Ab.G.Eb"
+    ],
+    [
+      8,
+      17.07,
+      "Eb7",
+      "Ab.A.Bb.Eb"
+    ],
+    [
+      9,
+      19.16,
+      "Eb7",
+      "Ab.A.Bb.Eb"
+    ],
+    [
+      10,
+      21.25,
+      "Abm",
+      "E.Eb.E.Eb"
+    ],
+    [
+      11,
+      23.34,
+      "Abm",
+      "Ab.Ab.Ab.G"
+    ],
+    [
+      12,
+      25.4,
+      "Fm7",
+      "G.G.Ab.Ab"
+    ],
+    [
+      13,
+      27.49,
+      "Ab",
+      "B.Ab.Ab.F"
+    ],
+    [
+      14,
+      29.58,
+      "Fm7",
+      "B.B.B.B"
+    ],
+    [
+      15,
+      31.67,
+      "Ab",
+      "B.B.G.A"
+    ],
+    [
+      16,
+      33.83,
+      "Eb7",
+      "Eb.Bb.Eb.G"
+    ],
+    [
+      17,
+      36.13,
+      "Fm7",
+      "Eb.Ab.Ab.Bb"
+    ],
+    [
+      18,
+      38.22,
+      "Bbm",
+      "Eb.Bb.Bb.B"
+    ],
+    [
+      19,
+      40.29,
+      "Fm7",
+      "Eb.Ab.Ab.Bb"
+    ],
+    [
+      20,
+      42.38,
+      "Eb7",
+      "Eb.Bb.Eb.Ab"
+    ],
+    [
+      21,
+      44.47,
+      "Ab7",
+      "Eb.Ab.G.F"
+    ],
+    [
+      22,
+      46.56,
+      "Bbm7",
+      "A.Bb.Bb.Bb"
+    ],
+    [
+      23,
+      48.65,
+      "Eb7",
+      "Eb.Ab.Ab.Bb"
+    ],
+    [
+      24,
+      50.74,
+      "Eb7",
+      "Eb.Bb.Eb.G"
+    ],
+    [
+      25,
+      52.83,
+      "Fm7",
+      "Eb.Ab.Ab.Bb"
+    ],
+    [
+      26,
+      54.91,
+      "Bbm",
+      "Eb.Bb.Bb.B"
+    ],
+    [
+      27,
+      57.01,
+      "Fm7",
+      "Eb.Ab.Ab.Bb"
+    ],
+    [
+      28,
+      59.07,
+      "Eb7",
+      "Eb.Bb.Eb.G"
+    ],
+    [
+      29,
+      61.16,
+      "Fm7",
+      "Eb.Ab.G.F"
+    ],
+    [
+      30,
+      63.34,
+      "Bbm7",
+      "A.Bb.Bb.Bb"
+    ],
+    [
+      31,
+      65.6,
+      "Ab",
+      "G.Ab.Eb.Ab"
+    ],
+    [
+      32,
+      67.69,
+      "Eb7",
+      "A.Bb.Eb.Ab"
+    ],
+    [
+      33,
+      69.78,
+      "Eb7",
+      "A.G.Eb.E"
+    ],
+    [
+      34,
+      71.87,
+      "Abm",
+      "Eb.E.Eb.Ab"
+    ],
+    [
+      35,
+      73.96,
+      "Abm7",
+      "Ab.Ab.G.G"
+    ],
+    [
+      36,
+      76.02,
+      "Fm7",
+      "G.Ab.Ab.B"
+    ],
+    [
+      37,
+      78.11,
+      "Ab",
+      "Ab.Ab.Ab.B"
+    ],
+    [
+      38,
+      80.2,
+      "Fm7",
+      "B.B.B.B"
+    ],
+    [
+      39,
+      82.29,
+      "Ab",
+      "B.G.Ab.Eb"
+    ],
+    [
+      40,
+      84.38,
+      "Ab7",
+      "Gb.F.C.Db"
+    ],
+    [
+      41,
+      86.47,
+      "Bbm7",
+      "Ab.F.D.Eb"
+    ],
+    [
+      42,
+      88.56,
+      "Ab7",
+      "Gb.F.C.Ab"
+    ],
+    [
+      43,
+      90.65,
+      "Bbm7",
+      "Ab.F.C.Bb"
+    ],
+    [
+      44,
+      92.72,
+      "Bb",
+      "D.F.Bb.Eb"
+    ],
+    [
+      45,
+      94.81,
+      "Ebm7",
+      "Gb.Eb.Gb.Bb"
+    ],
+    [
+      46,
+      96.9,
+      "Bbm7",
+      "G.Ab.Bb.Bb"
+    ],
+    [
+      47,
+      98.99,
+      "Fm7",
+      "B.Db.D.Eb"
+    ],
+    [
+      48,
+      101.08,
+      "Ab7",
+      "Gb.F.C.Db"
+    ],
+    [
+      49,
+      103.17,
+      "Bbm7",
+      "Ab.F.D.Eb"
+    ],
+    [
+      50,
+      105.26,
+      "Ab7",
+      "Gb.F.C.Db"
+    ],
+    [
+      51,
+      107.35,
+      "Bbm7",
+      "Ab.F.C.Bb"
+    ],
+    [
+      52,
+      109.41,
+      "Bb",
+      "D.F.Bb.Eb"
+    ],
+    [
+      53,
+      111.5,
+      "Ebm7",
+      "Gb.Eb.Gb.Bb"
+    ],
+    [
+      54,
+      113.59,
+      "Bbm7",
+      "G.Ab.Bb.Bb"
+    ],
+    [
+      55,
+      115.68,
+      "Db",
+      "B.Ab.B.Db"
+    ],
+    [
+      56,
+      117.77,
+      "Db7",
+      "B.Db.B.B"
+    ],
+    [
+      57,
+      120.05,
+      "Eb7",
+      "Ab.Eb.Bb.Eb"
+    ],
+    [
+      58,
+      122.21,
+      "Eb7",
+      "Bb.Eb.Ab.Eb"
+    ],
+    [
+      59,
+      124.3,
+      "Fm7",
+      "Ab.B.B.Ab"
+    ],
+    [
+      60,
+      126.39,
+      "Db7",
+      "Db.Bb.B.B"
+    ],
+    [
+      61,
+      128.48,
+      "Fm7",
+      "Ab.Eb.Db.Bb"
+    ],
+    [
+      62,
+      130.57,
+      "Fm7",
+      "Eb.Eb.F.G"
+    ],
+    [
+      63,
+      132.66,
+      "Fm7",
+      "Ab.B.Db.Ab"
+    ],
+    [
+      64,
+      134.79,
+      "Db7",
+      "Db.Bb.B.Ab"
+    ],
+    [
+      65,
+      137.0,
+      "Eb7",
+      "Ab.Eb.Bb.Eb"
+    ],
+    [
+      66,
+      139.16,
+      "Eb7",
+      "Bb.Eb.Ab.Eb"
+    ],
+    [
+      67,
+      141.36,
+      "Fm7",
+      "Ab.B.B.Ab"
+    ],
+    [
+      68,
+      143.52,
+      "Db7",
+      "Db.Bb.B.Ab"
+    ],
+    [
+      69,
+      145.73,
+      "Fm7",
+      "Ab.Eb.Db.Bb"
+    ],
+    [
+      70,
+      147.89,
+      "Eb7",
+      "Eb.Eb.F.G"
+    ],
+    [
+      71,
+      150.09,
+      "Ab7",
+      "G.Eb.Ab.F"
+    ],
+    [
+      72,
+      152.25,
+      "Dm7",
+      "F.F.F.F"
+    ],
+    [
+      73,
+      154.4,
+      "",
+      ""
+    ]
+  ],
+  "secs": [
+    {
+      "id": "a1",
+      "name": "Strain A",
+      "first": 0,
+      "end": 8,
+      "kind": "verse",
+      "ci": 1
+    },
+    {
+      "id": "a2",
+      "name": "Strain A repeat",
+      "first": 8,
+      "end": 16,
+      "kind": "verse",
+      "ci": 1
+    },
+    {
+      "id": "b1",
+      "name": "Strain B",
+      "first": 16,
+      "end": 24,
+      "kind": "chorus",
+      "ci": 2
+    },
+    {
+      "id": "b2",
+      "name": "Strain B repeat",
+      "first": 24,
+      "end": 32,
+      "kind": "chorus",
+      "ci": 2
+    },
+    {
+      "id": "a3",
+      "name": "Strain A\u2032",
+      "first": 32,
+      "end": 40,
+      "kind": "verse",
+      "ci": 1
+    },
+    {
+      "id": "c1",
+      "name": "Trio C",
+      "first": 40,
+      "end": 48,
+      "kind": "bridge",
+      "ci": 3
+    },
+    {
+      "id": "c2",
+      "name": "Trio C\u2032",
+      "first": 48,
+      "end": 56,
+      "kind": "bridge",
+      "ci": 3
+    },
+    {
+      "id": "d1",
+      "name": "Strain D",
+      "first": 56,
+      "end": 64,
+      "kind": "chorus",
+      "ci": 2
+    },
+    {
+      "id": "out",
+      "name": "Coda",
+      "first": 64,
+      "end": 73,
+      "kind": "tag",
+      "ci": 4
+    }
+  ],
+  "source": "scripts/analyze_audio.py (librosa)",
+  "confidence": "low-medium \u2014 piano LH from other/mix; empty drums stem",
+  "jobId": null
+}

@@ -19,13 +19,17 @@ __pycache__/
 .dev.vars
 
 # Local work, logs, and secrets.
-# work/* keeps jobs and scratch out of git. The CC0 Komiku demo metadata
-# is the exception: study JSON and attribution are tracked. Stem audio and
-# the FMA source mix stay on R2 (see work/demo-a-good-bass-for-gambling/SHIP.md).
+# work/* keeps jobs and scratch out of git. Public demo metadata is the
+# exception: study JSON and attribution are tracked. Stem audio and the FMA
+# source mix stay on R2 (see each demo's SHIP.md).
 work/*
 !work/demo-a-good-bass-for-gambling/
+!work/demo-make-funk/
+!work/demo-maple-leaf-rag/
 work/demo-a-good-bass-for-gambling/stems/
 work/demo-a-good-bass-for-gambling/source/
+work/demo-make-funk/stems/
+work/demo-maple-leaf-rag/stems/
 logs/
 .env*
 

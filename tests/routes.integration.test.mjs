@@ -50,6 +50,9 @@ describe("public demo APIs — CC0 open, LAP gated", () => {
     expect(data.songs.every((s) => /CC0|public domain|PD/i.test(s.license || ""))).toBe(true);
     expect(JSON.stringify(data)).not.toMatch(/like.?a.?prayer/i);
     expect(data.songs.some((s) => s.id === "a-good-bass-for-gambling")).toBe(true);
+    expect(data.songs.some((s) => s.id === "make-funk")).toBe(true);
+    expect(data.songs.some((s) => s.id === "maple-leaf-rag")).toBe(true);
+    expect(data.songs.length).toBeGreaterThanOrEqual(3);
   });
 
   it("GET /api/demo/a-good-bass-for-gambling → study JSON", async () => {
@@ -78,6 +81,54 @@ describe("public demo APIs — CC0 open, LAP gated", () => {
   it("public LAP stem path blocked", async () => {
     const { status } = await fetchRaw("/api/demo/like-a-prayer/stems/bass.wav");
     expect([401, 403]).toContain(status);
+  });
+
+  it("GET /api/demo/make-funk → study JSON", async () => {
+    const { status, text } = await fetchRaw("/api/demo/make-funk");
+    expect(status).toBe(200);
+    const data = JSON.parse(text);
+    expect(data.title).toMatch(/make funk/i);
+    expect(data.artist).toMatch(/HoliznaCC0/i);
+    expect(data.stems?.available).toBe(true);
+    expect(data.stems?.access).toBe("public");
+    expect(data.stems?.bass).toMatch(/\/api\/demo\/make-funk\/stems\/bass\.(m4a|wav)/);
+    // lean-B ship blocker: every card has insight
+    const cards = Object.values(data.cards || {}).flat();
+    expect(cards.length).toBeGreaterThan(0);
+    expect(cards.every((c) => c.insight && c.insight.layer)).toBe(true);
+  });
+
+  it("public Make Funk stem path serves audio", async () => {
+    const { status, res } = await fetchRaw("/api/demo/make-funk/stems/bass.m4a");
+    expect([200, 206]).toContain(status);
+    const ct = res.headers.get("content-type") || "";
+    expect(ct).toMatch(/audio|mp4|mpeg/i);
+    expect(Number(res.headers.get("content-length") || 0)).toBeGreaterThan(1000);
+  });
+
+  it("GET /api/demo/maple-leaf-rag → study JSON", async () => {
+    const { status, text } = await fetchRaw("/api/demo/maple-leaf-rag");
+    expect(status).toBe(200);
+    const data = JSON.parse(text);
+    expect(data.title).toMatch(/maple leaf/i);
+    expect(data.artist).toMatch(/Joplin/i);
+    expect(data.stems?.available).toBe(true);
+    expect(data.stems?.access).toBe("public");
+    // no invented drums
+    expect(Array.isArray(data.drumHits) ? data.drumHits.length : 0).toBe(0);
+    const cards = Object.values(data.cards || {}).flat();
+    expect(cards.every((c) => c.insight && c.insight.layer)).toBe(true);
+  });
+
+  it("public Maple Leaf Rag stem path serves audio", async () => {
+    const { status, res } = await fetchRaw("/api/demo/maple-leaf-rag/stems/other.m4a");
+    expect([200, 206]).toContain(status);
+    expect(Number(res.headers.get("content-length") || 0)).toBeGreaterThan(1000);
+  });
+
+  it("unknown public demo slug → 404", async () => {
+    const { status } = await fetchRaw("/api/demo/not-a-real-song");
+    expect([404, 401]).toContain(status);
   });
 
   it("/js/demo-data.json is not LAP song JSON", async () => {
@@ -117,6 +168,6 @@ describe("health", () => {
     expect(data.public_stems_open).toBe(false);
     const pipe = JSON.stringify(data.pipeline || {});
     expect(pipe).not.toMatch(/GET \/api\/demo\/like-a-prayer \(JSON only/);
-    expect(pipe).toMatch(/a-good-bass-for-gambling/);
+    expect(pipe).toMatch(/a-good-bass-for-gambling|CC0\/PDM|allowlisted/i);
   });
 });

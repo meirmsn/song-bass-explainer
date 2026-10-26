@@ -1,0 +1,12 @@
+{
+  "schema": "bass.transcription.v1",
+  "status": "ok",
+  "source": "faster-whisper",
+  "model": "base.en",
+  "segments": [],
+  "jobId": null,
+  "note": "no speech segments (instrumental or silence)",
+  "language": "en",
+  "audio": "/workspace/bass-study/work/demo-maple-leaf-rag/stems/vocals.wav",
+  "text": ""
+}
