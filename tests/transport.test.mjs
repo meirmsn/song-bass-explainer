@@ -245,3 +245,24 @@ describe("keyboard navigation helpers on transport", () => {
     expect(s.t).toBe(barTimes[demo.secs[1].first]);
   });
 });
+
+describe("playbackRate", () => {
+  it("tick advances slower at 50%", () => {
+    const tr = make();
+    tr.setPlaybackRate(0.5);
+    const t0 = tr.getState().t;
+    tr.play();
+    tr.tick(1.0);
+    expect(tr.getState().t).toBeCloseTo(t0 + 0.5, 5);
+    expect(tr.getState().playbackRate).toBe(0.5);
+  });
+
+  it("100% is identity", () => {
+    const tr = make();
+    tr.setPlaybackRate(1);
+    const t0 = tr.getState().t;
+    tr.play();
+    tr.tick(0.4);
+    expect(tr.getState().t).toBeCloseTo(t0 + 0.4, 5);
+  });
+});

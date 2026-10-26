@@ -975,7 +975,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 .meta .sec-slot { min-width:10ch; display:inline-block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .meta .badge { font-size:11px; color:#93c5fd; border:1px solid #374151; border-radius:999px; padding:2px 8px; white-space:nowrap; flex:0 0 auto; }
 .meta .badge.loading { color:#fbbf24; border-color:#92400e; }
-.transport { display:flex; align-items:center; gap:6px; flex:0 0 auto; }
+.transport { display:flex; align-items:center; gap:6px; flex:0 0 auto; flex-wrap:wrap; }
+.rate-strip { display:inline-flex; align-items:center; gap:3px; margin-left:4px; }
+.rate-btn { min-width:36px; height:28px; padding:0 6px; font-size:11px; font-weight:700; font-variant-numeric:tabular-nums; border-radius:6px; border:1px solid #374151; background:#111827; color:#9ca3af; cursor:pointer; line-height:1; -webkit-user-select:none; user-select:none; touch-action:manipulation; }
+.rate-btn.on { background:#1e3a5f; border-color:#3b82f6; color:#93c5fd; }
+.credit-line { font-size:11px; color:#6b7280; line-height:1.35; }
+.credit-line a { color:#93c5fd; text-decoration:none; font-weight:600; }
+.credit-line a:hover { text-decoration:underline; }
 .icon-btn { width:40px; height:40px; padding:0; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; border:1px solid #374151; background:#111827; color:#e5e7eb; -webkit-user-select:none; user-select:none; touch-action:manipulation; }
 .icon-btn svg, .icon-btn svg * { pointer-events:none; }
 .icon-btn.bass-tog { opacity:0.92; }
@@ -1096,7 +1102,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let demo;
     const endpoints = privateMode
       ? ["/private/api/demo/like-a-prayer", "/api/demo/like-a-prayer", "/js/demo-data.json"]
-      : ["/api/demo/like-a-prayer", "/js/demo-data.json"];
+      : ["/api/demo/a-good-bass-for-gambling", "/js/demo-data.json"];
     let lastErr = null;
     for (const ep of endpoints) {
       try {
@@ -1108,9 +1114,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     }
     if (!demo) throw lastErr || new Error("no demo data");
     demo.stems = demo.stems || { available: false };
-    // Public pages never enable Mute Bass even if a cached payload claims stems.
+    // Public pages: allow CC0/public stems only. Never enable licensed/private stems on the public player.
     if (!privateMode) {
-      demo.stems = { available: false, muteBassSupported: false, access: "private" };
+      const access = String(demo.stems.access || "");
+      const publicOk = access === "public" || (demo.stems.available && /\/api\/demo\/a-good-bass-for-gambling\//.test(String(demo.stems.bass || "")));
+      if (!publicOk) {
+        demo.stems = { available: false, muteBassSupported: false, access: "blocked" };
+      }
     }
     const BARS = demo.raw.map((r) => ({ bar: r[0], t: r[1], chord: r[2], bass: r[3] === "" ? [] : String(r[3]).split(".") }));
     const SECS = demo.secs;
@@ -1168,6 +1178,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let muteBass = false; // derived: listenMode === "mute" (compat)
     let midiBass = false;
     let midiDrums = false;
+    const PLAYBACK_RATES = [1, 0.9, 0.75, 0.5, 0.25];
+    let playbackRate = 1; // pitch-preserving slowdown via BufferSource.playbackRate
     let audioCtx = null;
     let bassBuf = null, noBassBuf = null, drumsBuf = null;
     let bassSrc = null, noBassSrc = null, drumsSrc = null;
@@ -1339,7 +1351,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           const nextStep = i + 1 < notes.length ? notes[i + 1].step : note.step + 4;
           const nextT = stepToSongTime(viewLo, Math.min(nextStep, steps), barTimeAt);
           const dur = Math.max(0.06, Math.min(0.45, (nextT - songT) * 0.9));
-          playBassSynthNote(when0 + (songT - song0), dur, note.midi);
+          playBassSynthNote(when0 + (songT - song0) / (playbackRate > 0 ? playbackRate : 1), dur / (playbackRate > 0 ? playbackRate : 1), note.midi);
         }
       }
       if (midiDrums) {
@@ -1350,7 +1362,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           const h = hits[i];
           const songT = stepToSongTime(viewLo, h.step, barTimeAt);
           if (songT + 0.001 < song0) continue;
-          playDrumSynthHit(when0 + (songT - song0), h.kind);
+          playDrumSynthHit(when0 + (songT - song0) / (playbackRate > 0 ? playbackRate : 1), h.kind);
         }
       }
     }
@@ -1506,6 +1518,12 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         drumsSrc = null;
       }
       applyListenGains();
+      const rate = playbackRate > 0 ? playbackRate : 1;
+      try {
+        bassSrc.playbackRate.value = rate;
+        noBassSrc.playbackRate.value = rate;
+        if (drumsSrc) drumsSrc.playbackRate.value = rate;
+      } catch (e) { /* older engines */ }
       const when = audioCtx.currentTime;
       try {
         bassSrc.start(when, start);
@@ -1524,7 +1542,20 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     }
     function syncTransportFromAudio() {
       if (!usingAudio || !audioCtx) return;
-      t = audioOffset + (audioCtx.currentTime - audioStartedAt);
+      const rate = playbackRate > 0 ? playbackRate : 1;
+      t = audioOffset + (audioCtx.currentTime - audioStartedAt) * rate;
+    }
+    function setPlaybackRate(rate) {
+      const r = Number(rate);
+      if (!PLAYBACK_RATES.includes(r)) return;
+      // Keep song position continuous across rate changes.
+      if (usingAudio && audioCtx) syncTransportFromAudio();
+      playbackRate = r;
+      if (playing) {
+        if (usingAudio) startStemNodes(t);
+        else if (midiBass || midiDrums) scheduleMidi(t);
+      }
+      render();
     }
 
     // Prefer cached layout rect: mid-drag render() tears down the SVG, so live
@@ -1722,7 +1753,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
             syncTransportFromAudio();
             if (loopOn && t >= le2) { t = ls2; startStemNodes(t); }
           } else {
-            t += 0.05;
+            t += 0.05 * (playbackRate > 0 ? playbackRate : 1);
             if (loopOn && t >= le2) {
               t = ls2;
               if (midiBass || midiDrums) scheduleMidi(t);
@@ -2312,6 +2343,9 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           setListenMode(mode);
         } else if (action === "midi") {
           toggleMidi(tEl.getAttribute("data-midi") || "bass");
+        } else if (action === "rate") {
+          const r = Number(tEl.getAttribute("data-rate"));
+          if (Number.isFinite(r)) setPlaybackRate(r);
         }
       };
       root.addEventListener("pointerup", handleTransport);
@@ -2424,8 +2458,35 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         '<svg width="18" height="18" viewBox="0 0 18 18"><rect x="3" y="3" width="12" height="12" rx="1.5" fill="currentColor"/></svg>'));
       transport.appendChild(iconBtn(loopOn ? "Loop on" : "Loop off", loopOn, "loop",
         '<svg width="18" height="18" viewBox="0 0 18 18"><path d="M4 9a5 5 0 0 1 8.5-3.5L14 7M14 9a5 5 0 0 1-8.5 3.5L4 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><polyline points="11,4 14,7 11,7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><polyline points="7,14 4,11 7,11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'));
+      const rateStrip = el("div", { className: "rate-strip", "aria-label": "Playback speed (pitch preserved)", "data-rate-strip": "1" });
+      const rateLabels = { 1: "100%", 0.9: "90%", 0.75: "75%", 0.5: "50%", 0.25: "25%" };
+      for (const r of PLAYBACK_RATES) {
+        rateStrip.appendChild(el("button", {
+          type: "button",
+          className: "rate-btn" + (playbackRate === r ? " on" : ""),
+          "data-transport": "rate",
+          "data-rate": String(r),
+          "aria-pressed": playbackRate === r ? "true" : "false",
+          title: "Playback " + rateLabels[r] + " (same pitch)",
+        }, [rateLabels[r]]));
+      }
+      transport.appendChild(rateStrip);
       header.appendChild(transport);
       shell.appendChild(header);
+      const credit = demo.credit || (demo.meta && demo.meta.license ? {
+        title: demo.title, artist: demo.artist, license: demo.meta.license, url: demo.meta.sourceUrl, source: demo.meta.source,
+      } : null);
+      if (credit && !privateMode) {
+        const creditRow = el("div", { className: "credit-line", "data-credit": "1" });
+        const bits = [credit.title || demo.title, credit.artist || demo.artist, credit.license || "CC0"].filter(Boolean);
+        creditRow.appendChild(document.createTextNode(bits.join(" · ") + " · "));
+        if (credit.url) {
+          creditRow.appendChild(el("a", { href: credit.url, target: "_blank", rel: "noopener noreferrer" }, [credit.source || "source"]));
+        } else if (credit.source) {
+          creditRow.appendChild(document.createTextNode(credit.source));
+        }
+        shell.appendChild(creditRow);
+      }
 
       shell.appendChild(el("div", { className: "timeline" }, [makeTimeline()]));
 
@@ -2610,7 +2671,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         return {
           t, playing, loopOn, secIdx, cardIdx, lo, hi,
           usingAudio, audioReady, stemLoading, muteBass, muteBassSupported, privateMode,
-          listenMode, drumsSupported, midiBass, midiDrums,
+          listenMode, drumsSupported, midiBass, midiDrums, playbackRate,
           stemUrls: { bass: stemUrls.bass, noBass: stemUrls.noBass, drums: stemUrls.drums },
           stemFetchCount,
           audioCtxState: audioCtx ? audioCtx.state : null,
@@ -2653,6 +2714,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         setListenMode(mode);
         return window.__BASS_PLAYER__.getState();
       },
+      setPlaybackRate: (r) => { setPlaybackRate(r); return window.__BASS_PLAYER__.getState(); },
       setMidiBass: (on) => { setMidi("bass", on); return window.__BASS_PLAYER__.getState(); },
       setMidiDrums: (on) => { setMidi("drums", on); return window.__BASS_PLAYER__.getState(); },
       toggleMidiBass: () => { toggleMidi("bass"); return window.__BASS_PLAYER__.getState(); },

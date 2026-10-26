@@ -1,6 +1,6 @@
 /**
- * Bass Study Worker — static assets + Access-gated jobs/stems + public visual demo (no audio).
- * Stems are NEVER served on unauthenticated /api/demo/.../stems paths.
+ * Bass Study Worker — static assets + Access-gated private jobs/stems + public CC0 demo.
+ * Licensed demos (Like a Prayer) stay private-only. Public CC0 stems served from DEMO_BUCKET.
  */
 import { buildStemsMeta } from "./stems.mjs";
 
@@ -108,7 +108,10 @@ export default {
       try {
         demoOk = Boolean(env.DEMO_BUCKET);
         if (env.DEMO_BUCKET) {
-          publicDemoStemsPresent = false; // licensed demo stems must not be public
+          publicDemoStemsPresent = Boolean(
+            (await env.DEMO_BUCKET.head("demo/a-good-bass-for-gambling/stems/bass.m4a")) ||
+            (await env.DEMO_BUCKET.head("demo/a-good-bass-for-gambling/stems/bass.wav"))
+          );
         }
       } catch {
         /* */
@@ -144,7 +147,7 @@ export default {
           get: "GET /private/api/jobs/:id (Access)",
           wake_list: "GET /private/api/wake (Access)",
           compute: "box hybrid consumer + scripts/analyze_audio.py (librosa generic)",
-          demo_public: "none (licensed demos are private-only; / is a plain landing)",
+          demo_public: "GET /api/demo/a-good-bass-for-gambling (+ public stems); catalog lists CC0 only",
           demo_private: "GET /private/api/demo/like-a-prayer (+ stems under /private/api/demo/.../stems)",
           stems: "Access-gated /private/api/.../stems (Accept-Ranges + 206 when Range present)",
         },
@@ -152,8 +155,8 @@ export default {
       });
     }
 
-    // HARD BLOCK: former public stem URLs — never serve WAV here.
-    if (path.startsWith("/api/demo/") && path.includes("/stems/")) {
+    // Licensed demo stems must never be public (any slug containing like-a-prayer).
+    if (path.startsWith("/api/demo/") && path.includes("/stems/") && /like-a-prayer/i.test(path)) {
       return json(
         {
           error: "Stems are Access-gated. Use /private/api/demo/like-a-prayer/stems/… or /private/player/",
@@ -162,7 +165,7 @@ export default {
       );
     }
 
-    // Licensed demos (e.g. Like a Prayer) are private-only. Public catalog stays empty / PD-only.
+    // Licensed demos (e.g. Like a Prayer) are private-only.
     if (path === "/api/demo/like-a-prayer" || path === "/api/demo/like-a-prayer/") {
       return json(
         {
@@ -173,8 +176,72 @@ export default {
     }
 
     if (path === "/api/demo/catalog") {
-      // Public face: no copyrighted songs. Future PD demos can be listed here.
-      return json({ songs: [] });
+      // Public face: CC0 / PD only — never Like a Prayer.
+      return json({
+        songs: [
+          {
+            id: "a-good-bass-for-gambling",
+            title: "A good bass for gambling",
+            artist: "Komiku",
+            license: "CC0 1.0 Universal",
+            album: "It's time for adventure ! vol 3",
+            source: "Free Music Archive",
+            sourceUrl:
+              "https://freemusicarchive.org/music/Komiku/Its_time_for_adventure__vol_3/Komiku_-_Its_time_for_adventure_vol_3_-_06_A_good_bass_for_gambling/",
+            api: "/api/demo/a-good-bass-for-gambling",
+            player: "/",
+          },
+        ],
+      });
+    }
+
+    // Public CC0 demo meta
+    if (path === "/api/demo/a-good-bass-for-gambling" || path === "/api/demo/a-good-bass-for-gambling/") {
+      if (!env.DEMO_BUCKET) return bad("DEMO_BUCKET binding missing", 500);
+      let data = null;
+      const study = await env.DEMO_BUCKET.get("demo/a-good-bass-for-gambling/study/resource.json");
+      if (study) data = JSON.parse(await study.text());
+      if (!data) {
+        const obj = await env.DEMO_BUCKET.get("demo/a-good-bass-for-gambling/demo-data.json");
+        if (obj) data = JSON.parse(await obj.text());
+      }
+      if (!data) return bad("public demo missing", 404);
+      const hasBassM4a = Boolean(await env.DEMO_BUCKET.head("demo/a-good-bass-for-gambling/stems/bass.m4a"));
+      const hasNoBassM4a = Boolean(await env.DEMO_BUCKET.head("demo/a-good-bass-for-gambling/stems/no_bass.m4a"));
+      const hasBassWav = Boolean(await env.DEMO_BUCKET.head("demo/a-good-bass-for-gambling/stems/bass.wav"));
+      const hasNoBassWav = Boolean(await env.DEMO_BUCKET.head("demo/a-good-bass-for-gambling/stems/no_bass.wav"));
+      const hasDrumsM4a = Boolean(await env.DEMO_BUCKET.head("demo/a-good-bass-for-gambling/stems/drums.m4a"));
+      const hasDrumsWav = Boolean(await env.DEMO_BUCKET.head("demo/a-good-bass-for-gambling/stems/drums.wav"));
+      data.stems = buildStemsMeta({
+        hasBassM4a,
+        hasNoBassM4a,
+        hasBassWav,
+        hasNoBassWav,
+        hasDrumsM4a,
+        hasDrumsWav,
+        basePath: "/api/demo/a-good-bass-for-gambling/stems",
+        access: "public",
+      });
+      return json(data);
+    }
+
+    const pubDemoStem = path.match(
+      /^\/api\/demo\/a-good-bass-for-gambling\/stems\/(bass|no_bass|drums|other)\.(wav|m4a|mp3)$/,
+    );
+    if (pubDemoStem && request.method === "GET") {
+      if (!env.DEMO_BUCKET) return bad("DEMO_BUCKET binding missing", 500);
+      const stem = pubDemoStem[1];
+      const ext = pubDemoStem[2];
+      const key = `demo/a-good-bass-for-gambling/stems/${stem}.${ext}`;
+      const obj = await getObject(env.DEMO_BUCKET, key, request);
+      if (!obj) return bad("stem not found", 404);
+      const ct = ext === "m4a" ? "audio/mp4" : ext === "mp3" ? "audio/mpeg" : "audio/wav";
+      return objectResponse(obj, ct, { privateAudio: false });
+    }
+
+    // Any other public /api/demo/*/stems — deny (only CC0 slug above is open).
+    if (path.startsWith("/api/demo/") && path.includes("/stems/")) {
+      return json({ error: "Unknown or private demo stems" }, 401);
     }
 
     if (path === "/api/jobs" || path.startsWith("/api/jobs/")) {

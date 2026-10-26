@@ -2,74 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bass Study</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Bass Study — A good bass for gambling</title>
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #0b0f14;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --primary: #3b82f6;
-      --border: #374151;
-      --panel: #111827;
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    }
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-    }
-    main {
-      max-width: 36rem;
-      margin: 0 auto;
-      padding: 4rem 1.25rem 3rem;
-    }
-    h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      margin: 0 0 0.5rem;
-    }
-    p {
-      color: var(--muted);
-      line-height: 1.5;
-      margin: 0 0 1.25rem;
-    }
-    .card {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--panel);
-      padding: 1.1rem 1.2rem;
-    }
-    a {
-      color: #93c5fd;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    a:hover { text-decoration: underline; }
-    .btn {
-      display: inline-block;
-      margin-top: 0.75rem;
-      padding: 0.65rem 1rem;
-      border-radius: 8px;
-      background: var(--primary);
-      color: #fff;
-      font-weight: 600;
-    }
-    .btn:hover { text-decoration: none; opacity: 0.95; }
+    :root { color-scheme: dark; --bg:#0b0f14; --text:#e5e7eb; --font: ui-sans-serif, system-ui, sans-serif; }
+    html, body { margin:0; height:100%; background:var(--bg); color:var(--text); font-family:var(--font); }
+    #app { height:100%; }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Bass Study</h1>
-    <p>Private bass-line study tools. Sign in to open your catalog and player.</p>
-    <div class="card">
-      <p style="margin:0">Access is required for the private area.</p>
-      <a class="btn" href="/private/">Sign in → /private/</a>
-    </div>
-  </main>
+  <div id="app">Loading public demo…</div>
+  <script>window.__BASS_PRIVATE__ = false;</script>
+  <script src="/js/player.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,1283 @@
+{
+  "schema": "bass.study.v1",
+  "title": "A good bass for gambling",
+  "artist": "Komiku",
+  "bpm": 123,
+  "timeSig": "4/4",
+  "keys": "Em",
+  "duration": 156.0,
+  "nbars": 79,
+  "raw": [
+    [
+      0,
+      0.02,
+      "Em",
+      ""
+    ],
+    [
+      1,
+      2.02,
+      "Em",
+      "E.B.E.Bb"
+    ],
+    [
+      2,
+      4.02,
+      "B7",
+      "Bb.Bb.A.A"
+    ],
+    [
+      3,
+      6.06,
+      "Em",
+      "E.Bb.E.Bb"
+    ],
+    [
+      4,
+      8.06,
+      "A7",
+      "Bb.A.A.E"
+    ],
+    [
+      5,
+      10.08,
+      "Em7",
+      "E.B.E.Bb"
+    ],
+    [
+      6,
+      12.03,
+      "A7",
+      "Bb.Bb.A.A"
+    ],
+    [
+      7,
+      14.03,
+      "Em",
+      "E.Bb.Eb.Bb"
+    ],
+    [
+      8,
+      16.07,
+      "B7",
+      "Bb.Bb.A.Gb"
+    ],
+    [
+      9,
+      18.07,
+      "Em",
+      "E.B.E.Bb"
+    ],
+    [
+      10,
+      20.06,
+      "Em",
+      "Bb.A.A.A"
+    ],
+    [
+      11,
+      22.04,
+      "Am7",
+      "E.A.E.Bb"
+    ],
+    [
+      12,
+      24.06,
+      "B7",
+      "Bb.Bb.A.G"
+    ],
+    [
+      13,
+      26.05,
+      "Em",
+      "E.A.E.Bb"
+    ],
+    [
+      14,
+      28.07,
+      "A7",
+      "Bb.A.A.A"
+    ],
+    [
+      15,
+      30.05,
+      "Em",
+      "E.Bb.E.Bb"
+    ],
+    [
+      16,
+      32.0,
+      "A7",
+      "Bb.Bb.A.A"
+    ],
+    [
+      17,
+      33.99,
+      "Em",
+      "E.E.E.Ab"
+    ],
+    [
+      18,
+      36.04,
+      "Em",
+      "Gb.Gb.F.F"
+    ],
+    [
+      19,
+      38.08,
+      "Em",
+      "E.E.E.Gb"
+    ],
+    [
+      20,
+      40.05,
+      "D7",
+      "Gb.C.C.C"
+    ],
+    [
+      21,
+      42.03,
+      "Em",
+      "E.E.E.G"
+    ],
+    [
+      22,
+      44.0,
+      "Em",
+      "Gb.Gb.F.F"
+    ],
+    [
+      23,
+      46.02,
+      "Em7",
+      "E.E.E.B"
+    ],
+    [
+      24,
+      47.97,
+      "Em",
+      "B.B.Bb.C"
+    ],
+    [
+      25,
+      49.95,
+      "Em",
+      "E.E.Bb.G"
+    ],
+    [
+      26,
+      51.85,
+      "E",
+      "E.Gb.A.B"
+    ],
+    [
+      27,
+      53.82,
+      "Em",
+      "E.E.Bb.G"
+    ],
+    [
+      28,
+      55.7,
+      "Em7",
+      "E.B.E.B"
+    ],
+    [
+      29,
+      57.54,
+      "Em",
+      "B.E.B.G"
+    ],
+    [
+      30,
+      59.54,
+      "Em",
+      "E.E.B.B"
+    ],
+    [
+      31,
+      61.49,
+      "Em",
+      "Bb.E.E.G"
+    ],
+    [
+      32,
+      63.44,
+      "Em",
+      "E.Gb.Gb.Gb"
+    ],
+    [
+      33,
+      65.41,
+      "Em",
+      "Gb.E.B.E"
+    ],
+    [
+      34,
+      67.41,
+      "Em",
+      "Bb.Bb.Bb.A"
+    ],
+    [
+      35,
+      69.45,
+      "Am",
+      "A.E.B.E"
+    ],
+    [
+      36,
+      71.49,
+      "Em",
+      "Bb.Bb.Bb.Bb"
+    ],
+    [
+      37,
+      73.49,
+      "Em",
+      "B.E.B.E"
+    ],
+    [
+      38,
+      75.49,
+      "Em",
+      "Bb.Bb.Bb.A"
+    ],
+    [
+      39,
+      77.48,
+      "Em",
+      "A.E.Bb.E"
+    ],
+    [
+      40,
+      79.48,
+      "Em",
+      "B.Bb.Bb.Eb"
+    ],
+    [
+      41,
+      81.5,
+      "Em",
+      "A.E.B.E"
+    ],
+    [
+      42,
+      83.48,
+      "Em",
+      "Bb.Bb.Bb.A"
+    ],
+    [
+      43,
+      85.52,
+      "Am",
+      "A.E.A.E"
+    ],
+    [
+      44,
+      87.52,
+      "Em",
+      "Bb.Bb.A.A"
+    ],
+    [
+      45,
+      89.51,
+      "Em",
+      "Gb.E.B.E"
+    ],
+    [
+      46,
+      91.51,
+      "Em",
+      "Bb.Bb.Bb.A"
+    ],
+    [
+      47,
+      93.48,
+      "Em",
+      "A.E.B.E"
+    ],
+    [
+      48,
+      95.48,
+      "Em",
+      "Bb.Bb.Bb.Bb"
+    ],
+    [
+      49,
+      97.48,
+      "Em",
+      "Bb.E.E.E"
+    ],
+    [
+      50,
+      99.45,
+      "G7",
+      "G.Gb.Gb.F"
+    ],
+    [
+      51,
+      101.49,
+      "Em",
+      "F.E.E.E"
+    ],
+    [
+      52,
+      103.52,
+      "B7",
+      "Gb.Gb.G.B"
+    ],
+    [
+      53,
+      105.51,
+      "Em",
+      "E.E.E.E"
+    ],
+    [
+      54,
+      107.48,
+      "Em",
+      "Gb.Gb.Gb.F"
+    ],
+    [
+      55,
+      109.48,
+      "Em",
+      "F.E.E.E"
+    ],
+    [
+      56,
+      111.48,
+      "B7",
+      "G.Gb.Gb.F"
+    ],
+    [
+      57,
+      113.52,
+      "Em7",
+      "E.E.B.B"
+    ],
+    [
+      58,
+      115.45,
+      "Am7",
+      "G.B.B.A"
+    ],
+    [
+      59,
+      117.49,
+      "Em",
+      "B.E.E.G"
+    ],
+    [
+      60,
+      119.56,
+      "Em7",
+      "E.E.Bb.E"
+    ],
+    [
+      61,
+      121.53,
+      "Em",
+      "E.E.E.G"
+    ],
+    [
+      62,
+      123.55,
+      "A7",
+      "E.F.A.Bb"
+    ],
+    [
+      63,
+      125.55,
+      "Em",
+      "B.E.E.G"
+    ],
+    [
+      64,
+      127.5,
+      "Em7",
+      "F.Db.Gb.Gb"
+    ],
+    [
+      65,
+      129.5,
+      "Em",
+      "Gb.E.B.E"
+    ],
+    [
+      66,
+      131.52,
+      "Em",
+      "Bb.Bb.Bb.A"
+    ],
+    [
+      67,
+      133.51,
+      "Em",
+      "A.E.B.E"
+    ],
+    [
+      68,
+      135.49,
+      "Em",
+      "Bb.Bb.Bb.A"
+    ],
+    [
+      69,
+      137.49,
+      "Em",
+      "A.E.B.E"
+    ],
+    [
+      70,
+      139.48,
+      "Em",
+      "Bb.Bb.Bb.A"
+    ],
+    [
+      71,
+      141.53,
+      "Em",
+      "A.E.B.E"
+    ],
+    [
+      72,
+      143.52,
+      "B7",
+      "Bb.Bb.A.A"
+    ],
+    [
+      73,
+      145.57,
+      "Em",
+      "A.E.B.E"
+    ],
+    [
+      74,
+      147.54,
+      "Em",
+      "Bb.Bb.Bb.A"
+    ],
+    [
+      75,
+      149.51,
+      "Em7",
+      "A.E.B.E"
+    ],
+    [
+      76,
+      151.46,
+      "B7",
+      "Bb.Bb.Bb.A"
+    ],
+    [
+      77,
+      153.41,
+      "Em",
+      "A.E.B.F"
+    ],
+    [
+      78,
+      155.37,
+      "Em",
+      ""
+    ]
+  ],
+  "secs": [
+    {
+      "id": "intro",
+      "name": "Intro",
+      "first": 0,
+      "end": 1,
+      "kind": "intro",
+      "ci": 0
+    },
+    {
+      "id": "a1",
+      "name": "Groove A",
+      "first": 1,
+      "end": 9,
+      "kind": "verse",
+      "ci": 1
+    },
+    {
+      "id": "a2",
+      "name": "Groove A\u2032",
+      "first": 9,
+      "end": 17,
+      "kind": "verse",
+      "ci": 1
+    },
+    {
+      "id": "b1",
+      "name": "Lift B",
+      "first": 17,
+      "end": 26,
+      "kind": "chorus",
+      "ci": 2
+    },
+    {
+      "id": "br",
+      "name": "Drop",
+      "first": 26,
+      "end": 34,
+      "kind": "bridge",
+      "ci": 3
+    },
+    {
+      "id": "a3",
+      "name": "Groove A\u2033",
+      "first": 34,
+      "end": 50,
+      "kind": "verse",
+      "ci": 1
+    },
+    {
+      "id": "b2",
+      "name": "Build",
+      "first": 50,
+      "end": 60,
+      "kind": "chorus",
+      "ci": 2
+    },
+    {
+      "id": "out",
+      "name": "Outro",
+      "first": 60,
+      "end": 79,
+      "kind": "tag",
+      "ci": 4
+    }
+  ],
+  "cards": {
+    "intro": [
+      {
+        "label": "Pocket",
+        "body": "Kit and bass are barely in \u2014 the first downbeat is almost empty air before the groove clicks."
+      },
+      {
+        "label": "Figure",
+        "body": "Treat bar 0 as a count-off: leave the low E unspoken, then land the E\u2013B\u2013E\u2013Bb pickup into Groove A."
+      },
+      {
+        "label": "Harmony",
+        "body": "Em center (i). Nothing to outline yet \u2014 the ear waits for the tonic pedal."
+      },
+      {
+        "label": "Missable",
+        "body": "Don\u2019t fill the open. The gambling swagger starts when the chromatic Bb answers the E, not before."
+      }
+    ],
+    "a1": [
+      {
+        "label": "Pocket",
+        "body": "~123 BPM 4/4. Drums sit medium-tight; bass speaks on the beat with little push \u2014 pocket is square and confident."
+      },
+      {
+        "label": "Figure",
+        "body": "Core figure: E on beats 1 & 3, B (or Bb neighbor) answering. Hear E\u2013B\u2013E\u2013Bb as tonic with a chromatic upper-neighbor tease."
+      },
+      {
+        "label": "Harmony",
+        "body": "Em / Em7 home. Occasional A7 or Am color when the bass hangs on A/Bb \u2014 keep chord quality (7 vs triad) when you hear the flat-7."
+      },
+      {
+        "label": "Missable",
+        "body": "The Bb is a chromatic neighbor, not a key change. Don\u2019t re-root the bar on Bb; it ornaments E."
+      }
+    ],
+    "verse": [
+      {
+        "label": "Pocket",
+        "body": "Back to medium drum weight. Bass leans harder on Bb hangs before resolving to E."
+      },
+      {
+        "label": "Figure",
+        "body": "Bb\u2013Bb\u2013Bb\u2013A into A\u2013E\u2013B\u2013E. Chromatic hang, then a clean Em outline."
+      },
+      {
+        "label": "Harmony",
+        "body": "Em answered by Am (iv) and A7 colors. Keep Am vs Am7 / A7 quality from the template when the 7th is clear."
+      },
+      {
+        "label": "Missable",
+        "body": "The long Bb is a delay of tonic, not a new tonal center \u2014 resolve it to E on purpose."
+      }
+    ],
+    "a2": [
+      {
+        "label": "Pocket",
+        "body": "Same pocket as A \u2014 hats/kick keep the gambling pulse; bass stays on the grid."
+      },
+      {
+        "label": "Figure",
+        "body": "E pedal with Bb\u2013A walkbacks. Lock the octave: low E, then the neighbor cluster above."
+      },
+      {
+        "label": "Harmony",
+        "body": "Still Em-centric. When chroma leans Am/A7, it\u2019s iv / V-of-iv flavor over the same bass story."
+      },
+      {
+        "label": "Missable",
+        "body": "Mute the bass (S/M) and check: the \u2018C7\u2019 mirage is often just Bb in the bass against Em."
+      }
+    ],
+    "b1": [
+      {
+        "label": "Pocket",
+        "body": "Drum energy lifts (~bars 17\u201325). Ride the denser kit without rushing the E pedals."
+      },
+      {
+        "label": "Figure",
+        "body": "More E repeats per bar (E\u2013E\u2013E\u2013x) \u2014 a lift pedal \u2014 then Gb/F chromatic crumbs as tension."
+      },
+      {
+        "label": "Harmony",
+        "body": "Em / Em7 with brief E major color flashes. Preserve Em7 when the flat-7 is audible."
+      },
+      {
+        "label": "Missable",
+        "body": "The lift is density, not a new key. Keep E as gravity; Gb is passing, not a modulation."
+      }
+    ],
+    "chorus": [
+      {
+        "label": "Pocket",
+        "body": "Build densifies again; stay behind the beat slightly so the walk doesn\u2019t get stiff."
+      },
+      {
+        "label": "Figure",
+        "body": "Walk fragments (G\u2013Gb\u2013F, F\u2013E\u2026) into E pedals \u2014 approach notes into tonic."
+      },
+      {
+        "label": "Harmony",
+        "body": "Em with B7 (V) approaches. Prefer B7 over vague diminished labels when the leading tone resolves to E."
+      },
+      {
+        "label": "Missable",
+        "body": "Walk tones are approach notes \u2014 name the target chord (Em), not every passing PC."
+      }
+    ],
+    "br": [
+      {
+        "label": "Pocket",
+        "body": "Bar 26 drums duck \u2014 a one-bar breath \u2014 then the kit returns. Feel the drop as intentional air."
+      },
+      {
+        "label": "Figure",
+        "body": "E figures continue through the drop; don\u2019t stop the bass just because the kit thins."
+      },
+      {
+        "label": "Harmony",
+        "body": "Em pedal through the drop. Use the thin bar to hear bass alone against residual harmony."
+      },
+      {
+        "label": "Missable",
+        "body": "Phone tip: loop the drop bar and toggle D&B vs full \u2014 the pocket hole is the lesson."
+      }
+    ],
+    "bridge": [
+      {
+        "label": "Pocket",
+        "body": "Bar 26 drums duck \u2014 a one-bar breath \u2014 then the kit returns. Feel the drop as intentional air."
+      },
+      {
+        "label": "Figure",
+        "body": "E figures continue through the drop; don\u2019t stop the bass just because the kit thins."
+      },
+      {
+        "label": "Harmony",
+        "body": "Em pedal through the drop. Use the thin bar to hear bass alone against residual harmony."
+      },
+      {
+        "label": "Missable",
+        "body": "Phone tip: loop the drop bar and toggle D&B vs full \u2014 the pocket hole is the lesson."
+      }
+    ],
+    "a3": [
+      {
+        "label": "Pocket",
+        "body": "Back to medium drum weight. Bass leans harder on Bb hangs before resolving to E."
+      },
+      {
+        "label": "Figure",
+        "body": "Bb\u2013Bb\u2013Bb\u2013A into A\u2013E\u2013B\u2013E. Chromatic hang, then a clean Em outline."
+      },
+      {
+        "label": "Harmony",
+        "body": "Em answered by Am (iv) and A7 colors. Keep Am vs Am7 / A7 quality from the template when the 7th is clear."
+      },
+      {
+        "label": "Missable",
+        "body": "The long Bb is a delay of tonic, not a new tonal center \u2014 resolve it to E on purpose."
+      }
+    ],
+    "b2": [
+      {
+        "label": "Pocket",
+        "body": "Build densifies again; stay behind the beat slightly so the walk doesn\u2019t get stiff."
+      },
+      {
+        "label": "Figure",
+        "body": "Walk fragments (G\u2013Gb\u2013F, F\u2013E\u2026) into E pedals \u2014 approach notes into tonic."
+      },
+      {
+        "label": "Harmony",
+        "body": "Em with B7 (V) approaches. Prefer B7 over vague diminished labels when the leading tone resolves to E."
+      },
+      {
+        "label": "Missable",
+        "body": "Walk tones are approach notes \u2014 name the target chord (Em), not every passing PC."
+      }
+    ],
+    "out": [
+      {
+        "label": "Pocket",
+        "body": "Energy fades; drums and bass thin toward silence. Let notes get shorter as the kit disappears."
+      },
+      {
+        "label": "Figure",
+        "body": "Return of E/Bb neighbor language, then sparse E\u2013B\u2013E into air."
+      },
+      {
+        "label": "Harmony",
+        "body": "Em to the end. No late modulations \u2014 chromatic bass over i."
+      },
+      {
+        "label": "Missable",
+        "body": "Last bars are vocabulary of leaving: play less, not a final fill. Empty kit is the cadence."
+      }
+    ],
+    "tag": [
+      {
+        "label": "Pocket",
+        "body": "Energy fades; drums and bass thin toward silence. Let notes get shorter as the kit disappears."
+      },
+      {
+        "label": "Figure",
+        "body": "Return of E/Bb neighbor language, then sparse E\u2013B\u2013E into air."
+      },
+      {
+        "label": "Harmony",
+        "body": "Em to the end. No late modulations \u2014 chromatic bass over i."
+      },
+      {
+        "label": "Missable",
+        "body": "Last bars are vocabulary of leaving: play less, not a final fill. Empty kit is the cadence."
+      }
+    ]
+  },
+  "patterns": {
+    "intro": [
+      {
+        "id": "intro_air",
+        "name": "Near-silent open",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 33
+          },
+          {
+            "step": 4,
+            "midi": 35
+          },
+          {
+            "step": 8,
+            "midi": 31
+          },
+          {
+            "step": 12,
+            "midi": 36
+          }
+        ]
+      }
+    ],
+    "a1": [
+      {
+        "id": "chrom_eb",
+        "name": "E\u2013B with Bb chromatic",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 28
+          },
+          {
+            "step": 4,
+            "midi": 35
+          },
+          {
+            "step": 8,
+            "midi": 28
+          },
+          {
+            "step": 12,
+            "midi": 34
+          },
+          {
+            "step": 16,
+            "midi": 34
+          },
+          {
+            "step": 20,
+            "midi": 34
+          },
+          {
+            "step": 24,
+            "midi": 33
+          },
+          {
+            "step": 28,
+            "midi": 33
+          }
+        ]
+      }
+    ],
+    "a2": [
+      {
+        "id": "chrom_eb2",
+        "name": "E pedal + Bb neighbor",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 28
+          },
+          {
+            "step": 4,
+            "midi": 35
+          },
+          {
+            "step": 8,
+            "midi": 28
+          },
+          {
+            "step": 12,
+            "midi": 34
+          },
+          {
+            "step": 16,
+            "midi": 34
+          },
+          {
+            "step": 20,
+            "midi": 33
+          },
+          {
+            "step": 24,
+            "midi": 33
+          },
+          {
+            "step": 28,
+            "midi": 33
+          }
+        ]
+      }
+    ],
+    "b1": [
+      {
+        "id": "e_pedal_lift",
+        "name": "E pedal into lift",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 28
+          },
+          {
+            "step": 4,
+            "midi": 40
+          },
+          {
+            "step": 8,
+            "midi": 28
+          },
+          {
+            "step": 12,
+            "midi": 32
+          },
+          {
+            "step": 16,
+            "midi": 30
+          },
+          {
+            "step": 20,
+            "midi": 30
+          },
+          {
+            "step": 24,
+            "midi": 29
+          },
+          {
+            "step": 28,
+            "midi": 29
+          }
+        ]
+      }
+    ],
+    "br": [
+      {
+        "id": "drop_e",
+        "name": "Drop \u2014 E figure",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 28
+          },
+          {
+            "step": 4,
+            "midi": 30
+          },
+          {
+            "step": 8,
+            "midi": 33
+          },
+          {
+            "step": 12,
+            "midi": 35
+          },
+          {
+            "step": 16,
+            "midi": 28
+          },
+          {
+            "step": 20,
+            "midi": 28
+          },
+          {
+            "step": 24,
+            "midi": 34
+          },
+          {
+            "step": 28,
+            "midi": 31
+          }
+        ]
+      }
+    ],
+    "a3": [
+      {
+        "id": "bb_hang",
+        "name": "Bb hang into E",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 34
+          },
+          {
+            "step": 4,
+            "midi": 34
+          },
+          {
+            "step": 8,
+            "midi": 34
+          },
+          {
+            "step": 12,
+            "midi": 33
+          },
+          {
+            "step": 16,
+            "midi": 33
+          },
+          {
+            "step": 20,
+            "midi": 28
+          },
+          {
+            "step": 24,
+            "midi": 35
+          },
+          {
+            "step": 28,
+            "midi": 28
+          }
+        ]
+      }
+    ],
+    "b2": [
+      {
+        "id": "build_walk",
+        "name": "Build walk",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 31
+          },
+          {
+            "step": 4,
+            "midi": 30
+          },
+          {
+            "step": 8,
+            "midi": 30
+          },
+          {
+            "step": 12,
+            "midi": 29
+          },
+          {
+            "step": 16,
+            "midi": 29
+          },
+          {
+            "step": 20,
+            "midi": 28
+          },
+          {
+            "step": 24,
+            "midi": 40
+          },
+          {
+            "step": 28,
+            "midi": 28
+          }
+        ]
+      }
+    ],
+    "out": [
+      {
+        "id": "outro_eb",
+        "name": "Outro E/Bb",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 30
+          },
+          {
+            "step": 4,
+            "midi": 28
+          },
+          {
+            "step": 8,
+            "midi": 35
+          },
+          {
+            "step": 12,
+            "midi": 28
+          },
+          {
+            "step": 16,
+            "midi": 34
+          },
+          {
+            "step": 20,
+            "midi": 34
+          },
+          {
+            "step": 24,
+            "midi": 34
+          },
+          {
+            "step": 28,
+            "midi": 33
+          }
+        ]
+      }
+    ],
+    "verse": [
+      {
+        "id": "chrom_eb",
+        "name": "E\u2013B with Bb chromatic",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 28
+          },
+          {
+            "step": 4,
+            "midi": 35
+          },
+          {
+            "step": 8,
+            "midi": 28
+          },
+          {
+            "step": 12,
+            "midi": 34
+          },
+          {
+            "step": 16,
+            "midi": 34
+          },
+          {
+            "step": 20,
+            "midi": 34
+          },
+          {
+            "step": 24,
+            "midi": 33
+          },
+          {
+            "step": 28,
+            "midi": 33
+          }
+        ]
+      }
+    ],
+    "chorus": [
+      {
+        "id": "e_pedal_lift",
+        "name": "E pedal into lift",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 28
+          },
+          {
+            "step": 4,
+            "midi": 40
+          },
+          {
+            "step": 8,
+            "midi": 28
+          },
+          {
+            "step": 12,
+            "midi": 32
+          },
+          {
+            "step": 16,
+            "midi": 30
+          },
+          {
+            "step": 20,
+            "midi": 30
+          },
+          {
+            "step": 24,
+            "midi": 29
+          },
+          {
+            "step": 28,
+            "midi": 29
+          }
+        ]
+      }
+    ],
+    "bridge": [
+      {
+        "id": "drop_e",
+        "name": "Drop \u2014 E figure",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 28
+          },
+          {
+            "step": 4,
+            "midi": 30
+          },
+          {
+            "step": 8,
+            "midi": 33
+          },
+          {
+            "step": 12,
+            "midi": 35
+          },
+          {
+            "step": 16,
+            "midi": 28
+          },
+          {
+            "step": 20,
+            "midi": 28
+          },
+          {
+            "step": 24,
+            "midi": 34
+          },
+          {
+            "step": 28,
+            "midi": 31
+          }
+        ]
+      }
+    ],
+    "tag": [
+      {
+        "id": "outro_eb",
+        "name": "Outro E/Bb",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 30
+          },
+          {
+            "step": 4,
+            "midi": 28
+          },
+          {
+            "step": 8,
+            "midi": 35
+          },
+          {
+            "step": 12,
+            "midi": 28
+          },
+          {
+            "step": 16,
+            "midi": 34
+          },
+          {
+            "step": 20,
+            "midi": 34
+          },
+          {
+            "step": 24,
+            "midi": 34
+          },
+          {
+            "step": 28,
+            "midi": 33
+          }
+        ]
+      }
+    ]
+  },
+  "drumsOutBars": [
+    0,
+    77,
+    78
+  ],
+  "stems": {
+    "available": true,
+    "access": "public",
+    "muteBassSupported": true,
+    "drumsAvailable": true,
+    "dbSupported": true,
+    "format": "aac",
+    "bass": "/api/demo/a-good-bass-for-gambling/stems/bass.m4a",
+    "no_bass": "/api/demo/a-good-bass-for-gambling/stems/no_bass.m4a",
+    "drums": "/api/demo/a-good-bass-for-gambling/stems/drums.m4a",
+    "bass_wav": "/api/demo/a-good-bass-for-gambling/stems/bass.wav",
+    "no_bass_wav": "/api/demo/a-good-bass-for-gambling/stems/no_bass.wav",
+    "drums_wav": "/api/demo/a-good-bass-for-gambling/stems/drums.wav",
+    "other": "/api/demo/a-good-bass-for-gambling/stems/other.m4a"
+  },
+  "meta": {
+    "insightSlots": "pocket|figure|harmony|missable",
+    "insightRedesign": "lean-B-2026-10-26",
+    "license": "CC0 1.0 Universal",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "Free Music Archive",
+    "sourceUrl": "https://freemusicarchive.org/music/Komiku/Its_time_for_adventure__vol_3/Komiku_-_Its_time_for_adventure_vol_3_-_06_A_good_bass_for_gambling/",
+    "album": "It's time for adventure ! vol 3",
+    "analysis": "acoustic (librosa chroma + pyin on htdemucs bass stem); no published chord/bass chart found 2026-10-26"
+  },
+  "credit": {
+    "title": "A good bass for gambling",
+    "artist": "Komiku",
+    "license": "CC0 1.0 Universal",
+    "source": "Free Music Archive",
+    "url": "https://freemusicarchive.org/music/Komiku/Its_time_for_adventure__vol_3/Komiku_-_Its_time_for_adventure_vol_3_-_06_A_good_bass_for_gambling/"
+  },
+  "semantic": {
+    "schema": "bass.semantic.v1",
+    "source": "acoustic refine (mix chroma + bass pyin); lean-B cards hand-shaped from measured features",
+    "confidence": "medium \u2014 verified against stems; no third-party chart exists"
+  },
+  "merge": {
+    "procedural_only": false,
+    "waiting_bot": false,
+    "report": "analysis/merge-report.json"
+  }
+}

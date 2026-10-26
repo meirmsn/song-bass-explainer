@@ -48,19 +48,32 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
   const payload = structuredClone(demo);
   if (typeof mutatePayload === "function") mutatePayload(payload);
   if (withStems) {
+    const base = privateMode
+      ? "/private/api/demo/fixture/stems"
+      : "/api/demo/a-good-bass-for-gambling/stems";
     payload.stems = {
       available: true,
+      access: privateMode ? "private" : "public",
       muteBassSupported: true,
       drumsAvailable: true,
       dbSupported: true,
       format: "aac",
-      bass: "/private/api/demo/fixture/stems/bass.m4a",
-      no_bass: "/private/api/demo/fixture/stems/no_bass.m4a",
-      drums: "/private/api/demo/fixture/stems/drums.m4a",
-      bass_wav: "/private/api/demo/fixture/stems/bass.wav",
-      no_bass_wav: "/private/api/demo/fixture/stems/no_bass.wav",
-      drums_wav: "/private/api/demo/fixture/stems/drums.wav",
+      bass: base + "/bass.m4a",
+      no_bass: base + "/no_bass.m4a",
+      drums: base + "/drums.m4a",
+      bass_wav: base + "/bass.wav",
+      no_bass_wav: base + "/no_bass.wav",
+      drums_wav: base + "/drums.wav",
     };
+    if (!privateMode) {
+      payload.credit = {
+        title: "A good bass for gambling",
+        artist: "Komiku",
+        license: "CC0 1.0 Universal",
+        source: "Free Music Archive",
+        url: "https://freemusicarchive.org/music/Komiku/",
+      };
+    }
   }
 
   const fetchMock = vi.fn(async (url) => {
@@ -91,6 +104,7 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
   class FakeSource {
     constructor() {
       this.buffer = null;
+      this.playbackRate = { value: 1 };
       this.connect = () => {};
     }
     start() {}
@@ -1822,5 +1836,35 @@ describe("phone layout — cards bottom drawer", () => {
     expect(document.querySelector("[data-cards-drawer] [data-insight-legend]")).toBeTruthy();
     const labels = [...document.querySelectorAll("[data-cards-drawer] [data-insight-label]")].map((n) => n.getAttribute("data-insight-label"));
     expect(labels.length).toBeGreaterThan(0);
+  });
+});
+
+
+describe("playback rate + public CC0 stems", () => {
+  afterEach(() => teardownPlayer());
+
+  it("rate strip exposes standard percentages and setPlaybackRate", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    const strip = document.querySelector("[data-rate-strip]");
+    expect(strip).toBeTruthy();
+    const labels = [...strip.querySelectorAll(".rate-btn")].map((b) => b.textContent.trim());
+    expect(labels).toEqual(["100%", "90%", "75%", "50%", "25%"]);
+    expect(api.getState().playbackRate).toBe(1);
+    api.setPlaybackRate(0.75);
+    expect(api.getState().playbackRate).toBe(0.75);
+    expect(document.querySelector('.rate-btn[data-rate="0.75"].on')).toBeTruthy();
+    document.querySelector('.rate-btn[data-rate="0.5"]').dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    await api.waitTick(20);
+    expect(api.getState().playbackRate).toBe(0.5);
+  });
+
+  it("public player with CC0 stems shows channel strip + credit", async () => {
+    const api = await bootPlayer({ privateMode: false, withStems: true });
+    expect(api.getState().muteBassSupported).toBe(true);
+    expect(document.querySelector(".ch-strip")).toBeTruthy();
+    expect(document.querySelector("[data-credit]")).toBeTruthy();
+    expect(document.querySelector("[data-credit]").textContent).toMatch(/Komiku/i);
+    expect(document.querySelector("[data-credit]").textContent).toMatch(/CC0/i);
+    expect(document.body.textContent).not.toMatch(/Like a Prayer/i);
   });
 });

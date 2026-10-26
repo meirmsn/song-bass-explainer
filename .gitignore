@@ -18,8 +18,14 @@ __pycache__/
 .wrangler/
 .dev.vars
 
-# Local work, logs, and secrets
-work/
+# Local work, logs, and secrets.
+# work/* keeps jobs and scratch out of git. The CC0 Komiku demo metadata
+# is the exception: study JSON and attribution are tracked. Stem audio and
+# the FMA source mix stay on R2 (see work/demo-a-good-bass-for-gambling/SHIP.md).
+work/*
+!work/demo-a-good-bass-for-gambling/
+work/demo-a-good-bass-for-gambling/stems/
+work/demo-a-good-bass-for-gambling/source/
 logs/
 .env*
 

@@ -48,6 +48,7 @@ export function createTransport(opts) {
   let playing = false;
   let loopOn = true;
   let cardIdx = 0;
+  let playbackRate = 1;
 
   function applySection(i, seekToStart) {
     const s = secs[i];
@@ -73,6 +74,7 @@ export function createTransport(opts) {
       hi,
       duration,
       sectionName: secs[secIdx]?.name ?? String(secIdx),
+      playbackRate,
     };
   }
 
@@ -191,7 +193,7 @@ export function createTransport(opts) {
   function tick(dt) {
     if (!playing) return getState();
     const { ls, le } = loopWindow(lo, hi);
-    t += dt;
+    t += dt * (playbackRate > 0 ? playbackRate : 1);
     if (loopOn && t >= le) t = ls;
     if (t >= duration) {
       t = duration;
@@ -233,6 +235,13 @@ export function createTransport(opts) {
     return getState();
   }
 
+  function setPlaybackRate(rate) {
+    const r = Number(rate);
+    if (!(r > 0)) return getState();
+    playbackRate = r;
+    return getState();
+  }
+
   return {
     getState,
     play,
@@ -250,6 +259,7 @@ export function createTransport(opts) {
     syncFromAudio,
     nextCard,
     setCard,
+    setPlaybackRate,
     barAt,
     loopWindow: () => loopWindow(lo, hi),
   };

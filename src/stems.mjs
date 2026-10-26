@@ -57,7 +57,7 @@ export function buildStemsMeta(opts) {
   const drumsAvailable = hasDrumsM4a || hasDrumsWav;
   return {
     available,
-    access: "private",
+    access: opts.access || "private",
     muteBassSupported: available,
     drumsAvailable,
     dbSupported: available && drumsAvailable,
