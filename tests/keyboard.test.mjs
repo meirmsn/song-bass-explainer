@@ -10,20 +10,27 @@ import {
 } from "../src/keyboard.mjs";
 
 describe("shouldHandleTransportKey", () => {
-  it("accepts Space / arrows / Escape without modifiers", () => {
-    expect(shouldHandleTransportKey({ key: " ", target: { tagName: "DIV", isContentEditable: false } })).toBe(true);
-    expect(shouldHandleTransportKey({ key: "ArrowLeft", target: { tagName: "DIV", isContentEditable: false } })).toBe(true);
-    expect(shouldHandleTransportKey({ key: "ArrowRight", target: { tagName: "DIV", isContentEditable: false } })).toBe(true);
-    expect(shouldHandleTransportKey({ key: "Escape", target: { tagName: "DIV", isContentEditable: false } })).toBe(true);
+  it("accepts Space / arrows / Escape / L without modifiers", () => {
+    const target = { tagName: "DIV", isContentEditable: false };
+    expect(shouldHandleTransportKey({ key: " ", target })).toBe(true);
+    expect(shouldHandleTransportKey({ key: "ArrowLeft", target })).toBe(true);
+    expect(shouldHandleTransportKey({ key: "ArrowRight", target })).toBe(true);
+    expect(shouldHandleTransportKey({ key: "Escape", target })).toBe(true);
+    expect(shouldHandleTransportKey({ key: "l", target })).toBe(true);
+    expect(shouldHandleTransportKey({ key: "L", target })).toBe(true);
+    expect(shouldHandleTransportKey({ key: "L", shiftKey: true, target })).toBe(true);
   });
 
   it("ignores modifiers and editable targets", () => {
     expect(shouldHandleTransportKey({ key: " ", metaKey: true, target: { tagName: "DIV", isContentEditable: false } })).toBe(false);
+    expect(shouldHandleTransportKey({ key: "l", ctrlKey: true, target: { tagName: "DIV", isContentEditable: false } })).toBe(false);
+    expect(shouldHandleTransportKey({ key: "L", altKey: true, target: { tagName: "DIV", isContentEditable: false } })).toBe(false);
     expect(shouldHandleTransportKey({ key: "ArrowLeft", ctrlKey: true, target: { tagName: "DIV", isContentEditable: false } })).toBe(false);
     expect(shouldHandleTransportKey({ key: "ArrowRight", altKey: true, target: { tagName: "DIV", isContentEditable: false } })).toBe(false);
     expect(shouldHandleTransportKey({ key: "ArrowLeft", shiftKey: true, target: { tagName: "DIV", isContentEditable: false } })).toBe(false);
     const input = { tagName: "INPUT", isContentEditable: false };
     expect(shouldHandleTransportKey({ key: " ", target: input })).toBe(false);
+    expect(shouldHandleTransportKey({ key: "l", target: input })).toBe(false);
     const area = { tagName: "TEXTAREA", isContentEditable: false };
     expect(shouldHandleTransportKey({ key: "ArrowRight", target: area })).toBe(false);
   });

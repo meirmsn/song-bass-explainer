@@ -2382,6 +2382,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
             return;
           }
           clearSubsection();
+          return;
+        }
+        if (e.key === "l" || e.key === "L") {
+          e.preventDefault();
+          loopOn = !loopOn;
+          if (loopOn) { lo = SECS[secIdx].first; hi = SECS[secIdx].end - 1; }
+          render();
         }
       });
     }
@@ -2436,7 +2443,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       meta.appendChild(el("span", { className: "clock", "data-meta": "clock" }, [fmt(t)]));
       meta.appendChild(el("span", { className: "sub sec-slot", "data-meta": "section" }, [sec.name]));
       meta.appendChild(el("span", { className: "stat loop-slot", "data-meta": "loop" }, [fmtLoopLabel(lo, hi, loopOn)]));
-      meta.appendChild(el("span", { className: "sub", title: "Keyboard: Space play/pause · ← loop/section start (again = prev) · → next section · Esc clear bar selection" }, ["Space · ← → · Esc"]));
+      meta.appendChild(el("span", { className: "sub", title: "Keyboard: Space play/pause · ← loop/section start (again = prev) · → next section · Esc clear bar selection · L toggle loop" }, ["Space · ← → · Esc · L"]));
       const badgeText = stemLoading
         ? "Loading stems…"
         : (muteBassSupported

@@ -13,13 +13,13 @@ export function isEditableKeyTarget(target) {
   return false;
 }
 
-/** True when Space / arrows / Escape should drive the player (not the browser). */
+/** True when Space / arrows / Escape / L should drive the player (not the browser). */
 export function shouldHandleTransportKey(e) {
   if (!e || typeof e.key !== "string") return false;
   if (e.metaKey || e.ctrlKey || e.altKey) return false;
   if (e.shiftKey && (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === " ")) return false;
   if (isEditableKeyTarget(e.target)) return false;
-  return e.key === " " || e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "Escape";
+  return e.key === " " || e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "Escape" || e.key === "l" || e.key === "L";
 }
 
 /**
