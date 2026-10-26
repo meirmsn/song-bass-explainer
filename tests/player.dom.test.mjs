@@ -1013,8 +1013,25 @@ describe("drum staff real rhythm", () => {
   });
 
   it("rendered drum staff uses rhythm engine (varied labels, rests, beams) — not identical dots", async () => {
-    const api = await bootPlayer();
-    api.pickSection(0); // intro → 8th hats
+    // Inject per-song drumHits (no invent default): 8th-hat backbeat across intro bars
+    const api = await bootPlayer({
+      mutatePayload: (payload) => {
+        const hits = [];
+        for (let bar = 0; bar < 8; bar++) {
+          hits.push(
+            { bar, step: 0, kind: "kick", midi: 36 },
+            { bar, step: 8, kind: "kick", midi: 36 },
+            { bar, step: 4, kind: "snare", midi: 38 },
+            { bar, step: 12, kind: "snare", midi: 38 },
+          );
+          for (const step of [0, 2, 4, 6, 8, 10, 12, 14]) {
+            hits.push({ bar, step, kind: "hat", midi: 42 });
+          }
+        }
+        payload.drumHits = hits;
+      },
+    });
+    api.pickSection(0); // intro → song 8th hats
     await api.waitTick(20);
     const staff = document.querySelector('svg[aria-label="Drum staff"]');
     expect(staff).toBeTruthy();
@@ -1033,6 +1050,25 @@ describe("drum staff real rhythm", () => {
     expect(staff.querySelectorAll("g[data-drum='hat']").length).toBeGreaterThan(0);
     expect(staff.querySelectorAll("g[data-drum='snare']").length).toBeGreaterThan(0);
     expect(staff.querySelectorAll("g[data-drum='kick']").length).toBeGreaterThan(0);
+  });
+
+  it("demo without drumHits renders empty drum staff (rests, no invent)", async () => {
+    const api = await bootPlayer();
+    api.pickSection(0);
+    await api.waitTick(20);
+    const staff = document.querySelector('svg[aria-label="Drum staff"]');
+    expect(staff).toBeTruthy();
+    // Kit notes only — no invent default when demo has no drumHits
+    expect(staff.querySelectorAll("g[data-rhythm='note']").length).toBe(0);
+    expect(staff.querySelectorAll("g[data-rhythm='note'][data-drum]").length).toBe(0);
+    expect(staff.querySelectorAll("g[data-rhythm='rest']").length).toBeGreaterThan(0);
+    // Staff subtitle should read as rests / out, not an 8th-hat invent claim from missing hits
+    const layer = [...document.querySelectorAll(".layer-label, .layer-title, [class*='layer']")]
+      .map((n) => n.textContent || "")
+      .find((t) => /drum staff/i.test(t));
+    if (layer) {
+      expect(layer.toLowerCase()).not.toMatch(/8th hats/);
+    }
   });
 });
 
@@ -1667,15 +1703,24 @@ describe("v1-drums-empty: drums-out independent of bass PEDAL", () => {
     expect(N.isBarDrumsSilent(10, [[0, 10]])).toBe(true);
     expect(N.isBarDrumsSilent(11, [[0, 10]])).toBe(false);
 
-    const all = N.buildDrumHits(4, false);
-    expect(all.length).toBeGreaterThan(0);
-    // viewLo=8, bars 8–11; silence [[8,10]] → only bar 11 relative step band remains
-    const filtered = N.drumHitsForView(4, false, 8, { drumsOutBars: [[8, 10]] });
+    // No invent default: missing song hits → empty even when drumsOutBars is set
+    expect(N.drumHitsForView(4, false, 8, { drumsOutBars: [[8, 10]] })).toEqual([]);
+    // With song hits: viewLo=8, bars 8–11; silence [[8,10]] → only bar 11 remains
+    const song = [];
+    for (let bar = 8; bar <= 11; bar++) {
+      song.push({ bar, step: 0, kind: "kick", midi: 36 });
+      song.push({ bar, step: 4, kind: "snare", midi: 38 });
+      song.push({ bar, step: 0, kind: "hat", midi: 42 });
+    }
+    const filtered = N.drumHitsForView(4, false, 8, { drumsOutBars: [[8, 10]], drumHits: song });
     const bars = [...new Set(filtered.map((h) => 8 + Math.floor(h.step / 16)))];
     expect(bars.every((b) => b >= 11)).toBe(true);
+    expect(filtered.length).toBeGreaterThan(0);
     expect(N.drumHitsForView(2, false, 0, { drumsOut: true })).toEqual([]);
     expect(N.drumHitsForView(2, false, 0, { rhythmOut: true })).toEqual([]);
     expect(N.isRhythmOut(N.PEDAL)).toBe(false);
+    // Dead helper may still invent for unit tests, but player path must not use it
+    expect(N.buildDrumHits(4, false).length).toBeGreaterThan(0);
   });
 
   it("PEDAL section with drumsOutBars covering view: bass notes, drum rests (no invented hats)", async () => {

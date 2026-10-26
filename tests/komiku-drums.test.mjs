@@ -1,6 +1,6 @@
 /**
- * Regression: public Komiku demo must not show the LAP procedural invent
- * (kick 1+3 / snare 2+4 / 8th hats) when song drumHits are present.
+ * Regression: kit notes come only from per-song drumHits.
+ * No invent default (kick 1+3 / snare 2+4 / 8th hats) when hits are missing.
  * @vitest-environment jsdom
  */
 import { describe, it, expect, afterEach, vi } from "vitest";
@@ -122,10 +122,45 @@ describe("song drumHits preferred over LAP invent", () => {
     );
   });
 
-  it("without song hits, drumHitsForView still falls back to procedural invent", async () => {
+  it("without song hits, drumHitsForView returns empty (no invent default)", async () => {
     const N = await loadNotation();
     const view = N.drumHitsForView(1, false, 0, {});
-    expect(sameSig(signatureFromHits(view), lapInventSignature(false))).toBe(true);
+    expect(view).toEqual([]);
+    // Must not be the legacy LAP kick1+3/snare2+4/8th-hat invent grid
+    expect(sameSig(signatureFromHits(view), lapInventSignature(false))).toBe(false);
+  });
+
+  it("demo without drumHits → empty view (not LAP invent grid)", async () => {
+    const N = await loadNotation();
+    expect(N.normalizeSongDrumHits({})).toBeNull();
+    expect(N.normalizeSongDrumHits({ title: "no hits" })).toBeNull();
+    const view = N.drumHitsForView(4, false, 0, {
+      drumHits: N.normalizeSongDrumHits({}),
+      drumsOutBars: [],
+    });
+    expect(view).toEqual([]);
+    const invent = N.buildDrumHits(4, false);
+    expect(invent.length).toBeGreaterThan(0);
+    expect(sameSig(signatureFromHits(view, 0), signatureFromHits(invent, 0))).toBe(false);
+  });
+
+  it("demo with drumHits → uses them (not invent)", async () => {
+    const N = await loadNotation();
+    const song = [
+      { bar: 0, step: 0, kind: "kick", midi: 36 },
+      { bar: 0, step: 4, kind: "kick", midi: 36 },
+      { bar: 0, step: 8, kind: "kick", midi: 36 },
+      { bar: 0, step: 12, kind: "kick", midi: 36 },
+      { bar: 0, step: 4, kind: "snare", midi: 38 },
+      { bar: 0, step: 12, kind: "snare", midi: 38 },
+      { bar: 0, step: 0, kind: "hat", midi: 42 },
+      { bar: 0, step: 8, kind: "hat", midi: 42 },
+    ];
+    const view = N.drumHitsForView(1, false, 0, { drumHits: song });
+    expect(view.length).toBe(song.length);
+    expect(sameSig(signatureFromHits(view), lapInventSignature(false))).toBe(false);
+    expect(signatureFromHits(view).kick.has(4)).toBe(true);
+    expect(signatureFromHits(view).hat.has(2)).toBe(false);
   });
 
   it("normalizeSongDrumHits reads demo.drumHits", async () => {

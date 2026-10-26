@@ -488,7 +488,10 @@
     }
   }
 
-  /** Procedural backbeat hits (legacy LAP invent). Only for demos without song drumHits. */
+  /**
+   * Procedural backbeat hits (legacy LAP invent). Dead/test helper only —
+   * never called from drumHitsForView / staff / MIDI player paths.
+   */
   function buildDrumHits(nBars, hat16, opts) {
     if (opts && (opts.empty || opts.silent)) return [];
     const hits = [];
@@ -622,8 +625,8 @@
   }
 
   /**
-   * Drum hits for a staff/MIDI view. Prefers per-song drumHits when present;
-   * otherwise falls back to procedural buildDrumHits (legacy demos).
+   * Drum hits for a staff/MIDI view. Uses per-song drumHits only.
+   * No song hits → empty (rests), same as drums-out — never invent a default grid.
    * Supports full drums-out and per-bar silence (drumsOutBars).
    */
   function drumHitsForView(nBars, hat16, viewLo, opts) {
@@ -631,13 +634,12 @@
     if (o.empty || o.silent || o.rhythmOut || o.drumsOut) return [];
     const lo = Number(viewLo) || 0;
     const song = o.drumHits || o.songHits || null;
-    let hits = null;
+    let hits = [];
     if (song && song.length) {
-      hits = songDrumHitsForView(song, nBars, lo);
+      const mapped = songDrumHitsForView(song, nBars, lo);
+      hits = mapped || [];
     }
-    if (!hits) {
-      hits = buildDrumHits(nBars, hat16);
-    }
+    // No invent fallback: missing/empty song hits → rests.
     const ranges = o.drumsOutBars || [];
     if (!ranges.length) return hits;
     return hits.filter((h) => !isBarDrumsSilent(lo + Math.floor(h.step / 16), ranges));
