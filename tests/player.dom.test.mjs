@@ -106,9 +106,15 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
       this.buffer = null;
       this.playbackRate = { value: 1 };
       this.connect = () => {};
+      this.startedAt = null;
+      this.startOffset = 0;
+      this.stopped = false;
     }
-    start() {}
-    stop() {}
+    start(when, offset) {
+      this.startedAt = when;
+      this.startOffset = offset == null ? 0 : offset;
+    }
+    stop() { this.stopped = true; }
   }
   class FakeParam {
     constructor(v = 0) { this.value = v; }
@@ -146,6 +152,7 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
       this._bufSrcCount = 0;
       this._oscillators = [];
       this._filters = [];
+      this._sources = [];
       window.__LAST_AUDIO_CTX__ = this;
     }
     createGain() {
@@ -155,7 +162,9 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
     }
     createBufferSource() {
       this._bufSrcCount += 1;
-      return new FakeSource();
+      const s = new FakeSource();
+      this._sources.push(s);
+      return s;
     }
     createOscillator() {
       this._oscCount += 1;
@@ -179,12 +188,17 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
       };
     }
     async decodeAudioData() {
+      // Short but stretchable buffer (0.25s). duration reports study length for clamp math.
+      const sampleRate = 44100;
+      const length = Math.floor(sampleRate * 0.25);
+      const data = [new Float32Array(length)];
+      for (let i = 0; i < length; i++) data[0][i] = Math.sin(2 * Math.PI * 110 * i / sampleRate);
       return {
         duration: demo.duration,
-        length: 8,
-        sampleRate: 44100,
+        length,
+        sampleRate,
         numberOfChannels: 1,
-        getChannelData: () => new Float32Array(8),
+        getChannelData: (i) => data[i] || data[0],
       };
     }
     async resume() {
@@ -2012,5 +2026,50 @@ describe("playback rate + public CC0 stems", () => {
     expect(document.querySelector("[data-credit]").textContent).toMatch(/Komiku/i);
     expect(document.querySelector("[data-credit]").textContent).toMatch(/CC0/i);
     expect(document.body.textContent).not.toMatch(/Like a Prayer/i);
+  });
+
+  it("tempo slowdown keeps stem BufferSource.playbackRate at 1 (WSOLA, not raw rate)", async () => {
+    // Regression: earlier ship set source.playbackRate = tempo and claimed "pitch preserved".
+    // That ALWAYS shifts pitch. Pitch-preserving path must stretch buffers and play at rate 1.
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    expect(api.getState().pitchPreserveMode).toBe("wsola");
+    expect(api.getState().stemTempoUsesRawPlaybackRate).toBe(false);
+    expect(window.__BASS_NOTATION__.stemTempoUsesRawPlaybackRate()).toBe(false);
+
+    await api.ensureAudio();
+    api.setPlaybackRate(0.5);
+    api.play();
+    await api.waitTick(80);
+
+    const st = api.getState();
+    expect(st.playbackRate).toBe(0.5);
+    expect(st.usingAudio).toBe(true);
+    expect(st.stemSourcePlaybackRate).toBe(1);
+
+    const ctx = window.__LAST_AUDIO_CTX__;
+    expect(ctx).toBeTruthy();
+    const started = (ctx._sources || []).filter((s) => s.buffer && s.startedAt != null);
+    expect(started.length).toBeGreaterThanOrEqual(2);
+    for (const s of started) {
+      expect(s.playbackRate.value).toBe(1);
+      // Stretched buffer should be ~2x the decoded stem sample length (0.25s → ~0.5s).
+      expect(s.buffer.length).toBeGreaterThan(Math.floor(44100 * 0.25) * 1.5);
+    }
+  });
+
+  it("would fail if only BufferSource.playbackRate carried tempo for pitch-preserve claim", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    await api.ensureAudio();
+    api.setPlaybackRate(0.75);
+    api.play();
+    await api.waitTick(80);
+    const ctx = window.__LAST_AUDIO_CTX__;
+    const started = (ctx._sources || []).filter((s) => s.buffer && s.startedAt != null);
+    expect(started.length).toBeGreaterThan(0);
+    // If someone "fixes" tempo by assigning playbackRate=0.75 on the source, this fails.
+    const rawRateUsed = started.some((s) => Math.abs(s.playbackRate.value - 0.75) < 1e-9);
+    expect(rawRateUsed).toBe(false);
+    expect(api.getState().stemSourcePlaybackRate).toBe(1);
+    expect(api.getState().playbackRate).toBe(0.75);
   });
 });

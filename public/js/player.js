@@ -12,6 +12,79 @@
   const STRING_NAMES = ["G", "D", "A", "E"];
   const PC = [[0,0],[1,-1],[1,0],[2,-1],[2,0],[3,0],[4,-1],[4,0],[5,-1],[5,0],[6,-1],[6,0]];
 
+  // Pitch-preserving tempo (WSOLA). Mirrors src/timestretch.mjs — keep in sync.
+  // AudioBufferSourceNode.playbackRate alone ALWAYS shifts pitch; do not use it for "slow without pitch change".
+  function stretchChannel(input, tempo, sampleRate, options) {
+    options = options || {};
+    const t = Number(tempo);
+    if (!(t > 0) || !Number.isFinite(t)) throw new Error("tempo must be a positive finite number");
+    const src = input instanceof Float32Array ? input : Float32Array.from(input);
+    if (src.length === 0) return new Float32Array(0);
+    if (Math.abs(t - 1) < 1e-9) return Float32Array.from(src);
+    const sr = sampleRate > 0 ? sampleRate : 44100;
+    const frameLen = options.frameLen || Math.max(64, Math.round(sr * 0.025));
+    const seekWin = options.seekWin != null ? options.seekWin : Math.max(0, Math.round(sr * 0.012));
+    const synthHop = options.synthHop || Math.max(1, Math.floor(frameLen / 2));
+    const analHop = Math.max(1, Math.round(synthHop * t));
+    const outLen = Math.max(frameLen, Math.ceil(src.length / t) + frameLen);
+    const output = new Float32Array(outLen);
+    const weight = new Float32Array(outLen);
+    const window = new Float32Array(frameLen);
+    for (let i = 0; i < frameLen; i++) window[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (frameLen - 1 || 1));
+    let readPos = 0, writePos = 0, first = true;
+    while (writePos + frameLen < outLen && readPos + frameLen <= src.length) {
+      let usePos = readPos;
+      if (!first && seekWin > 0 && writePos > 0) {
+        const searchStart = Math.max(0, readPos - seekWin);
+        const searchEnd = Math.min(src.length - frameLen, readPos + seekWin);
+        const overlapLen = Math.min(synthHop, writePos, frameLen);
+        let bestCorr = -Infinity, bestPos = readPos;
+        for (let cand = searchStart; cand <= searchEnd; cand++) {
+          let corr = 0;
+          for (let i = 0; i < overlapLen; i++) corr += output[writePos - overlapLen + i] * src[cand + i];
+          if (corr > bestCorr) { bestCorr = corr; bestPos = cand; }
+        }
+        usePos = bestPos;
+      }
+      for (let i = 0; i < frameLen; i++) {
+        const w = window[i];
+        const si = usePos + i;
+        if (si >= src.length) break;
+        output[writePos + i] += src[si] * w;
+        weight[writePos + i] += w;
+      }
+      readPos = usePos + analHop;
+      writePos += synthHop;
+      first = false;
+    }
+    const exactLen = Math.max(1, Math.round(src.length / t));
+    const trimmed = new Float32Array(exactLen);
+    for (let i = 0; i < exactLen; i++) {
+      const w = weight[i];
+      trimmed[i] = w > 1e-8 ? output[i] / w : output[i];
+    }
+    return trimmed;
+  }
+  function stretchAudioBuffer(buffer, tempo, createBuffer, options) {
+    options = options || {};
+    const t = Number(tempo);
+    if (!(t > 0) || !Number.isFinite(t)) throw new Error("tempo must be a positive finite number");
+    if (Math.abs(t - 1) < 1e-9) return buffer;
+    const chans = buffer.numberOfChannels || 1;
+    const sr = buffer.sampleRate || 44100;
+    const stretched = [];
+    for (let c = 0; c < chans; c++) stretched.push(stretchChannel(buffer.getChannelData(c), t, sr, options));
+    const len = stretched[0].length;
+    const out = createBuffer(chans, len, sr);
+    for (let c = 0; c < chans; c++) {
+      const dest = out.getChannelData(c);
+      dest.set(stretched[c].subarray(0, Math.min(dest.length, stretched[c].length)));
+    }
+    return out;
+  }
+  function stemTempoUsesRawPlaybackRate() { return false; }
+
+
   const eighths = (ms, off) => ms.map((m, i) => ({ step: off + i * 2, midi: m }));
   const B7_BAR = [[0,38],[2,38],[3,36],[4,38],[6,38],[8,38],[10,38],[11,36],[12,38],[14,38]];
   // Chorus groove from bass-stem measurement: high→low octave drop + syncopated 16ths (~6 hits/bar), not straight 8th octaves.
@@ -1262,7 +1335,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let midiBass = false;
     let midiDrums = false;
     const PLAYBACK_RATES = [1, 0.9, 0.75, 0.5, 0.25];
-    let playbackRate = 1; // pitch-preserving slowdown via BufferSource.playbackRate
+    let playbackRate = 1; // song tempo ratio; stems use WSOLA (not BufferSource.playbackRate) so pitch stays
     let audioCtx = null;
     let bassBuf = null, noBassBuf = null, drumsBuf = null;
     let bassSrc = null, noBassSrc = null, drumsSrc = null;
@@ -1278,6 +1351,9 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let stemRawBuffers = null; // { bass, noBass, drums? } ArrayBuffers after fetch
     let ensureAudioPromise = null;
     let stemFetchCount = 0;
+    let stretchCache = new Map(); // rate -> { bass, noBass, drums }
+    let lastStemSourcePlaybackRate = 1; // always 1 when pitch-preserved WSOLA path is used
+    let pitchPreserveMode = "wsola"; // not "playbackRate"
 
     function applyListenGains() {
       const g = listenGains(listenMode, drumsSupported && !!drumsBuf);
@@ -1516,6 +1592,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           bassBuf = decoded[0];
           noBassBuf = decoded[1];
           drumsBuf = decoded[2] || null;
+          stretchCache = new Map();
           if (!bassGain) {
             bassGain = audioCtx.createGain();
             noBassGain = audioCtx.createGain();
@@ -1576,10 +1653,27 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       suspendAudioCtx();
       if (resetToLoopStart) t = BARS[lo].t;
     }
+    function getStretchedStemBuffers(rate) {
+      if (rate === 1) return { bass: bassBuf, noBass: noBassBuf, drums: drumsBuf };
+      const key = String(rate);
+      if (stretchCache.has(key)) return stretchCache.get(key);
+      const createBuf = (ch, len, sr) => audioCtx.createBuffer(ch, len, sr);
+      const packed = {
+        bass: stretchAudioBuffer(bassBuf, rate, createBuf),
+        noBass: stretchAudioBuffer(noBassBuf, rate, createBuf),
+        drums: drumsBuf ? stretchAudioBuffer(drumsBuf, rate, createBuf) : null,
+      };
+      stretchCache.set(key, packed);
+      return packed;
+    }
     function startStemNodes(atTime) {
       if (!audioReady || !audioCtx || !bassBuf || !noBassBuf) return;
       stopStemNodes();
-      // Clamp to both study duration and decoded buffer lengths (avoid InvalidStateError / silence).
+      const rate = playbackRate > 0 ? playbackRate : 1;
+      // Pitch-preserving path: WSOLA-stretch buffers, play at source rate 1.
+      // Never drive tempo via BufferSource.playbackRate alone (that shifts pitch).
+      const playBufs = getStretchedStemBuffers(rate);
+      // Clamp to both study duration and *original* buffer lengths (song time domain).
       const maxStart = Math.min(
         DURATION,
         bassBuf.duration || DURATION,
@@ -1587,31 +1681,40 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         drumsBuf ? (drumsBuf.duration || DURATION) : DURATION,
       ) - 0.01;
       const start = Math.max(0, Math.min(maxStart, atTime));
+      // Stretched buffer is longer by 1/rate; song time `start` maps to buffer offset start/rate.
+      const bufferOffset = rate === 1 ? start : start / rate;
+      const maxBuf = Math.min(
+        playBufs.bass.duration || bufferOffset,
+        playBufs.noBass.duration || bufferOffset,
+        playBufs.drums ? (playBufs.drums.duration || bufferOffset) : bufferOffset,
+      ) - 0.01;
+      const bufStart = Math.max(0, Math.min(Math.max(0, maxBuf), bufferOffset));
       bassSrc = audioCtx.createBufferSource();
       noBassSrc = audioCtx.createBufferSource();
-      bassSrc.buffer = bassBuf;
-      noBassSrc.buffer = noBassBuf;
+      bassSrc.buffer = playBufs.bass;
+      noBassSrc.buffer = playBufs.noBass;
       bassSrc.connect(bassGain);
       noBassSrc.connect(noBassGain);
-      if (drumsBuf && drumsGain) {
+      if (playBufs.drums && drumsGain) {
         drumsSrc = audioCtx.createBufferSource();
-        drumsSrc.buffer = drumsBuf;
+        drumsSrc.buffer = playBufs.drums;
         drumsSrc.connect(drumsGain);
       } else {
         drumsSrc = null;
       }
       applyListenGains();
-      const rate = playbackRate > 0 ? playbackRate : 1;
+      // Source rate stays 1 — tempo came from WSOLA length, pitch unchanged.
+      lastStemSourcePlaybackRate = 1;
       try {
-        bassSrc.playbackRate.value = rate;
-        noBassSrc.playbackRate.value = rate;
-        if (drumsSrc) drumsSrc.playbackRate.value = rate;
+        bassSrc.playbackRate.value = 1;
+        noBassSrc.playbackRate.value = 1;
+        if (drumsSrc) drumsSrc.playbackRate.value = 1;
       } catch (e) { /* older engines */ }
       const when = audioCtx.currentTime;
       try {
-        bassSrc.start(when, start);
-        noBassSrc.start(when, start);
-        if (drumsSrc) drumsSrc.start(when, start);
+        bassSrc.start(when, bufStart);
+        noBassSrc.start(when, bufStart);
+        if (drumsSrc) drumsSrc.start(when, bufStart);
       } catch (err) {
         console.warn("stem start failed", err);
         bassSrc = noBassSrc = drumsSrc = null;
@@ -2765,6 +2868,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           t, playing, loopOn, secIdx, cardIdx, lo, hi,
           usingAudio, audioReady, stemLoading, muteBass, muteBassSupported, privateMode,
           listenMode, drumsSupported, midiBass, midiDrums, playbackRate,
+          pitchPreserveMode, stemSourcePlaybackRate: lastStemSourcePlaybackRate, stemTempoUsesRawPlaybackRate: stemTempoUsesRawPlaybackRate(),
           stemUrls: { bass: stemUrls.bass, noBass: stemUrls.noBass, drums: stemUrls.drums },
           stemFetchCount,
           audioCtxState: audioCtx ? audioCtx.state : null,
@@ -2887,6 +2991,9 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     expandPatternNotes,
     stepToSongTime,
     listenGains,
+    stretchChannel,
+    stretchAudioBuffer,
+    stemTempoUsesRawPlaybackRate,
     tabPos,
     OPEN: OPEN.slice(),
     midiToName,
