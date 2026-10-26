@@ -423,6 +423,7 @@
     return x + ks.count * step + 2;
   }
 
+
   function noteDurationSteps(notes, index, barSteps) {
     const bs = barSteps == null ? 16 : barSteps;
     const note = notes[index];
@@ -848,6 +849,19 @@
     minDur: 0.08,
   };
 
+  /** Soft clear chord-pad voice (sine, gentle LP) — not harsh synth grit. */
+  const CHORD_MIDI_VOICE = {
+    oscType: "sine",
+    filterType: "lowpass",
+    filterFreq: 2200,
+    filterQ: 0.5,
+    peakGain: 0.05,
+    attack: 0.035,
+    release: 0.14,
+    minDur: 0.18,
+  };
+  const SOUNDING_HL = "#60a5fa";
+
   function midiToFreq(midi) {
     return 440 * Math.pow(2, (Number(midi) - 69) / 12);
   }
@@ -957,6 +971,83 @@
     const n = Number(m);
     if (!Number.isFinite(n)) return "";
     return NOTE_NAMES[((n % 12) + 12) % 12] + (Math.floor(n / 12) - 1);
+  }
+
+  /** Pitch-class map for chord roots / slash bass (enharmonics used in demos). */
+  const CHORD_PC = {
+    C: 0, "C#": 1, Db: 1, D: 2, "D#": 3, Eb: 3, E: 4, F: 5,
+    "F#": 6, Gb: 6, G: 7, "G#": 8, Ab: 8, A: 9, "A#": 10, Bb: 10, B: 11,
+  };
+  const CHORD_QUALITY_INTERVALS = {
+    maj: [0, 4, 7],
+    min: [0, 3, 7],
+    dom7: [0, 4, 7, 10],
+    maj7: [0, 4, 7, 11],
+    min7: [0, 3, 7, 10],
+    dim: [0, 3, 6],
+    dim7: [0, 3, 6, 9],
+    aug: [0, 4, 8],
+    sus4: [0, 5, 7],
+    maj6: [0, 4, 7, 9],
+    dom9: [0, 4, 7, 10, 14],
+  };
+  /**
+   * Parse demo chord symbols (C, Dm, Bb, A7, Fm7, Abm7, slash C/E when present).
+   * Returns { rootPc, quality, bassPc, symbol } or null.
+   */
+  function parseChordSymbol(sym) {
+    const s = String(sym || "").trim();
+    if (!s) return null;
+    const m = s.match(/^([A-G](?:b|#)?)(maj7|maj|min7|min|m7|m|dim7|dim|aug|sus4|sus2|sus|add9|add2|7|6|9)?(?:\/([A-G](?:b|#)?))?$/i);
+    if (!m) return null;
+    const rootName = m[1];
+    const qRaw = (m[2] || "").toLowerCase();
+    const bassName = m[3] || null;
+    let quality = "maj";
+    if (qRaw === "m" || qRaw === "min") quality = "min";
+    else if (qRaw === "m7" || qRaw === "min7") quality = "min7";
+    else if (qRaw === "7") quality = "dom7";
+    else if (qRaw === "maj7") quality = "maj7";
+    else if (qRaw === "maj") quality = "maj";
+    else if (qRaw === "dim7") quality = "dim7";
+    else if (qRaw === "dim") quality = "dim";
+    else if (qRaw === "aug") quality = "aug";
+    else if (qRaw === "sus" || qRaw === "sus4" || qRaw === "sus2") quality = "sus4";
+    else if (qRaw === "6") quality = "maj6";
+    else if (qRaw === "9") quality = "dom9";
+    else if (qRaw === "add9" || qRaw === "add2") quality = "maj";
+    const rootPc = CHORD_PC[rootName];
+    if (rootPc == null) return null;
+    const bassPc = bassName != null ? CHORD_PC[bassName] : null;
+    return { rootPc, quality, bassPc: bassPc == null ? null : bassPc, symbol: s, rootName, bassName };
+  }
+  /** Concert MIDI chord tones in a clear mid register (not harsh; sits above bass). */
+  function chordToneMidis(sym, opts) {
+    const o = opts || {};
+    const prefer = Number.isFinite(o.rootMidi) ? o.rootMidi : 52; // ~E3
+    const parsed = parseChordSymbol(sym);
+    if (!parsed) return [];
+    const ints = CHORD_QUALITY_INTERVALS[parsed.quality] || CHORD_QUALITY_INTERVALS.maj;
+    let root = prefer - (((prefer % 12) + 12) % 12) + parsed.rootPc;
+    while (root > prefer + 6) root -= 12;
+    while (root < prefer - 6) root += 12;
+    const tones = ints.map((iv) => {
+      let m = root + iv;
+      while (m > 71) m -= 12;
+      while (m < 48) m += 12;
+      return m;
+    });
+    // Optional slash bass below the voicing
+    if (parsed.bassPc != null) {
+      let bass = prefer - 12 - ((((prefer - 12) % 12) + 12) % 12) + parsed.bassPc;
+      while (bass > 48) bass -= 12;
+      while (bass < 36) bass += 12;
+      if (!tones.some((t) => ((t % 12) + 12) % 12 === parsed.bassPc)) tones.unshift(bass);
+    }
+    return Array.from(new Set(tones)).sort((a, b) => a - b);
+  }
+  function chordPitchClasses(sym) {
+    return chordToneMidis(sym).map((m) => ((m % 12) + 12) % 12);
   }
 
   function resolveInsightPattern(insight, patsEff) {
@@ -1560,13 +1651,14 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let muteBass = false; // derived: listenMode === "mute" (compat)
     let midiBass = false;
     let midiDrums = false;
+    let midiChords = false;
     const PLAYBACK_RATES = [1, 0.9, 0.75, 0.5, 0.25];
     let playbackRate = 1; // song tempo ratio; stems use WSOLA (not BufferSource.playbackRate) so pitch stays
     let audioCtx = null;
     let bassBuf = null, noBassBuf = null, drumsBuf = null;
     let bassSrc = null, noBassSrc = null, drumsSrc = null;
     let bassGain = null, noBassGain = null, drumsGain = null;
-    let midiBassGain = null, midiDrumsGain = null;
+    let midiBassGain = null, midiDrumsGain = null, midiChordsGain = null;
     let midiNodes = [];
     let midiScheduleGen = 0;
     let audioReady = false;
@@ -1599,14 +1691,17 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       if (drumsGain) drumsGain.gain.value = g.drums;
       if (midiBassGain) midiBassGain.gain.value = midiBass ? 1 : 0;
       if (midiDrumsGain) midiDrumsGain.gain.value = midiDrums ? 1 : 0;
+      if (midiChordsGain) midiChordsGain.gain.value = midiChords ? 1 : 0;
     }
     function ensureMidiGraph() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (!midiBassGain) {
         midiBassGain = audioCtx.createGain();
         midiDrumsGain = audioCtx.createGain();
+        midiChordsGain = audioCtx.createGain();
         midiBassGain.connect(audioCtx.destination);
         midiDrumsGain.connect(audioCtx.destination);
+        midiChordsGain.connect(audioCtx.destination);
       }
       applyListenGains();
       return audioCtx;
@@ -1652,6 +1747,35 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         midiNodes.push(osc);
         midiNodes.push(g);
       }
+      midiNodes.push(filt);
+    }
+    function playChordSynthNote(when, dur, midi) {
+      const v = CHORD_MIDI_VOICE;
+      if (!midiChordsGain) return;
+      const filt = audioCtx.createBiquadFilter();
+      filt.type = v.filterType;
+      filt.frequency.value = v.filterFreq;
+      if (filt.Q) filt.Q.value = v.filterQ;
+      filt.connect(midiChordsGain);
+      const len = Math.max(v.minDur, dur || 0.4);
+      const attack = Math.min(v.attack, len * 0.35);
+      const release = Math.min(v.release, len * 0.4);
+      const peakAt = when + attack;
+      const releaseAt = Math.max(peakAt, when + len - release);
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = v.oscType;
+      osc.frequency.value = midiToFreq(Number(midi));
+      g.gain.setValueAtTime(0.0001, when);
+      g.gain.exponentialRampToValueAtTime(v.peakGain, peakAt);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.0001, v.peakGain * 0.85), releaseAt);
+      g.gain.exponentialRampToValueAtTime(0.0001, when + len);
+      osc.connect(g);
+      g.connect(filt);
+      osc.start(when);
+      osc.stop(when + len + 0.03);
+      midiNodes.push(osc);
+      midiNodes.push(g);
       midiNodes.push(filt);
     }
     function playDrumSynthHit(when, kind) {
@@ -1722,20 +1846,20 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     }
     function scheduleMidi(atSongTime) {
       cancelMidi();
-      if (!midiBass && !midiDrums) return;
+      if (!midiBass && !midiDrums && !midiChords) return;
       midiScheduleGen += 1;
       ensureMidiGraph();
       const { pat, hat16, rhythmOut, drumsOut } = currentPatAndHat();
-      // Full rhythm-out: neither bass nor drums MIDI. Drums-out alone still allows bass MIDI.
-      if (rhythmOut) return;
       const viewLo = lo;
       const viewHi = hi;
       const n = viewHi - viewLo + 1;
       const steps = n * 16;
       const when0 = audioCtx.currentTime;
       const song0 = atSongTime;
+      const rate = playbackRate > 0 ? playbackRate : 1;
       const barTimeAt = (i) => (i >= NBARS ? DURATION : BARS[Math.max(0, Math.min(NBARS - 1, i))].t);
-      if (midiBass) {
+      // Full rhythm-out: skip bass/drums MIDI (no invent). Chord MIDI still allowed (harmony line).
+      if (!rhythmOut && midiBass) {
         const notes = expandPatternNotes(pat, n).filter((note) => note.step < steps);
         notes.sort((a, b) => a.step - b.step);
         for (let i = 0; i < notes.length; i++) {
@@ -1745,10 +1869,10 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           const nextStep = i + 1 < notes.length ? notes[i + 1].step : note.step + 4;
           const nextT = stepToSongTime(viewLo, Math.min(nextStep, steps), barTimeAt);
           const dur = Math.max(0.06, Math.min(0.45, (nextT - songT) * 0.9));
-          playBassSynthNote(when0 + (songT - song0) / (playbackRate > 0 ? playbackRate : 1), dur / (playbackRate > 0 ? playbackRate : 1), note.midi);
+          playBassSynthNote(when0 + (songT - song0) / rate, dur / rate, note.midi);
         }
       }
-      if (midiDrums) {
+      if (!rhythmOut && midiDrums) {
         const hits = drumHitsForView(n, hat16, viewLo, {
           rhythmOut, drumsOut, drumsOutBars: DRUMS_OUT_BARS, drumHits: SONG_DRUM_HITS,
         }).filter((h) => h.step < steps);
@@ -1756,13 +1880,33 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           const h = hits[i];
           const songT = stepToSongTime(viewLo, h.step, barTimeAt);
           if (songT + 0.001 < song0) continue;
-          playDrumSynthHit(when0 + (songT - song0) / (playbackRate > 0 ? playbackRate : 1), h.kind);
+          playDrumSynthHit(when0 + (songT - song0) / rate, h.kind);
+        }
+      }
+      if (midiChords) {
+        for (let i = 0; i < n; i++) {
+          const barIdx = viewLo + i;
+          const row = BARS[barIdx];
+          if (!row || !row.chord) continue;
+          const tones = chordToneMidis(row.chord);
+          if (!tones.length) continue;
+          const songT = barTimeAt(barIdx);
+          const songEnd = barTimeAt(barIdx + 1);
+          if (songEnd + 0.001 < song0) continue;
+          const startSong = Math.max(songT, song0);
+          const durSong = Math.max(0.12, (songEnd - startSong) * 0.92);
+          const when = when0 + (startSong - song0) / rate;
+          const dur = durSong / rate;
+          for (let ti = 0; ti < tones.length; ti++) {
+            playChordSynthNote(when, dur, tones[ti]);
+          }
         }
       }
     }
     function setMidi(which, on) {
       if (which === "bass") midiBass = Boolean(on);
       else if (which === "drums") midiDrums = Boolean(on);
+      else if (which === "chords" || which === "chord") midiChords = Boolean(on);
       else return;
       applyListenGains();
       if (playing) {
@@ -1775,12 +1919,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     function toggleMidi(which) {
       if (which === "bass") setMidi("bass", !midiBass);
       else if (which === "drums") setMidi("drums", !midiDrums);
+      else if (which === "chords" || which === "chord") setMidi("chords", !midiChords);
     }
     /** Cancel old MIDI voices and schedule the current section/view from song time.
      *  Used on section boundaries (auto-advance and MIDI-only seeks) without restarting stems. */
     function rescheduleMidiForTransport(atSongTime) {
       if (!playing) return;
-      if (!midiBass && !midiDrums) return;
+      if (!midiBass && !midiDrums && !midiChords) return;
       try {
         ensureMidiGraph();
         if (audioCtx && audioCtx.state === "suspended" && audioCtx.resume) audioCtx.resume();
@@ -2075,7 +2220,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       audioStartedAt = when;
       audioOffset = start;
       usingAudio = true;
-      if (midiBass || midiDrums) scheduleMidi(start);
+      if (midiBass || midiDrums || midiChords) scheduleMidi(start);
     }
     function syncTransportFromAudio() {
       if (!usingAudio || !audioCtx) return;
@@ -2092,7 +2237,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       try {
         if (playing) {
           if (audioReady && bassBuf && noBassBuf) startStemNodes(t);
-          else if (midiBass || midiDrums) scheduleMidi(t);
+          else if (midiBass || midiDrums || midiChords) scheduleMidi(t);
         }
       } catch (err) {
         console.warn("setPlaybackRate failed", err);
@@ -2282,7 +2427,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           }
         }
         if (myGen !== playGen || !playing) return;
-        if ((midiBass || midiDrums) && !usingAudio) {
+        if ((midiBass || midiDrums || midiChords) && !usingAudio) {
           try {
             ensureMidiGraph();
             if (audioCtx.state === "suspended" && audioCtx.resume) await audioCtx.resume();
@@ -2311,7 +2456,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
             t += 0.05 * (playbackRate > 0 ? playbackRate : 1);
             if (loopOn && t >= le2) {
               t = ls2;
-              if (midiBass || midiDrums) scheduleMidi(t);
+              if (midiBass || midiDrums || midiChords) scheduleMidi(t);
             }
           }
           if (t >= DURATION) {
@@ -2415,6 +2560,40 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       return svg;
     }
 
+
+    /** Steps of bass pattern notes whose scheduled MIDI window contains songTime. */
+    function soundingBassNoteSteps(songTime, viewLo, n, pat) {
+      const steps = n * 16;
+      const barTimeAt = (i) => (i >= NBARS ? DURATION : BARS[Math.max(0, Math.min(NBARS - 1, i))].t);
+      const notes = expandPatternNotes(pat, n).filter((note) => note.step < steps);
+      notes.sort((a, b) => a.step - b.step);
+      const out = new Set();
+      for (let i = 0; i < notes.length; i++) {
+        const note = notes[i];
+        const songT = stepToSongTime(viewLo, note.step, barTimeAt);
+        const nextStep = i + 1 < notes.length ? notes[i + 1].step : note.step + 4;
+        const nextT = stepToSongTime(viewLo, Math.min(nextStep, steps), barTimeAt);
+        const dur = Math.max(0.06, Math.min(0.45, (nextT - songT) * 0.9));
+        if (songTime >= songT - 0.02 && songTime < songT + dur) out.add(note.step);
+      }
+      return out;
+    }
+    /** Drum hit steps currently in a short attack window around songTime. */
+    function soundingDrumHitSteps(songTime, viewLo, n, hat16, rhythmOut, drumsOut) {
+      const steps = n * 16;
+      const barTimeAt = (i) => (i >= NBARS ? DURATION : BARS[Math.max(0, Math.min(NBARS - 1, i))].t);
+      const hits = drumHitsForView(n, hat16, viewLo, {
+        rhythmOut, drumsOut, drumsOutBars: DRUMS_OUT_BARS, drumHits: SONG_DRUM_HITS,
+      }).filter((h) => h.step < steps);
+      const out = new Set();
+      for (let i = 0; i < hits.length; i++) {
+        const h = hits[i];
+        const songT = stepToSongTime(viewLo, h.step, barTimeAt);
+        if (songTime >= songT - 0.02 && songTime < songT + 0.14) out.add(h.step + ":" + h.kind);
+      }
+      return out;
+    }
+
     function makeChords(viewLo, viewHi, n, playX, bar, kind) {
       const svg = svgEl("svg", { viewBox: "0 0 " + VBW + " 64", width: "100%", height: "100%", preserveAspectRatio: "none", role: "img", "aria-label": "Chord names", style: { cursor: "crosshair", userSelect: "none", touchAction: "none" } });
       svg.appendChild(selectionOverlay(viewLo, viewHi, 2, 60));
@@ -2424,15 +2603,22 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         const next = i + 1 < n ? BARS[viewLo + i + 1].chord : "";
         const x = X0 + i * bw;
         const hot = b.bar === bar;
+        const sounding = Boolean(midiChords && playing && hot && b.chord);
         const partial = loopOn && (lo > viewLo || hi < viewHi);
         const inSub = partial && b.bar >= lo && b.bar <= hi;
-        const g = svgEl("g", {});
+        const g = svgEl("g", {
+          "data-chord": b.chord || "",
+          "data-bar": String(b.bar),
+          "data-sounding": sounding ? "1" : "0",
+        });
         g.appendChild(svgEl("rect", { x, y: 2, width: bw - 2, height: 60, rx: 4,
-          fill: hot ? "#1f2937" : inSub ? NEG : "transparent", opacity: hot ? 1 : inSub ? 0.18 : 1,
-          stroke: hot || inSub ? NEG : "#374151", "stroke-width": hot || inSub ? 2 : 1 }));
-        g.appendChild(svgEl("text", { x: x + bw / 2, y: 14, "text-anchor": "middle", "font-size": 10, fill: "#6b7280" }, [document.createTextNode("bar " + b.bar)]));
-        g.appendChild(svgEl("text", { x: x + bw / 2, y: 34, "text-anchor": "middle", "font-size": 20, "font-weight": 700, fill: "#e5e7eb" }, [document.createTextNode(b.chord)]));
-        g.appendChild(svgEl("text", { x: x + bw / 2, y: 52, "text-anchor": "middle", "font-size": 13, "font-weight": 600, fill: "#d1d5db" }, [document.createTextNode(romanFor(b.chord, kind, next))]));
+          fill: sounding ? "#1e3a5f" : hot ? "#1f2937" : inSub ? NEG : "transparent",
+          opacity: hot || sounding ? 1 : inSub ? 0.18 : 1,
+          stroke: sounding ? SOUNDING_HL : (hot || inSub ? NEG : "#374151"),
+          "stroke-width": sounding || hot || inSub ? 2 : 1 }));
+        g.appendChild(svgEl("text", { x: x + bw / 2, y: 14, "text-anchor": "middle", "font-size": 10, fill: sounding ? "#93c5fd" : "#6b7280" }, [document.createTextNode("bar " + b.bar)]));
+        g.appendChild(svgEl("text", { x: x + bw / 2, y: 34, "text-anchor": "middle", "font-size": 20, "font-weight": 700, fill: sounding ? SOUNDING_HL : "#e5e7eb" }, [document.createTextNode(b.chord)]));
+        g.appendChild(svgEl("text", { x: x + bw / 2, y: 52, "text-anchor": "middle", "font-size": 13, "font-weight": 600, fill: sounding ? "#93c5fd" : "#d1d5db" }, [document.createTextNode(romanFor(b.chord, kind, next))]));
         svg.appendChild(g);
       }
       svg.appendChild(svgEl("line", { x1: playX, x2: playX, y1: 2, y2: 62, stroke: NEG, "stroke-width": 2.5, "pointer-events": "none" }));
@@ -2456,12 +2642,22 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         const off = b * 16;
         pat.notes.forEach((note) => { if (note.step < 32) notes.push({ step: note.step + off, midi: note.midi }); });
       }
+      const soundingSteps = (midiBass && playing) ? soundingBassNoteSteps(t, viewLo, n, pat) : new Set();
+      const chordPcs = (midiChords && playing) ? new Set(chordPitchClasses((BARS[barAt(t)] || {}).chord || "")) : new Set();
       notes.filter((note) => note.step < steps).forEach((note) => {
         const pos = tabPos(note.midi);
         const label = String(pos.f);
-        const g = svgEl("g", {});
-        g.appendChild(svgEl("rect", { x: sx(note.step) - 6 - (label.length - 1) * 3, y: sy(pos.s) - 8, width: 12 + (label.length - 1) * 6, height: 15, fill: "#0b0f14" }));
-        g.appendChild(svgEl("text", { x: sx(note.step), y: sy(pos.s) + 4, "text-anchor": "middle", "font-size": 12, "font-weight": 700, fill: "#e5e7eb" }, [document.createTextNode(label)]));
+        const isSounding = soundingSteps.has(note.step);
+        const isChordTone = chordPcs.has(((note.midi % 12) + 12) % 12);
+        const lit = isSounding || isChordTone;
+        const g = svgEl("g", {
+          "data-midi": String(note.midi),
+          "data-step": String(note.step),
+          "data-sounding": isSounding ? "1" : "0",
+          "data-chord-tone": isChordTone ? "1" : "0",
+        });
+        g.appendChild(svgEl("rect", { x: sx(note.step) - 6 - (label.length - 1) * 3, y: sy(pos.s) - 8, width: 12 + (label.length - 1) * 6, height: 15, fill: lit ? "#1e3a5f" : "#0b0f14", stroke: lit ? SOUNDING_HL : "none", "stroke-width": lit ? 1.5 : 0 }));
+        g.appendChild(svgEl("text", { x: sx(note.step), y: sy(pos.s) + 4, "text-anchor": "middle", "font-size": 12, "font-weight": 700, fill: lit ? SOUNDING_HL : "#e5e7eb" }, [document.createTextNode(label)]));
         svg.appendChild(g);
       });
       svg.appendChild(svgEl("line", { x1: playX, x2: playX, y1: 8, y2: sy(3) + 10, stroke: NEG, "stroke-width": 2.5, "pointer-events": "none" }));
@@ -2495,6 +2691,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         pat.notes.forEach((note) => { if (note.step < 32) notes.push({ step: note.step + off, midi: note.midi }); });
       }
       const inView = notes.filter((note) => note.step < steps);
+      const bassSoundingSteps = (midiBass && playing) ? soundingBassNoteSteps(t, viewLo, n, pat) : new Set();
+      const chordPcs = (midiChords && playing) ? new Set(chordPitchClasses((BARS[barAt(t)] || {}).chord || "")) : new Set();
       const events = buildRhythmVoice(inView, steps);
       const noteEvents = events.filter((e) => e.type === "note");
       const groups = beamGroups(noteEvents);
@@ -2572,6 +2770,10 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         });
 
         laid.forEach((L) => {
+          const isSounding = bassSoundingSteps.has(L.ev.step);
+          const isChordTone = chordPcs.has((((L.ev.midi % 12) + 12) % 12));
+          const lit = isSounding || (midiChords && playing && isChordTone);
+          const noteInk = lit ? SOUNDING_HL : ink;
           const gAttrs = {
             "data-rhythm": "note",
             "data-dur": String(L.ev.dur),
@@ -2579,32 +2781,35 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
             "data-midi": String(L.ev.midi),
             "data-written": String(L.sp.writtenMidi),
             "data-pos": String(L.sp.pos),
+            "data-step": String(L.ev.step),
+            "data-sounding": isSounding ? "1" : "0",
+            "data-chord-tone": isChordTone ? "1" : "0",
           };
           if (L.ev.tie) gAttrs["data-tie"] = L.ev.tie;
           if (L.ev.attack === false) gAttrs["data-attack"] = "0";
           const g = svgEl("g", gAttrs);
           drawLedgers(g, L.sp.pos, L.cx);
-          if (L.sp.flat) g.appendChild(svgEl("text", { x: L.cx - 12, y: L.cy + 4, "font-size": 11, fill: ink }, [document.createTextNode("b")]));
+          if (L.sp.flat) g.appendChild(svgEl("text", { x: L.cx - 12, y: L.cy + 4, "font-size": 11, fill: noteInk }, [document.createTextNode("b")]));
           const open = L.ev.style.unit >= 8;
           g.appendChild(svgEl("ellipse", {
-            cx: L.cx, cy: L.cy, rx: 4.5, ry: 3.2,
-            fill: open ? "none" : ink,
-            stroke: ink,
-            "stroke-width": open ? 1.5 : 0,
+            cx: L.cx, cy: L.cy, rx: lit ? 5.2 : 4.5, ry: lit ? 3.6 : 3.2,
+            fill: open ? "none" : noteInk,
+            stroke: noteInk,
+            "stroke-width": open || lit ? 1.6 : 0,
             transform: "rotate(-20 " + L.cx + " " + L.cy + ")",
           }));
           if (L.ev.style.unit < 16) {
             g.appendChild(svgEl("line", {
               x1: L.stemX, x2: L.stemX, y1: L.cy, y2: L.stemEnd,
-              stroke: ink, "stroke-width": 1.2,
+              stroke: noteInk, "stroke-width": lit ? 1.6 : 1.2,
             }));
           }
           if (L.ev.style.dots) {
-            g.appendChild(svgEl("circle", { cx: L.cx + 8, cy: L.cy + (L.sp.pos % 2 === 0 ? -2 : 0), r: 1.7, fill: ink }));
+            g.appendChild(svgEl("circle", { cx: L.cx + 8, cy: L.cy + (L.sp.pos % 2 === 0 ? -2 : 0), r: 1.7, fill: noteInk }));
           }
           if (!beamable && L.ev.style.unit <= 2) {
             const beams = L.ev.style.unit === 1 ? 2 : 1;
-            g.appendChild(svgEl("path", { d: flagPath(L.stemX, L.stemEnd, L.up, beams), fill: ink }));
+            g.appendChild(svgEl("path", { d: flagPath(L.stemX, L.stemEnd, L.up, beams), fill: noteInk }));
           }
           svg.appendChild(g);
         });
@@ -2662,6 +2867,27 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       });
 
       appendBassTiePaths(svg, events, sx, yy, ink);
+
+      // Chord MIDI: sounding chord tones as open diamonds at the playhead.
+      if (midiChords && playing) {
+        const curChord = ((BARS[barAt(t)] || {}).chord) || "";
+        const tones = chordToneMidis(curChord);
+        const cg = svgEl("g", { "data-chord-tones": curChord || "", "pointer-events": "none" });
+        for (let ti = 0; ti < tones.length; ti++) {
+          const sp = staffPos(tones[ti]);
+          const cy = yy(sp.pos);
+          drawLedgers(cg, sp.pos, playX);
+          cg.appendChild(svgEl("rect", {
+            x: playX - 4.5, y: cy - 4.5, width: 9, height: 9,
+            fill: "none", stroke: SOUNDING_HL, "stroke-width": 1.8,
+            transform: "rotate(45 " + playX + " " + cy + ")",
+            "data-sounding": "1",
+            "data-midi": String(tones[ti]),
+            "data-chord-tone": "1",
+          }));
+        }
+        svg.appendChild(cg);
+      }
 
       svg.appendChild(svgEl("line", { x1: playX, x2: playX, y1: 6, y2: 94, stroke: NEG, "stroke-width": 2.5, "pointer-events": "none" }));
       bindStaffDrag(svg, () => ({ viewLo, viewHi }), onSeek, onLoopBars);
@@ -2760,6 +2986,9 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         drumHits: dOpts.drumHits || dOpts.songHits || null,
         empty: rhythmOut || dOpts.drumsOut ? true : false,
       }).filter((h) => h.step < steps);
+      const drumSounding = (midiDrums && playing)
+        ? soundingDrumHitSteps(t, viewLo, n, hat16, rhythmOut, dOpts.drumsOut)
+        : new Set();
 
       voices.forEach((voice) => {
         const notes = allHits
@@ -2783,26 +3012,39 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           });
 
           laid.forEach((L) => {
+            const isSounding = drumSounding.has(L.ev.step + ":" + voice.kind);
+            const noteInk = isSounding ? SOUNDING_HL : ink;
             const g = svgEl("g", {
               "data-rhythm": "note",
               "data-dur": String(L.ev.dur),
               "data-label": L.ev.style.label,
               "data-drum": voice.kind,
+              "data-step": String(L.ev.step),
+              "data-sounding": isSounding ? "1" : "0",
             });
             const open = L.ev.style.unit >= 8;
             drawDrumHead(g, voice.kind, L.cx, L.cy, open);
+            if (isSounding) {
+              // Recolor child strokes/fills to highlight
+              Array.prototype.forEach.call(g.childNodes, (node) => {
+                if (node.setAttribute) {
+                  if (node.getAttribute("stroke")) node.setAttribute("stroke", noteInk);
+                  if (node.getAttribute("fill") && node.getAttribute("fill") !== "none") node.setAttribute("fill", noteInk);
+                }
+              });
+            }
             if (L.ev.style.unit < 16) {
               g.appendChild(svgEl("line", {
                 x1: L.stemX, x2: L.stemX, y1: L.cy, y2: L.stemEnd,
-                stroke: ink, "stroke-width": 1.15,
+                stroke: noteInk, "stroke-width": isSounding ? 1.5 : 1.15,
               }));
             }
             if (L.ev.style.dots) {
-              g.appendChild(svgEl("circle", { cx: L.cx + 7, cy: L.cy, r: 1.5, fill: ink }));
+              g.appendChild(svgEl("circle", { cx: L.cx + 7, cy: L.cy, r: 1.5, fill: noteInk }));
             }
             if (!beamable && L.ev.style.unit <= 2) {
               const beams = L.ev.style.unit === 1 ? 2 : 1;
-              g.appendChild(svgEl("path", { d: drumFlagPath(L.stemX, L.stemEnd, L.up, beams), fill: ink }));
+              g.appendChild(svgEl("path", { d: drumFlagPath(L.stemX, L.stemEnd, L.up, beams), fill: noteInk }));
             }
             svg.appendChild(g);
           });
@@ -3365,6 +3607,19 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         }, ["MIDI"]));
         return strip;
       }
+      function makeChordChannelStrip() {
+        const strip = el("div", { className: "ch-strip", "aria-label": "Chord MIDI", "data-ch-strip": "chords" });
+        strip.appendChild(el("button", {
+          type: "button",
+          className: "ch-btn" + (midiChords ? " on" : ""),
+          "aria-label": "Chord MIDI from chord symbols",
+          "aria-pressed": midiChords ? "true" : "false",
+          "data-transport": "midi",
+          "data-midi": "chords",
+          title: "MIDI — hear chord tones (WebAudio) for the harmony line",
+        }, ["MIDI"]));
+        return strip;
+      }
       function makeDrumChannelStrip() {
         if (!muteBassSupported) return null;
         const strip = el("div", { className: "ch-strip", "aria-label": "Drum listen modes", "data-ch-strip": "drums" });
@@ -3394,7 +3649,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         return strip;
       }
       layers.appendChild(layer("Bass tab · " + pat.name + " · drag to loop bars", makeTab(lay.viewLo, lay.viewHi, lay.n, playX, pat)));
-      layers.appendChild(layer("Chord names · estimate · Roman fn", makeChords(lay.viewLo, lay.viewHi, lay.n, playX, bar, sec.kind), "chords"));
+      layers.appendChild(layer("Chord names · estimate · Roman fn", makeChords(lay.viewLo, lay.viewHi, lay.n, playX, bar, sec.kind), "chords", makeChordChannelStrip()));
       layers.appendChild(layer("Bass staff", makeBassStaff(lay.viewLo, lay.viewHi, lay.n, playX, pat), null, makeBassChannelStrip()));
       const drumLabel = rhythmOut ? "rests (out)" : (drumsViewOut ? "rests (drums out)" : drumHatLabel(viewDrumHits, hat16));
       layers.appendChild(layer("Drum staff · " + drumLabel, makeDrumStaff(lay.viewLo, lay.viewHi, lay.n, playX, hat16, rhythmOut, { drumsOut, drumsOutBars: DRUMS_OUT_BARS, drumHits: SONG_DRUM_HITS }), null, makeDrumChannelStrip()));
@@ -3512,7 +3767,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           t, playing, loopOn, secIdx, cardIdx, lo, hi,
           usingAudio, audioReady, stemLoading, muteBass, muteBassSupported, privateMode, activeSongId,
           songCatalog,
-          listenMode, drumsSupported, midiBass, midiDrums, midiScheduleGen, midiNodeCount: midiNodes.length, playbackRate,
+          listenMode, drumsSupported, midiBass, midiDrums, midiChords, midiScheduleGen, midiNodeCount: midiNodes.length, playbackRate,
           pitchPreserveMode, stemSourcePlaybackRate: lastStemSourcePlaybackRate, stemTempoUsesRawPlaybackRate: stemTempoUsesRawPlaybackRate(),
           stretchWindowSongSec: STRETCH_WINDOW_SONG_S,
           stretchWindowSongStart, stretchWindowSongEnd,
@@ -3561,8 +3816,10 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       setPlaybackRate: (r) => { setPlaybackRate(r); return window.__BASS_PLAYER__.getState(); },
       setMidiBass: (on) => { setMidi("bass", on); return window.__BASS_PLAYER__.getState(); },
       setMidiDrums: (on) => { setMidi("drums", on); return window.__BASS_PLAYER__.getState(); },
+      setMidiChords: (on) => { setMidi("chords", on); return window.__BASS_PLAYER__.getState(); },
       toggleMidiBass: () => { toggleMidi("bass"); return window.__BASS_PLAYER__.getState(); },
       toggleMidiDrums: () => { toggleMidi("drums"); return window.__BASS_PLAYER__.getState(); },
+      toggleMidiChords: () => { toggleMidi("chords"); return window.__BASS_PLAYER__.getState(); },
       seek: onSeek,
       pickSection,
       clearSubsection,
@@ -3638,6 +3895,10 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     normalizeDrumsOutBars,
     isBarDrumsSilent,
     BASS_MIDI_VOICE,
+    CHORD_MIDI_VOICE,
+    parseChordSymbol,
+    chordToneMidis,
+    chordPitchClasses,
     midiToFreq,
     expandPatternNotes,
     stepToSongTime,

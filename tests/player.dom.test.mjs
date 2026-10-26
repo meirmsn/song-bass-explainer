@@ -564,7 +564,10 @@ describe("player DOM shell transport", () => {
 
   it("channel strip is absent on public (no stems) player", async () => {
     await bootPlayer({ privateMode: false, withStems: false });
-    expect(document.querySelector(".ch-strip")).toBeFalsy();
+    // Bass/drums stem strips stay hidden without stems; chord MIDI strip is always available.
+    expect(document.querySelector('.ch-strip[data-ch-strip="bass"]')).toBeFalsy();
+    expect(document.querySelector('.ch-strip[data-ch-strip="drums"]')).toBeFalsy();
+    expect(document.querySelector('.ch-strip[data-ch-strip="chords"]')).toBeTruthy();
     expect(document.querySelector('.transport [data-transport="mute"]')).toBeFalsy();
   });
 
@@ -2731,5 +2734,139 @@ describe("staff time + key signatures", () => {
     expect(ks.getAttribute("data-key-kind")).toBe("flat");
     expect(ks.getAttribute("data-key-count")).toBe("4");
     expect(ks.querySelectorAll("[data-accidental='flat']").length).toBe(4);
+  });
+});
+
+describe("chord-midi: playable chords + sounding note highlight", () => {
+  afterEach(() => {
+    teardownPlayer();
+  });
+
+  it("parseChordSymbol / chordToneMidis cover demo qualities", async () => {
+    await bootPlayer({ privateMode: true, withStems: false });
+    const N = window.__BASS_NOTATION__;
+    expect(N.parseChordSymbol("Dm")).toMatchObject({ rootPc: 2, quality: "min" });
+    expect(N.parseChordSymbol("Bb")).toMatchObject({ rootPc: 10, quality: "maj" });
+    expect(N.parseChordSymbol("A7")).toMatchObject({ rootPc: 9, quality: "dom7" });
+    expect(N.parseChordSymbol("Fm7")).toMatchObject({ rootPc: 5, quality: "min7" });
+    expect(N.parseChordSymbol("")).toBeNull();
+    const dm = N.chordToneMidis("Dm");
+    expect(dm.length).toBeGreaterThanOrEqual(3);
+    const pcs = dm.map((m) => ((m % 12) + 12) % 12).sort((a, b) => a - b);
+    expect(pcs).toEqual([2, 5, 9]); // D F A
+    const a7 = N.chordToneMidis("A7");
+    expect(a7.map((m) => ((m % 12) + 12) % 12).sort((a, b) => a - b)).toEqual([1, 4, 7, 9]); // A C# E G
+    expect(N.CHORD_MIDI_VOICE.oscType).toBe("sine");
+    expect(["sawtooth", "square"]).not.toContain(N.CHORD_MIDI_VOICE.oscType);
+    expect(N.CHORD_MIDI_VOICE.peakGain).toBeLessThanOrEqual(0.12);
+    expect(N.CHORD_MIDI_VOICE.filterType).toBe("lowpass");
+  });
+
+  it("chord MIDI toggle on chord layer; schedules while playing; highlights sounding chord", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    const chordMidi = () => document.querySelector('button[data-midi="chords"]');
+    expect(chordMidi()).toBeTruthy();
+    expect(chordMidi().textContent.trim()).toBe("MIDI");
+    expect(api.getState().midiChords).toBe(false);
+
+    chordMidi().dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    await api.waitTick(30);
+    expect(api.getState().midiChords).toBe(true);
+    expect(chordMidi().classList.contains("on")).toBe(true);
+    expect(chordMidi().getAttribute("aria-pressed")).toBe("true");
+
+    api.pickSection(0);
+    api.setLoop(true);
+    const gen0 = api.getState().midiScheduleGen;
+    await api.ensureAudio();
+    api.play();
+    await api.waitTick(100);
+    expect(api.getState().playing).toBe(true);
+    expect(api.getState().midiChords).toBe(true);
+    expect(api.getState().midiScheduleGen).toBeGreaterThan(gen0);
+    expect(api.getState().midiNodeCount).toBeGreaterThan(0);
+
+    const soundingChord = document.querySelector('g[data-sounding="1"][data-chord]');
+    expect(soundingChord).toBeTruthy();
+    expect(soundingChord.getAttribute("data-chord")).toBeTruthy();
+
+    const toneMarks = document.querySelectorAll('[data-chord-tones] [data-chord-tone="1"]');
+    expect(toneMarks.length).toBeGreaterThanOrEqual(3);
+    const diamonds = [...toneMarks].filter((el) => el.tagName === "rect");
+    expect(diamonds.length).toBeGreaterThanOrEqual(3);
+    for (const d of diamonds) {
+      expect(d.getAttribute("fill")).toBe("none");
+      expect(d.getAttribute("stroke")).toBe("#60a5fa");
+      expect(d.getAttribute("transform") || "").toMatch(/rotate\(45/);
+    }
+
+    const ctx = window.__LAST_AUDIO_CTX__;
+    const chordOsc = ctx._oscillators.filter((o) => o.type === "sine" && !o._stopped);
+    expect(chordOsc.length).toBeGreaterThanOrEqual(3);
+
+    api.toggleMidiChords();
+    expect(api.getState().midiChords).toBe(false);
+    api.pause();
+  });
+
+  it("bass MIDI highlights sounding staff notes; drums MIDI highlights hits", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    api.pickSection(2);
+    api.setMidiBass(true);
+    api.setMidiDrums(true);
+    await api.ensureAudio();
+    api.play();
+    await api.waitTick(120);
+    expect(api.getState().playing).toBe(true);
+    expect(api.getState().midiBass).toBe(true);
+    expect(api.getState().midiDrums).toBe(true);
+    const lit = document.querySelectorAll('[data-sounding="1"][data-midi], [data-sounding="1"][data-drum]');
+    expect(lit.length).toBeGreaterThan(0);
+    api.pause();
+  });
+
+  it("chord MIDI works without stems (demo path) and reschedules on section advance", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: false });
+    expect(document.querySelector('button[data-midi="chords"]')).toBeTruthy();
+    api.setMidiChords(true);
+    api.setLoop(false);
+    api.pickSection(0);
+    api.seek(0);
+    const gen0 = api.getState().midiScheduleGen;
+    api.play();
+    await api.waitTick(80);
+    expect(api.getState().midiChords).toBe(true);
+    expect(api.getState().midiScheduleGen).toBeGreaterThan(gen0);
+    const gen1 = api.getState().midiScheduleGen;
+    api.pickSection(1);
+    await api.waitTick(60);
+    expect(api.getState().secIdx).toBe(1);
+    expect(api.getState().midiScheduleGen).toBeGreaterThan(gen1);
+    api.pause();
+  });
+
+  it("chord MIDI does not invent drums; empty rhythm-out still allows chords", async () => {
+    const api = await bootPlayer({
+      privateMode: true,
+      withStems: true,
+      mutatePayload: (payload) => {
+        payload.patterns.s1 = [{ id: "empty", name: "Rest (rhythm section out)", notes: [] }];
+      },
+    });
+    api.pickSection(1);
+    api.setMidiBass(true);
+    api.setMidiDrums(true);
+    api.setMidiChords(true);
+    await api.ensureAudio();
+    api.play();
+    await api.waitTick(80);
+    expect(api.getState().patternId).toBe("empty");
+    expect(api.getState().midiChords).toBe(true);
+    expect(document.querySelector('button[data-midi="chords"].on')).toBeTruthy();
+    const ctx = window.__LAST_AUDIO_CTX__;
+    const live = ctx._oscillators.filter((o) => !o._stopped);
+    expect(live.length).toBeGreaterThanOrEqual(3);
+    expect(live.every((o) => o.type === "sine")).toBe(true);
+    api.pause();
   });
 });
