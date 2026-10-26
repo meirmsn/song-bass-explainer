@@ -78,7 +78,19 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
 
   const fetchMock = vi.fn(async (url) => {
     const u = String(url);
-    if (u.includes("/private/api/demo/") || u.includes("/api/demo/") || u.endsWith("demo-data.json")) {
+    if (u.includes("/private/api/catalog")) {
+      return new Response(JSON.stringify({
+        demos: [
+          { id: "a-good-bass-for-gambling", title: "A good bass for gambling", artist: "Komiku", group: "demo" },
+          { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", group: "demo" },
+          { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", group: "demo" },
+        ],
+        processed: [
+          { id: "like-a-prayer", title: "Like a Prayer", artist: "Madonna / study", group: "processed" },
+        ],
+      }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+    if (u.includes("/private/api/demo/") || u.includes("/api/demo/") || u.endsWith("demo-data.json") || u.includes("/study/resource.json")) {
       return new Response(JSON.stringify(payload), {
         status: 200,
         headers: { "content-type": "application/json" },
@@ -2221,5 +2233,39 @@ describe("playback rate + public CC0 stems", () => {
     expect(api.getState().playbackRate).toBe(0.75);
     expect(api.getState().playing).toBe(true);
     expect(document.querySelector('.rate-btn[data-rate="0.75"].on')).toBeTruthy();
+  });
+});
+
+describe("quiet public → private entry + private song picker", () => {
+  afterEach(() => teardownPlayer());
+
+  it("public player shows a quiet data-private-entry link to /private/player/", async () => {
+    await bootPlayer({ privateMode: false, withStems: true });
+    const link = document.querySelector("[data-private-entry]");
+    expect(link).toBeTruthy();
+    expect(link.getAttribute("href")).toBe("/private/player/");
+    expect(link.className).toMatch(/private-entry/);
+    // Must not be a big CTA button
+    expect(link.tagName.toLowerCase()).toBe("a");
+    expect(link.closest("button")).toBeNull();
+  });
+
+  it("private player shows Demo vs Processed song picker groups", async () => {
+    await bootPlayer({ privateMode: true, withStems: true });
+    const sel = document.querySelector("[data-song-picker]");
+    expect(sel).toBeTruthy();
+    const groups = [...sel.querySelectorAll("optgroup")];
+    expect(groups.map((g) => g.label)).toEqual(["Demo", "Processed"]);
+    expect(groups[0].getAttribute("data-group")).toBe("demo");
+    expect(groups[1].getAttribute("data-group")).toBe("processed");
+    const demoIds = [...groups[0].querySelectorAll("option")].map((o) => o.value);
+    const procIds = [...groups[1].querySelectorAll("option")].map((o) => o.value);
+    expect(demoIds).toContain("a-good-bass-for-gambling");
+    expect(demoIds).toContain("make-funk");
+    expect(demoIds).toContain("maple-leaf-rag");
+    expect(procIds).toContain("like-a-prayer");
+    expect(demoIds).not.toContain("like-a-prayer");
+    // Public quiet link must not appear on private
+    expect(document.querySelector("[data-private-entry]")).toBeNull();
   });
 });

@@ -3,6 +3,7 @@
  * Licensed demos (Like a Prayer) stay private-only. Public CC0 stems served from DEMO_BUCKET.
  */
 import { buildStemsMeta } from "./stems.mjs";
+import { buildPrivateCatalog, PRIVATE_PROCESSED_DEMOS } from "./catalog.mjs";
 
 const ACCOUNT = "91a68408014ad4deb94e432d231f4af8";
 
@@ -189,7 +190,7 @@ export default {
           wake_list: "GET /private/api/wake (Access)",
           compute: "box hybrid consumer + scripts/analyze_audio.py (librosa generic)",
           demo_public: "GET /api/demo/:slug for allowlisted CC0/PDM (+ public stems); catalog lists public demos only",
-          demo_private: "GET /private/api/demo/like-a-prayer (+ stems under /private/api/demo/.../stems)",
+          demo_private: "GET /private/api/catalog (demos vs processed); GET /private/api/demo/like-a-prayer (+ stems)",
           stems: "Access-gated /private/api/.../stems (Accept-Ranges + 206 when Range present)",
         },
         account_hint: ACCOUNT.slice(0, 8) + "…",
@@ -289,11 +290,40 @@ export default {
       return objectResponse(obj, ct, { privateAudio: false });
     }
 
-        if (path === "/api/jobs" || path.startsWith("/api/jobs/")) {
+    if (path === "/api/jobs" || path.startsWith("/api/jobs/")) {
       return json({ error: "Use /private/api/jobs (Cloudflare Access)" }, 401);
     }
 
     // ---- Access-gated private APIs ----
+
+    // Private catalog: Demo (public CC0/PDM) vs Processed (LAP + ready jobs) — Access-gated.
+    if (path === "/private/api/catalog" || path === "/private/api/catalog/") {
+      if (!env.PRIVATE_BUCKET) return bad("PRIVATE_BUCKET binding missing", 500);
+      let jobs = [];
+      try {
+        jobs = await listJobs(env.PRIVATE_BUCKET, 80);
+      } catch {
+        jobs = [];
+      }
+      // Only surface jobs that actually have a study resource.
+      const ready = [];
+      for (const job of jobs) {
+        const st = String(job.status || "");
+        if (!/^(ready|done|waiting_bot)$/i.test(st)) continue;
+        try {
+          const head = await env.PRIVATE_BUCKET.head(`jobs/${job.id}/study/resource.json`);
+          if (head) ready.push({ ...job, studyReady: true });
+        } catch {
+          /* skip */
+        }
+      }
+      const catalog = buildPrivateCatalog({
+        publicDemos: PUBLIC_DEMOS,
+        privateDemos: PRIVATE_PROCESSED_DEMOS,
+        jobs: ready,
+      });
+      return json(catalog);
+    }
 
     if (path === "/private/api/demo/like-a-prayer" || path === "/private/api/demo/like-a-prayer/") {
       if (!env.PRIVATE_BUCKET) return bad("PRIVATE_BUCKET binding missing", 500);

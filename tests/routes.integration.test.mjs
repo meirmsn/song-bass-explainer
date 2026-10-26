@@ -144,7 +144,7 @@ describe("public demo APIs — CC0 open, LAP gated", () => {
 });
 
 describe("Access gating on /private*", () => {
-  it.each(["/private/", "/private/player/", "/private/api/jobs", "/private/api/demo/like-a-prayer"])(
+  it.each(["/private/", "/private/player/", "/private/api/jobs", "/private/api/demo/like-a-prayer", "/private/api/catalog"])(
     "%s redirects to Access (302/401) without session",
     async (path) => {
       const { status, res } = await fetchRaw(path);
@@ -171,3 +171,4 @@ describe("health", () => {
     expect(pipe).toMatch(/a-good-bass-for-gambling|CC0\/PDM|allowlisted/i);
   });
 });
+

@@ -1287,6 +1287,16 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
   .cards-drawer:not([hidden]) { display:flex; }
   body.cards-drawer-open { overflow:hidden; }
 }
+.private-entry { font-size:10px; color:#4b5563; text-decoration:none; letter-spacing:.02em; white-space:nowrap; }
+.private-entry:hover { color:#9ca3af; text-decoration:underline; }
+.song-picker-row { display:flex; align-items:center; gap:8px; flex:0 0 auto; min-width:0; }
+.song-picker-row label { font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#6b7280; flex:0 0 auto; }
+.song-picker { font-size:12px; max-width:min(280px,55vw); min-width:140px; background:#111827; color:#e5e7eb; border:1px solid #374151; border-radius:6px; padding:4px 8px; }
+.song-picker optgroup { font-style:normal; font-weight:700; color:#9ca3af; }
+@media (max-width:640px) {
+  .private-entry { font-size:9px; }
+  .song-picker { max-width:70vw; font-size:11px; }
+}
 `;
     const style = document.createElement("style");
     style.id = "bass-player-styles";
@@ -1298,13 +1308,46 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     ensurePlayerStyles();
     const privateMode = Boolean(window.__BASS_PRIVATE__) || location.pathname.startsWith("/private/");
     let demo;
-    // Multi-song public: ?song= / ?id= allowlisted slug; default Komiku. (Tempo/WSOLA path untouched.)
+    // Multi-song: ?song= / ?id=. Public allowlist only. Private: demos + processed (LAP/jobs). (Tempo/WSOLA path untouched.)
     const PUBLIC_SONG_RE = /^(a-good-bass-for-gambling|make-funk|maple-leaf-rag)$/;
     const q = new URLSearchParams(location.search);
     const songParam = String(q.get("song") || q.get("id") || "").trim();
     const publicSlug = PUBLIC_SONG_RE.test(songParam) ? songParam : "a-good-bass-for-gambling";
+    let songCatalog = { demos: [], processed: [] };
+    let activeSongId = privateMode
+      ? (songParam || "like-a-prayer")
+      : publicSlug;
+    if (privateMode) {
+      try {
+        const cres = await fetch("/private/api/catalog");
+        if (cres.ok) songCatalog = await cres.json();
+      } catch (_) { /* Access / offline — picker falls back to known entries */ }
+      if (!songCatalog.demos?.length) {
+        songCatalog.demos = [
+          { id: "a-good-bass-for-gambling", title: "A good bass for gambling", artist: "Komiku", group: "demo" },
+          { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", group: "demo" },
+          { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", group: "demo" },
+        ];
+      }
+      if (!songCatalog.processed?.length) {
+        songCatalog.processed = [
+          { id: "like-a-prayer", title: "Like a Prayer", artist: "Madonna / study", group: "processed" },
+        ];
+      }
+    }
+    function resolvePrivateEndpoints(id) {
+      if (PUBLIC_SONG_RE.test(id)) {
+        return [`/api/demo/${id}`, `/api/demo/a-good-bass-for-gambling`, "/js/demo-data.json"];
+      }
+      if (/^job_[a-zA-Z0-9_]+$/.test(id)) {
+        return [`/private/api/jobs/${id}/study/resource.json`, "/private/api/demo/like-a-prayer", "/js/demo-data.json"];
+      }
+      // Default / unknown → LAP private demo
+      const slug = id || "like-a-prayer";
+      return [`/private/api/demo/${slug}`, "/private/api/demo/like-a-prayer", "/js/demo-data.json"];
+    }
     const endpoints = privateMode
-      ? ["/private/api/demo/like-a-prayer", "/api/demo/like-a-prayer", "/js/demo-data.json"]
+      ? resolvePrivateEndpoints(activeSongId)
       : [`/api/demo/${publicSlug}`, "/api/demo/a-good-bass-for-gambling", "/js/demo-data.json"];
     let lastErr = null;
     for (const ep of endpoints) {
@@ -2888,7 +2931,76 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         } else if (credit.source) {
           creditRow.appendChild(document.createTextNode(credit.source));
         }
+        // Quiet Access entry — not a CTA; Cloudflare Access gates /private/*
+        creditRow.appendChild(document.createTextNode(" · "));
+        creditRow.appendChild(el("a", {
+          href: "/private/player/",
+          className: "private-entry",
+          "data-private-entry": "1",
+          title: "Private player (sign in)",
+        }, ["Private"]));
         shell.appendChild(creditRow);
+      } else if (!privateMode) {
+        // Still offer a quiet private entry when credit metadata is missing
+        const quiet = el("div", { className: "credit-line", "data-credit": "1" });
+        quiet.appendChild(el("a", {
+          href: "/private/player/",
+          className: "private-entry",
+          "data-private-entry": "1",
+          title: "Private player (sign in)",
+        }, ["Private"]));
+        shell.appendChild(quiet);
+      }
+
+      if (privateMode) {
+        const row = el("div", { className: "song-picker-row", "data-song-picker-row": "1" });
+        row.appendChild(el("label", { for: "bass-song-picker" }, ["Song"]));
+        const sel = el("select", {
+          id: "bass-song-picker",
+          className: "song-picker",
+          "data-song-picker": "1",
+          "aria-label": "Select demo or processed song",
+        });
+        const demoGroup = document.createElement("optgroup");
+        demoGroup.label = "Demo";
+        demoGroup.setAttribute("data-group", "demo");
+        for (const s of (songCatalog.demos || [])) {
+          const opt = document.createElement("option");
+          opt.value = s.id;
+          opt.textContent = (s.artist ? s.artist + " — " : "") + (s.title || s.id);
+          if (s.id === activeSongId) opt.selected = true;
+          demoGroup.appendChild(opt);
+        }
+        const procGroup = document.createElement("optgroup");
+        procGroup.label = "Processed";
+        procGroup.setAttribute("data-group", "processed");
+        for (const s of (songCatalog.processed || [])) {
+          const opt = document.createElement("option");
+          opt.value = s.id;
+          opt.textContent = (s.artist ? s.artist + " — " : "") + (s.title || s.id);
+          if (s.id === activeSongId) opt.selected = true;
+          procGroup.appendChild(opt);
+        }
+        sel.appendChild(demoGroup);
+        sel.appendChild(procGroup);
+        // If active id is missing from both lists (e.g. job not in catalog yet), add it under Processed
+        const known = new Set([...(songCatalog.demos || []), ...(songCatalog.processed || [])].map((s) => s.id));
+        if (activeSongId && !known.has(activeSongId)) {
+          const opt = document.createElement("option");
+          opt.value = activeSongId;
+          opt.textContent = demo.title || activeSongId;
+          opt.selected = true;
+          procGroup.appendChild(opt);
+        }
+        sel.addEventListener("change", () => {
+          const next = String(sel.value || "").trim();
+          if (!next || next === activeSongId) return;
+          const u = new URL(location.href);
+          u.searchParams.set("song", next);
+          location.assign(u.pathname + "?" + u.searchParams.toString() + u.hash);
+        });
+        row.appendChild(sel);
+        shell.appendChild(row);
       }
 
       shell.appendChild(el("div", { className: "timeline" }, [makeTimeline()]));
@@ -3084,7 +3196,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         const tabHead = document.querySelector(".layer-head");
         return {
           t, playing, loopOn, secIdx, cardIdx, lo, hi,
-          usingAudio, audioReady, stemLoading, muteBass, muteBassSupported, privateMode,
+          usingAudio, audioReady, stemLoading, muteBass, muteBassSupported, privateMode, activeSongId,
+          songCatalog,
           listenMode, drumsSupported, midiBass, midiDrums, playbackRate,
           pitchPreserveMode, stemSourcePlaybackRate: lastStemSourcePlaybackRate, stemTempoUsesRawPlaybackRate: stemTempoUsesRawPlaybackRate(),
           stretchWindowSongSec: STRETCH_WINDOW_SONG_S,
