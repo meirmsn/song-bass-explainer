@@ -1,0 +1,554 @@
+{
+  "title": "Fixture Tune",
+  "artist": "Test Fixture",
+  "bpm": 120,
+  "timeSig": "4/4",
+  "keys": "C",
+  "duration": 12.0,
+  "nbars": 24,
+  "raw": [
+    [
+      0,
+      0.0,
+      "C",
+      "C.C.C.C"
+    ],
+    [
+      1,
+      0.5,
+      "C",
+      "C.C.C.C"
+    ],
+    [
+      2,
+      1.0,
+      "G",
+      "G.G.G.G"
+    ],
+    [
+      3,
+      1.5,
+      "G",
+      "G.G.G.G"
+    ],
+    [
+      4,
+      2.0,
+      "Am",
+      "C.C.C.C"
+    ],
+    [
+      5,
+      2.5,
+      "Am",
+      "C.C.C.C"
+    ],
+    [
+      6,
+      3.0,
+      "F",
+      "C.C.C.C"
+    ],
+    [
+      7,
+      3.5,
+      "F",
+      "C.C.C.C"
+    ],
+    [
+      8,
+      4.0,
+      "C",
+      "C.C.C.C"
+    ],
+    [
+      9,
+      4.5,
+      "C",
+      "C.C.C.C"
+    ],
+    [
+      10,
+      5.0,
+      "G",
+      "G.G.G.G"
+    ],
+    [
+      11,
+      5.5,
+      "G",
+      "G.G.G.G"
+    ],
+    [
+      12,
+      6.0,
+      "Am",
+      "C.C.C.C"
+    ],
+    [
+      13,
+      6.5,
+      "Am",
+      "C.C.C.C"
+    ],
+    [
+      14,
+      7.0,
+      "F",
+      "C.C.C.C"
+    ],
+    [
+      15,
+      7.5,
+      "F",
+      "C.C.C.C"
+    ],
+    [
+      16,
+      8.0,
+      "C",
+      "C.C.C.C"
+    ],
+    [
+      17,
+      8.5,
+      "G",
+      "C.C.C.C"
+    ],
+    [
+      18,
+      9.0,
+      "Am",
+      "C.C.C.C"
+    ],
+    [
+      19,
+      9.5,
+      "F",
+      "C.C.C.C"
+    ],
+    [
+      20,
+      10.0,
+      "C",
+      "C.C.C.C"
+    ],
+    [
+      21,
+      10.5,
+      "G",
+      "G.G.G.G"
+    ],
+    [
+      22,
+      11.0,
+      "Am",
+      "A.A.A.A"
+    ],
+    [
+      23,
+      11.5,
+      "F",
+      "F.F.F.F"
+    ]
+  ],
+  "secs": [
+    {
+      "id": "s0",
+      "name": "A",
+      "first": 0,
+      "end": 8,
+      "kind": "intro",
+      "ci": 0
+    },
+    {
+      "id": "s1",
+      "name": "B",
+      "first": 8,
+      "end": 16,
+      "kind": "verse",
+      "ci": 1
+    },
+    {
+      "id": "s2",
+      "name": "C",
+      "first": 16,
+      "end": 24,
+      "kind": "chorus",
+      "ci": 2
+    }
+  ],
+  "cards": {
+    "intro": [
+      {
+        "label": "Drums",
+        "body": "Steady pulse for testing."
+      },
+      {
+        "label": "Bass",
+        "body": "Root notes on the beat."
+      },
+      {
+        "label": "Harmony",
+        "body": "I\u2013V\u2013vi\u2013IV loop."
+      },
+      {
+        "label": "Feel",
+        "body": "Keep it simple."
+      }
+    ],
+    "chorus": [
+      {
+        "label": "Drums",
+        "body": "Same grid, slightly louder.",
+        "insight": {
+          "layer": "drums",
+          "patternId": "sync_oct",
+          "title": "Bass against kick",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick"
+            },
+            {
+              "step": 4,
+              "kind": "bass",
+              "midi": 29,
+              "text": "this bass note against that drum hit"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Bass",
+        "body": "Syncopated octave drop.",
+        "insight": {
+          "layer": "bass",
+          "patternId": "sync_oct",
+          "title": "Octave drop",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 41,
+              "text": "this note here"
+            },
+            {
+              "step": 4,
+              "midi": 29,
+              "text": "this pattern"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Harmony",
+        "body": "Same loop again."
+      },
+      {
+        "label": "Feel",
+        "body": "Lift without new changes."
+      }
+    ],
+    "verse": [
+      {
+        "label": "Drums",
+        "body": "Steady pulse for testing."
+      },
+      {
+        "label": "Bass",
+        "body": "Root notes on the beat."
+      },
+      {
+        "label": "Harmony",
+        "body": "I\u2013V\u2013vi\u2013IV loop."
+      },
+      {
+        "label": "Feel",
+        "body": "Keep it simple."
+      }
+    ],
+    "v2": [
+      {
+        "label": "Drums",
+        "body": "Out \u2014 rests only."
+      },
+      {
+        "label": "Bass",
+        "body": "Out \u2014 rests only."
+      }
+    ]
+  },
+  "stems": {
+    "available": false,
+    "muteBassSupported": false
+  },
+  "patterns": {
+    "s0": [
+      {
+        "id": "pedal",
+        "name": "Pedal point on D",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 38
+          },
+          {
+            "step": 2,
+            "midi": 38
+          }
+        ]
+      }
+    ],
+    "s1": [
+      {
+        "id": "pedal",
+        "name": "Pedal point on D",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 38
+          },
+          {
+            "step": 2,
+            "midi": 38
+          }
+        ]
+      }
+    ],
+    "intro": [
+      {
+        "id": "pedal",
+        "name": "Pedal point on D",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 38
+          },
+          {
+            "step": 2,
+            "midi": 38
+          }
+        ]
+      }
+    ],
+    "verse": [
+      {
+        "id": "pedal",
+        "name": "Pedal point on D",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 38
+          },
+          {
+            "step": 2,
+            "midi": 38
+          }
+        ]
+      }
+    ],
+    "s2": [
+      {
+        "id": "sync_oct",
+        "name": "Syncopated octave drop",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 41
+          },
+          {
+            "step": 4,
+            "midi": 29
+          },
+          {
+            "step": 6,
+            "midi": 29
+          },
+          {
+            "step": 8,
+            "midi": 29
+          },
+          {
+            "step": 11,
+            "midi": 41
+          },
+          {
+            "step": 13,
+            "midi": 29
+          },
+          {
+            "step": 15,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 24
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 27,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 33
+          }
+        ]
+      },
+      {
+        "id": "walk",
+        "name": "A\u2013C\u2013D ascending walk",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 33
+          },
+          {
+            "step": 4,
+            "midi": 33
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 38
+          },
+          {
+            "step": 12,
+            "midi": 38
+          },
+          {
+            "step": 14,
+            "midi": 40
+          }
+        ]
+      }
+    ],
+    "chorus": [
+      {
+        "id": "sync_oct",
+        "name": "Syncopated octave drop",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 41
+          },
+          {
+            "step": 4,
+            "midi": 29
+          },
+          {
+            "step": 6,
+            "midi": 29
+          },
+          {
+            "step": 8,
+            "midi": 29
+          },
+          {
+            "step": 11,
+            "midi": 41
+          },
+          {
+            "step": 13,
+            "midi": 29
+          },
+          {
+            "step": 15,
+            "midi": 36
+          },
+          {
+            "step": 16,
+            "midi": 36
+          },
+          {
+            "step": 20,
+            "midi": 36
+          },
+          {
+            "step": 22,
+            "midi": 24
+          },
+          {
+            "step": 24,
+            "midi": 36
+          },
+          {
+            "step": 27,
+            "midi": 36
+          },
+          {
+            "step": 30,
+            "midi": 33
+          }
+        ]
+      },
+      {
+        "id": "walk",
+        "name": "A\u2013C\u2013D ascending walk",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 33
+          },
+          {
+            "step": 4,
+            "midi": 33
+          },
+          {
+            "step": 6,
+            "midi": 36
+          },
+          {
+            "step": 8,
+            "midi": 38
+          },
+          {
+            "step": 12,
+            "midi": 38
+          },
+          {
+            "step": 14,
+            "midi": 40
+          }
+        ]
+      }
+    ],
+    "v2": [
+      {
+        "id": "empty",
+        "name": "Rest (rhythm section out)",
+        "notes": []
+      }
+    ],
+    "empty": [
+      {
+        "id": "empty",
+        "name": "Rest (rhythm section out)",
+        "notes": []
+      }
+    ]
+  }
+}

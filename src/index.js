@@ -1,0 +1,366 @@
+/**
+ * Bass Study Worker — static assets + Access-gated jobs/stems + public visual demo (no audio).
+ * Stems are NEVER served on unauthenticated /api/demo/.../stems paths.
+ */
+import { buildStemsMeta } from "./stems.mjs";
+
+const ACCOUNT = "91a68408014ad4deb94e432d231f4af8";
+
+function json(data, status = 200, headers = {}) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8", ...headers },
+  });
+}
+
+function bad(msg, status = 400) {
+  return json({ error: msg }, status);
+}
+
+function ytOk(url) {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, "");
+    if (!["youtube.com", "youtu.be", "m.youtube.com", "music.youtube.com"].includes(host)) return false;
+    if (host === "youtu.be") return u.pathname.length > 1;
+    return Boolean(u.searchParams.get("v") || u.pathname.includes("/shorts/") || u.pathname.includes("/live/"));
+  } catch {
+    return false;
+  }
+}
+
+function jobId() {
+  return "job_" + crypto.randomUUID().replace(/-/g, "").slice(0, 16);
+}
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+async function listJobs(bucket, limit = 40) {
+  const listed = await bucket.list({ prefix: "jobs/", limit: 500 });
+  const objs = (listed.objects || []).filter((o) => o.key.endsWith("/meta.json"));
+  objs.sort((a, b) => (b.uploaded || "").localeCompare(a.uploaded || ""));
+  const jobs = [];
+  for (const o of objs.slice(0, limit)) {
+    const obj = await bucket.get(o.key);
+    if (!obj) continue;
+    try {
+      jobs.push(JSON.parse(await obj.text()));
+    } catch {
+      /* skip */
+    }
+  }
+  return jobs;
+}
+
+async function putJob(bucket, job) {
+  await bucket.put(`jobs/${job.id}/meta.json`, JSON.stringify(job, null, 2), {
+    httpMetadata: { contentType: "application/json" },
+  });
+  return job;
+}
+
+async function getObject(bucket, key, request) {
+  const opts = {};
+  if (request && request.headers && request.headers.has("range")) {
+    // R2 Workers binding accepts Request headers for byte-range GETs → 206.
+    opts.range = request.headers;
+  }
+  return bucket.get(key, opts);
+}
+
+function objectResponse(obj, fallbackType, { privateAudio = false } = {}) {
+  if (!obj) return null;
+  const headers = new Headers();
+  const ct = obj.httpMetadata?.contentType || fallbackType || "application/octet-stream";
+  headers.set("content-type", ct);
+  headers.set("cache-control", privateAudio ? "private, max-age=300" : "public, max-age=3600");
+  headers.set("accept-ranges", "bytes");
+  if (!privateAudio) headers.set("access-control-allow-origin", "*");
+  if (obj.httpEtag) headers.set("etag", obj.httpEtag);
+
+  const ranged = Boolean(obj.range && typeof obj.range.offset === "number");
+  if (ranged) {
+    const start = obj.range.offset;
+    const length = obj.range.length;
+    const end = start + length - 1;
+    headers.set("content-range", `bytes ${start}-${end}/${obj.size}`);
+    headers.set("content-length", String(length));
+    return new Response(obj.body, { status: 206, headers });
+  }
+  if (obj.size != null) headers.set("content-length", String(obj.size));
+  return new Response(obj.body, { status: 200, headers });
+}
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const path = url.pathname;
+
+    if (path === "/_health") {
+      let demoOk = false;
+      let privateOk = false;
+      let jobCount = null;
+      let wakeCount = null;
+      let privateDemoStems = false;
+      let publicDemoStemsPresent = false;
+      try {
+        demoOk = Boolean(env.DEMO_BUCKET);
+        if (env.DEMO_BUCKET) {
+          publicDemoStemsPresent = false; // licensed demo stems must not be public
+        }
+      } catch {
+        /* */
+      }
+      try {
+        privateOk = Boolean(env.PRIVATE_BUCKET);
+        if (env.PRIVATE_BUCKET) {
+          const listed = await env.PRIVATE_BUCKET.list({ prefix: "jobs/", limit: 100 });
+          jobCount = (listed.objects || []).filter((o) => o.key.endsWith("/meta.json")).length;
+          const wakes = await env.PRIVATE_BUCKET.list({ prefix: "wake/", limit: 50 });
+          wakeCount = (wakes.objects || []).length;
+          privateDemoStems = Boolean(
+            (await env.PRIVATE_BUCKET.head("demo/like-a-prayer/stems/bass.m4a")) ||
+            (await env.PRIVATE_BUCKET.head("demo/like-a-prayer/stems/bass.wav"))
+          );
+        }
+      } catch {
+        /* */
+      }
+      return json({
+        ok: true,
+        host: url.host,
+        r2_demo: demoOk,
+        r2_private: privateOk,
+        jobs_meta_count: jobCount,
+        wake_count: wakeCount,
+        public_stems_open: false,
+        public_demo_stems_object_present: publicDemoStemsPresent,
+        private_demo_stems: privateDemoStems,
+        pipeline: {
+          intake: "POST /private/api/jobs (Access)",
+          list: "GET /private/api/jobs (Access)",
+          get: "GET /private/api/jobs/:id (Access)",
+          wake_list: "GET /private/api/wake (Access)",
+          compute: "box hybrid consumer + scripts/analyze_audio.py (librosa generic)",
+          demo_public: "none (licensed demos are private-only; / is a plain landing)",
+          demo_private: "GET /private/api/demo/like-a-prayer (+ stems under /private/api/demo/.../stems)",
+          stems: "Access-gated /private/api/.../stems (Accept-Ranges + 206 when Range present)",
+        },
+        account_hint: ACCOUNT.slice(0, 8) + "…",
+      });
+    }
+
+    // HARD BLOCK: former public stem URLs — never serve WAV here.
+    if (path.startsWith("/api/demo/") && path.includes("/stems/")) {
+      return json(
+        {
+          error: "Stems are Access-gated. Use /private/api/demo/like-a-prayer/stems/… or /private/player/",
+        },
+        401,
+      );
+    }
+
+    // Licensed demos (e.g. Like a Prayer) are private-only. Public catalog stays empty / PD-only.
+    if (path === "/api/demo/like-a-prayer" || path === "/api/demo/like-a-prayer/") {
+      return json(
+        {
+          error: "This demo is private. Sign in at /private/player/",
+        },
+        401,
+      );
+    }
+
+    if (path === "/api/demo/catalog") {
+      // Public face: no copyrighted songs. Future PD demos can be listed here.
+      return json({ songs: [] });
+    }
+
+    if (path === "/api/jobs" || path.startsWith("/api/jobs/")) {
+      return json({ error: "Use /private/api/jobs (Cloudflare Access)" }, 401);
+    }
+
+    // ---- Access-gated private APIs ----
+
+    if (path === "/private/api/demo/like-a-prayer" || path === "/private/api/demo/like-a-prayer/") {
+      if (!env.PRIVATE_BUCKET) return bad("PRIVATE_BUCKET binding missing", 500);
+      // Prefer full study resource; fall back to demo-data shape
+      let data = null;
+      const study = await env.PRIVATE_BUCKET.get("demo/like-a-prayer/study/resource.json");
+      if (study) data = JSON.parse(await study.text());
+      if (!data && env.DEMO_BUCKET) {
+        const obj = await env.DEMO_BUCKET.get("demo/like-a-prayer/demo-data.json");
+        if (obj) data = JSON.parse(await obj.text());
+      }
+      if (!data) return bad("private demo missing", 404);
+      const hasBassM4a = Boolean(await env.PRIVATE_BUCKET.head("demo/like-a-prayer/stems/bass.m4a"));
+      const hasNoBassM4a = Boolean(await env.PRIVATE_BUCKET.head("demo/like-a-prayer/stems/no_bass.m4a"));
+      const hasBassWav = Boolean(await env.PRIVATE_BUCKET.head("demo/like-a-prayer/stems/bass.wav"));
+      const hasNoBassWav = Boolean(await env.PRIVATE_BUCKET.head("demo/like-a-prayer/stems/no_bass.wav"));
+      const hasDrumsM4a = Boolean(await env.PRIVATE_BUCKET.head("demo/like-a-prayer/stems/drums.m4a"));
+      const hasDrumsWav = Boolean(await env.PRIVATE_BUCKET.head("demo/like-a-prayer/stems/drums.wav"));
+      data.stems = buildStemsMeta({
+        hasBassM4a,
+        hasNoBassM4a,
+        hasBassWav,
+        hasNoBassWav,
+        hasDrumsM4a,
+        hasDrumsWav,
+        basePath: "/private/api/demo/like-a-prayer/stems",
+      });
+      return json(data);
+    }
+
+    const privDemoStem = path.match(/^\/private\/api\/demo\/like-a-prayer\/stems\/(bass|no_bass|drums|other)\.(wav|m4a|mp3)$/);
+    if (privDemoStem && request.method === "GET") {
+      if (!env.PRIVATE_BUCKET) return bad("PRIVATE_BUCKET binding missing", 500);
+      const stem = privDemoStem[1];
+      const ext = privDemoStem[2];
+      const key = `demo/like-a-prayer/stems/${stem}.${ext}`;
+      const obj = await getObject(env.PRIVATE_BUCKET, key, request);
+      if (!obj) return bad("stem not found", 404);
+      const ct = ext === "m4a" ? "audio/mp4" : ext === "mp3" ? "audio/mpeg" : "audio/wav";
+      return objectResponse(obj, ct, { privateAudio: true });
+    }
+
+    if (path === "/private/api/jobs" && request.method === "GET") {
+      if (!env.PRIVATE_BUCKET) return bad("PRIVATE_BUCKET binding missing", 500);
+      return json({ jobs: await listJobs(env.PRIVATE_BUCKET) });
+    }
+
+    if (path === "/private/api/wake" && request.method === "GET") {
+      if (!env.PRIVATE_BUCKET) return bad("PRIVATE_BUCKET binding missing", 500);
+      const listed = await env.PRIVATE_BUCKET.list({ prefix: "wake/", limit: 50 });
+      const wakes = [];
+      for (const o of listed.objects || []) {
+        if (!o.key.endsWith(".json")) continue;
+        const obj = await env.PRIVATE_BUCKET.get(o.key);
+        if (!obj) continue;
+        try {
+          wakes.push(JSON.parse(await obj.text()));
+        } catch {
+          /* */
+        }
+      }
+      wakes.sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+      return json({ wakes });
+    }
+
+    if (path === "/private/api/jobs" && request.method === "POST") {
+      if (!env.PRIVATE_BUCKET) return bad("PRIVATE_BUCKET binding missing", 500);
+      let body;
+      try {
+        body = await request.json();
+      } catch {
+        return bad("Invalid JSON");
+      }
+      const yt = String(body.url || "").trim();
+      if (!ytOk(yt)) return bad("Need a valid YouTube URL");
+      const id = jobId();
+      const createdAt = nowIso();
+      const job = {
+        id,
+        url: yt,
+        title: body.title ? String(body.title).slice(0, 200) : null,
+        status: "queued",
+        stage: "intake",
+        stages: { intake: { ok: true, at: createdAt } },
+        createdAt,
+        updatedAt: createdAt,
+        artifacts: {
+          prefix: `jobs/${id}/`,
+          layout: [
+            "meta.json",
+            "source/audio.wav",
+            "stems/{bass,no_bass,drums,other}.wav",
+            "analysis/beat.json",
+            "analysis/transcription.json",
+            "analysis/procedural.json",
+            "analysis/semantic.json",
+            "study/resource.json",
+          ],
+        },
+        notes: "Queued for box hybrid consumer (yt-dlp → demucs → analysis → wake).",
+      };
+      await putJob(env.PRIVATE_BUCKET, job);
+      await env.PRIVATE_BUCKET.put(
+        `wake/${id}.json`,
+        JSON.stringify(
+          {
+            type: "bass.job.queued",
+            jobId: id,
+            at: createdAt,
+            status: "queued",
+            next: ["download", "demucs", "beat", "transcribe", "procedural", "wake_bot", "merge"],
+          },
+          null,
+          2,
+        ),
+        { httpMetadata: { contentType: "application/json" } },
+      );
+      return json({ job }, 201);
+    }
+
+    const jobMatch = path.match(/^\/private\/api\/jobs\/([a-zA-Z0-9_]+)$/);
+    if (jobMatch && request.method === "GET") {
+      if (!env.PRIVATE_BUCKET) return bad("PRIVATE_BUCKET binding missing", 500);
+      const id = jobMatch[1];
+      const obj = await env.PRIVATE_BUCKET.get(`jobs/${id}/meta.json`);
+      if (!obj) return bad("Job not found", 404);
+      const job = JSON.parse(await obj.text());
+      const stagesListed = await env.PRIVATE_BUCKET.list({ prefix: `jobs/${id}/stages/`, limit: 50 });
+      const stageFiles = {};
+      for (const o of stagesListed.objects || []) {
+        const so = await env.PRIVATE_BUCKET.get(o.key);
+        if (!so) continue;
+        try {
+          const name = o.key.split("/").pop().replace(/\.json$/, "");
+          stageFiles[name] = JSON.parse(await so.text());
+        } catch {
+          /* */
+        }
+      }
+      return json({ job, stages: stageFiles });
+    }
+
+    const privStem = path.match(/^\/private\/api\/jobs\/([a-zA-Z0-9_]+)\/stems\/(bass|no_bass|drums|other)\.(wav|m4a|mp3)$/);
+    if (privStem && request.method === "GET") {
+      if (!env.PRIVATE_BUCKET) return bad("PRIVATE_BUCKET binding missing", 500);
+      const jobId = privStem[1];
+      const stem = privStem[2];
+      const ext = privStem[3];
+      const key = `jobs/${jobId}/stems/${stem}.${ext}`;
+      const obj = await getObject(env.PRIVATE_BUCKET, key, request);
+      if (!obj) return bad("stem not found", 404);
+      const ct = ext === "m4a" ? "audio/mp4" : ext === "mp3" ? "audio/mpeg" : "audio/wav";
+      return objectResponse(obj, ct, { privateAudio: true });
+    }
+
+    const privArt = path.match(/^\/private\/api\/jobs\/([a-zA-Z0-9_]+)\/(analysis|study)\/([a-zA-Z0-9_.-]+\.json)$/);
+    if (privArt && request.method === "GET") {
+      if (!env.PRIVATE_BUCKET) return bad("PRIVATE_BUCKET binding missing", 500);
+      const key = `jobs/${privArt[1]}/${privArt[2]}/${privArt[3]}`;
+      const obj = await env.PRIVATE_BUCKET.get(key);
+      if (!obj) return bad("artifact not found", 404);
+      return objectResponse(obj, "application/json");
+    }
+
+    if (env.ASSETS) {
+      const asset = await env.ASSETS.fetch(request);
+      if (asset.status !== 404) return asset;
+    }
+
+    if (path === "/private" || path === "/private/" || path.startsWith("/private/")) {
+      return new Response(
+        `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Private Catalog</title></head>
+<body><h1>Login required / private catalog</h1>
+<p>Placeholder. Cloudflare Access should protect /private and /private/*.</p>
+</body></html>`,
+        { status: 200, headers: { "content-type": "text/html; charset=utf-8" } },
+      );
+    }
+
+    return new Response("Not found", { status: 404 });
+  },
+};

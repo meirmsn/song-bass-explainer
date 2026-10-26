@@ -1,0 +1,23 @@
+name = "bass-study"
+main = "src/index.js"
+compatibility_date = "2026-10-23"
+workers_dev = true
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+[[r2_buckets]]
+binding = "DEMO_BUCKET"
+bucket_name = "bass-demo"
+
+[[r2_buckets]]
+binding = "PRIVATE_BUCKET"
+bucket_name = "bass-private"
+
+# Custom domain attached via API / wrangler domains after deploy
+
+# Workers Custom Domain (attached via API, id 1f0d4a982cfa879abf7226d2cea34b6330fed7e8):
+#   bass.meirmsn.dev -> bass-study
+# Re-attach if needed: PUT /accounts/{id}/workers/domains
