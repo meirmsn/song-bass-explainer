@@ -950,6 +950,13 @@
     return wrap;
   }
 
+  // Phone breakpoint: ≤640 CSS px. iPad (768+) and desktop keep the fixed 2-col dashboard.
+  const PHONE_MAX_WIDTH = 640;
+  function isPhoneLayout() {
+    if (typeof window === "undefined") return false;
+    return (window.innerWidth | 0) <= PHONE_MAX_WIDTH;
+  }
+
   function ensurePlayerStyles() {
     if (document.getElementById("bass-player-styles")) return;
     const css = `
@@ -1016,9 +1023,65 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 .card-mini.active { border-color:#ef4444; background:#111827; }
 .card-mini-label { font-size:10px; font-weight:700; color:#9ca3af; margin-bottom:2px; }
 .card-mini-body { font-size:11px; line-height:1.3; color:#9ca3af; }
-@media (max-width:900px) {
+/* Phone ≤640px: fixed no-scroll score stack; cards live in bottom sheet. iPad/desktop keep 2-col. */
+@media (max-width:640px) {
+  .shell { height:100dvh; max-height:100dvh; overflow:hidden; padding-bottom:56px; border-radius:0; border-left:0; border-right:0; }
   .grid { grid-template-columns:1fr; }
-  .shell { height:auto; min-height:100dvh; overflow:auto; }
+  .grid > .cards { display:none; }
+  .meta .title { font-size:16px; }
+  .meta .sub:not(.sec-slot) { display:none; }
+  .header { flex-wrap:wrap; }
+}
+.phone-cards-peek {
+  display:none; position:fixed; left:0; right:0; bottom:0; z-index:40;
+  min-height:52px; padding:10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+  box-sizing:border-box; border:0; border-top:1px solid #374151; border-radius:14px 14px 0 0;
+  background:#111827; color:#e5e7eb; cursor:pointer; text-align:left;
+  font:inherit; -webkit-user-select:none; user-select:none; touch-action:manipulation;
+  box-shadow:0 -8px 24px rgba(0,0,0,.35);
+}
+.phone-cards-peek-kicker { font-size:10px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:#9ca3af; }
+.phone-cards-peek-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:2px; }
+.phone-cards-peek-label { font-size:14px; font-weight:700; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.phone-cards-peek-count { font-size:12px; color:#93c5fd; white-space:nowrap; flex:0 0 auto; }
+.cards-drawer-backdrop {
+  display:none; position:fixed; inset:0; z-index:50; border:0; padding:0; margin:0;
+  background:rgba(0,0,0,.45); cursor:pointer; -webkit-user-select:none; user-select:none; touch-action:manipulation;
+}
+.cards-drawer {
+  display:none; position:fixed; left:0; right:0; bottom:0; z-index:60;
+  max-height:min(72vh, 560px); box-sizing:border-box;
+  padding:0 10px calc(10px + env(safe-area-inset-bottom, 0px));
+  border-top:1px solid #374151; border-radius:16px 16px 0 0;
+  background:#0b0f14; color:#e5e7eb;
+  transform:translateY(105%); transition:transform .22s ease;
+  box-shadow:0 -12px 40px rgba(0,0,0,.5);
+  overflow:hidden; flex-direction:column;
+}
+.cards-drawer.open { transform:translateY(0); }
+.cards-drawer-handle {
+  flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:10px 4px 6px; cursor:grab; -webkit-user-select:none; user-select:none;
+}
+.cards-drawer-grip {
+  width:40px; height:4px; border-radius:999px; background:#4b5563; margin:0 auto 4px;
+}
+.cards-drawer-title { font-size:13px; font-weight:700; color:#9ca3af; }
+.cards-drawer-close {
+  min-width:36px; height:32px; padding:0 10px; border-radius:8px; border:1px solid #374151;
+  background:#111827; color:#e5e7eb; font-size:18px; line-height:1; cursor:pointer;
+  -webkit-user-select:none; user-select:none; touch-action:manipulation;
+}
+.cards-drawer .cards {
+  flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch;
+  border:0; border-radius:0; padding:4px 2px 8px;
+}
+@media (max-width:640px) {
+  .phone-cards-peek { display:block; }
+  .phone-cards-peek[hidden], .cards-drawer-backdrop[hidden], .cards-drawer[hidden] { display:none !important; }
+  .cards-drawer-backdrop:not([hidden]) { display:block; }
+  .cards-drawer:not([hidden]) { display:flex; }
+  body.cards-drawer-open { overflow:hidden; }
 }
 `;
     const style = document.createElement("style");
@@ -1092,6 +1155,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let secIdx = Math.min(2, SECS.length - 1);
     let lo = SECS[secIdx].first, hi = SECS[secIdx].end - 1;
     let t = BARS[SECS[secIdx].first].t, playing = false, loopOn = true, cardIdx = 0;
+    let cardsDrawerOpen = false;
     let timer = null;
     const dragSession = { current: null };
 
@@ -2187,11 +2251,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       let lastTransportTs = 0;
       let lastTransportKey = "";
       const handleTransport = (e) => {
-        const tEl = e.target && e.target.closest ? e.target.closest("[data-transport], [data-section], [data-card], [data-card-next]") : null;
+        const tEl = e.target && e.target.closest ? e.target.closest("[data-transport], [data-section], [data-card], [data-card-next], [data-card-prev], [data-drawer]") : null;
         if (!tEl || !root.contains(tEl)) return;
         const key = tEl.hasAttribute("data-section") ? "sec:" + tEl.getAttribute("data-section")
           : tEl.hasAttribute("data-card-next") ? "card-next"
+          : tEl.hasAttribute("data-card-prev") ? "card-prev"
           : tEl.hasAttribute("data-card") ? "card:" + tEl.getAttribute("data-card")
+          : tEl.hasAttribute("data-drawer") ? "drawer:" + tEl.getAttribute("data-drawer")
           : "tr:" + (tEl.getAttribute("data-transport") || "") + ":" + (tEl.getAttribute("data-listen") || "") + ":" + (tEl.getAttribute("data-midi") || "");
         const now = Date.now();
         // Debounce only the same control's pointerup+click double-fire — not a quick tap on a different control.
@@ -2204,8 +2270,26 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           if (Number.isFinite(i)) pickSection(i);
           return;
         }
+        if (tEl.hasAttribute("data-drawer")) {
+          const act = tEl.getAttribute("data-drawer");
+          if (act === "open") cardsDrawerOpen = true;
+          else if (act === "close") cardsDrawerOpen = false;
+          else if (act === "toggle") cardsDrawerOpen = !cardsDrawerOpen;
+          render();
+          return;
+        }
         if (tEl.hasAttribute("data-card-next")) {
           cardIdx++;
+          render();
+          return;
+        }
+        if (tEl.hasAttribute("data-card-prev")) {
+          const deckLen = (() => {
+            const sec = SECS[secIdx];
+            const d = CARDS_EFF[sec.id] || CARDS_EFF[sec.kind] || CARDS[sec.id] || CARDS[sec.kind] || CARDS.intro;
+            return Math.max(1, d.length);
+          })();
+          cardIdx = (cardIdx % deckLen + deckLen - 1) % deckLen;
           render();
           return;
         }
@@ -2258,7 +2342,25 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         }
         if (e.key === "Escape") {
           e.preventDefault();
+          if (isPhoneLayout() && cardsDrawerOpen) {
+            cardsDrawerOpen = false;
+            render();
+            return;
+          }
           clearSubsection();
+        }
+      });
+    }
+
+    if (!root.__bassResizeBound) {
+      root.__bassResizeBound = true;
+      let lastPhone = isPhoneLayout();
+      window.addEventListener("resize", () => {
+        const nowPhone = isPhoneLayout();
+        if (nowPhone !== lastPhone) {
+          lastPhone = nowPhone;
+          if (!nowPhone) cardsDrawerOpen = false;
+          render();
         }
       });
     }
@@ -2407,7 +2509,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       layers.appendChild(layer("Drum staff · " + (rhythmOut ? "rests (out)" : (drumsViewOut ? "rests (drums out)" : (hat16 ? "16th hats" : "8th hats"))), makeDrumStaff(lay.viewLo, lay.viewHi, lay.n, playX, hat16, rhythmOut, { drumsOut, drumsOutBars: DRUMS_OUT_BARS }), null, makeDrumChannelStrip()));
       grid.appendChild(layers);
 
-      const cards = el("div", { className: "cards" });
+      const cards = el("div", { className: "cards", "data-cards-panel": "1" });
       const cardsHead = el("div", { className: "cards-head" });
       cardsHead.appendChild(el("span", { className: "cards-title" }, ["Flashcards"]));
       cardsHead.appendChild(el("span", { className: "sub" }, [sec.name + " · " + ((cardIdx % deck.length) + 1) + "/" + deck.length]));
@@ -2418,6 +2520,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       const insightView = makeCardInsight(card.insight, insightPat);
       if (insightView) cards.appendChild(insightView);
       const cardActions = el("div", { className: "card-actions" });
+      cardActions.appendChild(el("button", { type: "button", className: "btn", "data-card-prev": "1" }, ["Prev"]));
       cardActions.appendChild(el("button", { type: "button", className: "btn primary", "data-card-next": "1" }, ["Next card"]));
       cardActions.appendChild(el("span", { className: "sub" }, ["Arranger notes for this section"]));
       cards.appendChild(cardActions);
@@ -2430,9 +2533,67 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         gridCards.appendChild(b);
       });
       cards.appendChild(gridCards);
-      grid.appendChild(cards);
-      shell.appendChild(grid);
-      root.appendChild(shell);
+
+      const phone = isPhoneLayout();
+      document.body.classList.toggle("cards-drawer-open", phone && cardsDrawerOpen);
+      if (phone) {
+        // Score stack only — cards move into the slide-away bottom sheet.
+        shell.appendChild(grid);
+        root.appendChild(shell);
+
+        const peek = el("button", {
+          type: "button",
+          className: "phone-cards-peek",
+          "data-drawer": "open",
+          "aria-label": "Open flashcards",
+          "aria-expanded": cardsDrawerOpen ? "true" : "false",
+        });
+        peek.appendChild(el("div", { className: "phone-cards-peek-kicker" }, ["Flashcards"]));
+        const peekRow = el("div", { className: "phone-cards-peek-row" });
+        peekRow.appendChild(el("span", { className: "phone-cards-peek-label" }, [card.label + " · " + sec.name]));
+        peekRow.appendChild(el("span", { className: "phone-cards-peek-count" }, [((cardIdx % deck.length) + 1) + "/" + deck.length + " · open"]));
+        peek.appendChild(peekRow);
+        if (cardsDrawerOpen) peek.hidden = true;
+        root.appendChild(peek);
+
+        const backdrop = el("button", {
+          type: "button",
+          className: "cards-drawer-backdrop",
+          "data-drawer": "close",
+          "aria-label": "Close flashcards",
+        });
+        if (!cardsDrawerOpen) backdrop.hidden = true;
+        root.appendChild(backdrop);
+
+        const drawer = el("div", {
+          className: "cards-drawer" + (cardsDrawerOpen ? " open" : ""),
+          "data-cards-drawer": "1",
+          role: "dialog",
+          "aria-modal": "true",
+          "aria-label": "Flashcards",
+        });
+        if (!cardsDrawerOpen) drawer.hidden = true;
+        const handle = el("div", { className: "cards-drawer-handle" });
+        const handleLeft = el("div", {});
+        handleLeft.appendChild(el("div", { className: "cards-drawer-grip" }));
+        handleLeft.appendChild(el("div", { className: "cards-drawer-title" }, [sec.name + " · flashcards"]));
+        handle.appendChild(handleLeft);
+        handle.appendChild(el("button", {
+          type: "button",
+          className: "cards-drawer-close",
+          "data-drawer": "close",
+          "aria-label": "Close flashcards",
+        }, ["×"]));
+        drawer.appendChild(handle);
+        drawer.appendChild(cards);
+        root.appendChild(drawer);
+      } else {
+        cardsDrawerOpen = false;
+        document.body.classList.remove("cards-drawer-open");
+        grid.appendChild(cards);
+        shell.appendChild(grid);
+        root.appendChild(shell);
+      }
     }
 
     render();
@@ -2461,6 +2622,11 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           activeCardLabel: deck[cardIdx % deck.length].label,
           activeCardInsight: deck[cardIdx % deck.length].insight || null,
           hasInsightPanel: Boolean(document.querySelector(".card-insight")),
+          isPhoneLayout: isPhoneLayout(),
+          phoneMaxWidth: PHONE_MAX_WIDTH,
+          cardsDrawerOpen: Boolean(cardsDrawerOpen),
+          cardsInDrawer: Boolean(document.querySelector("[data-cards-drawer] .cards, [data-cards-drawer] [data-cards-panel]")),
+          cardsInGrid: Boolean(document.querySelector(".grid > .cards, .grid > [data-cards-panel]")),
         };
       },
       play: onPlay,
@@ -2510,12 +2676,26 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         return window.__BASS_PLAYER__.getState();
       },
       nextCard: () => { cardIdx++; render(); return window.__BASS_PLAYER__.getState(); },
+      prevCard: () => {
+        const sec = SECS[secIdx];
+        const deck = CARDS_EFF[sec.id] || CARDS_EFF[sec.kind] || CARDS[sec.id] || CARDS[sec.kind] || CARDS.intro;
+        const n = Math.max(1, deck.length);
+        cardIdx = (cardIdx % n + n - 1) % n;
+        render();
+        return window.__BASS_PLAYER__.getState();
+      },
       setCard: (i) => { cardIdx = i; render(); return window.__BASS_PLAYER__.getState(); },
+      openCardsDrawer: () => { cardsDrawerOpen = true; render(); return window.__BASS_PLAYER__.getState(); },
+      closeCardsDrawer: () => { cardsDrawerOpen = false; render(); return window.__BASS_PLAYER__.getState(); },
+      toggleCardsDrawer: () => { cardsDrawerOpen = !cardsDrawerOpen; render(); return window.__BASS_PLAYER__.getState(); },
+      isPhoneLayout,
       waitTick: (ms = 60) => new Promise((r) => setTimeout(r, ms)),
       ensureAudio: () => ensureAudio(),
       beginStemFetch: () => beginStemFetch(),
       destroy: () => {
         destroyed = true;
+        cardsDrawerOpen = false;
+        document.body.classList.remove("cards-drawer-open");
         haltPlayback({ syncTime: false, resetToLoopStart: false });
         if (timer) { clearInterval(timer); timer = null; }
       },
@@ -2524,6 +2704,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
   }
 
   window.__BASS_NOTATION__ = {
+    PHONE_MAX_WIDTH,
+    isPhoneLayout,
     WRITTEN_OCTAVE,
     staffPos,
     staffYy,

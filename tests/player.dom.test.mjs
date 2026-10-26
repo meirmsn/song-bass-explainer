@@ -26,10 +26,21 @@ function teardownPlayer() {
   delete window.__BASS_NOTATION__;
   delete window.__BASS_PRIVATE__;
   delete window.__LAST_AUDIO_CTX__;
+  document.body.classList.remove("cards-drawer-open");
+  try {
+    Object.defineProperty(window, "innerWidth", { configurable: true, writable: true, value: 1280 });
+    Object.defineProperty(window, "innerHeight", { configurable: true, writable: true, value: 800 });
+  } catch (_) { /* ignore */ }
 }
 
 
-async function bootPlayer({ privateMode = true, withStems = false, mutatePayload = null } = {}) {
+function setViewport(width, height = 844) {
+  Object.defineProperty(window, "innerWidth", { configurable: true, writable: true, value: width });
+  Object.defineProperty(window, "innerHeight", { configurable: true, writable: true, value: height });
+}
+
+async function bootPlayer({ privateMode = true, withStems = false, mutatePayload = null, width = null, height = 844 } = {}) {
+  if (width != null) setViewport(width, height);
   document.body.innerHTML = '<div id="app"></div>';
   window.__BASS_PRIVATE__ = privateMode;
   delete window.__BASS_PLAYER__;
@@ -1598,5 +1609,218 @@ describe("v1-drums-empty: drums-out independent of bass PEDAL", () => {
     const drums = document.querySelector('svg[aria-label="Drum staff"]');
     expect(drums.querySelectorAll("g[data-rhythm='note']").length).toBe(0);
     expect(document.body.textContent).toMatch(/rests \(drums out\)/i);
+  });
+});
+
+describe("phone layout — cards bottom drawer", () => {
+  afterEach(() => {
+    teardownPlayer();
+  });
+
+  it("exports PHONE_MAX_WIDTH 640 and isPhoneLayout helper", async () => {
+    const api = await bootPlayer({ width: 1280 });
+    expect(window.__BASS_NOTATION__.PHONE_MAX_WIDTH).toBe(640);
+    expect(typeof window.__BASS_NOTATION__.isPhoneLayout).toBe("function");
+    expect(window.__BASS_NOTATION__.isPhoneLayout()).toBe(false);
+    expect(api.getState().isPhoneLayout).toBe(false);
+    expect(api.getState().phoneMaxWidth).toBe(640);
+  });
+
+  it("wide viewport (~1280) keeps cards in the grid — no drawer forced", async () => {
+    const api = await bootPlayer({ width: 1280, height: 800 });
+    api.pickSection(2);
+    const s = api.getState();
+    expect(s.isPhoneLayout).toBe(false);
+    expect(s.cardsDrawerOpen).toBe(false);
+    expect(s.cardsInGrid).toBe(true);
+    expect(s.cardsInDrawer).toBe(false);
+    expect(document.querySelector("[data-cards-drawer]")).toBeNull();
+    expect(document.querySelector(".phone-cards-peek")).toBeNull();
+    expect(document.querySelector(".cards-drawer-backdrop")).toBeNull();
+    expect(document.querySelector(".grid > .cards, .grid > [data-cards-panel]")).toBeTruthy();
+    expect(document.querySelector(".layers")).toBeTruthy();
+    expect(document.querySelector(".shell")).toBeTruthy();
+  });
+
+  it("phone width 390×844 places cards inside drawer DOM (not grid column)", async () => {
+    const api = await bootPlayer({ width: 390, height: 844 });
+    api.pickSection(2);
+    const s = api.getState();
+    expect(s.isPhoneLayout).toBe(true);
+    expect(s.cardsInDrawer).toBe(true);
+    expect(s.cardsInGrid).toBe(false);
+    expect(document.querySelector(".grid > .cards, .grid > [data-cards-panel]")).toBeNull();
+    expect(document.querySelector("[data-cards-drawer] [data-cards-panel]")).toBeTruthy();
+    expect(document.querySelector(".phone-cards-peek")).toBeTruthy();
+    expect(document.querySelector(".layers")).toBeTruthy();
+    // Core score stack present
+    expect(document.querySelector('svg[aria-label="Bass staff"]')).toBeTruthy();
+    expect(document.querySelector('svg[aria-label="Drum staff"]')).toBeTruthy();
+  });
+
+  it("open drawer via peek, switch cards (next/prev/mini), close via ×", async () => {
+    const api = await bootPlayer({ width: 390, height: 844 });
+    api.pickSection(2);
+    expect(api.getState().cardsDrawerOpen).toBe(false);
+    expect(document.querySelector("[data-cards-drawer]")?.hidden).toBe(true);
+
+    const peek = document.querySelector(".phone-cards-peek");
+    expect(peek).toBeTruthy();
+    peek.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    await api.waitTick(40);
+    expect(api.getState().cardsDrawerOpen).toBe(true);
+    expect(document.querySelector("[data-cards-drawer]")?.hidden).toBe(false);
+    expect(document.querySelector("[data-cards-drawer]")?.classList.contains("open")).toBe(true);
+    expect(document.body.classList.contains("cards-drawer-open")).toBe(true);
+
+    expect(api.getState().activeCardLabel).toBe("Pocket");
+    const nextBtn = [...document.querySelectorAll("[data-cards-drawer] button")].find((b) => /Next card/i.test(b.textContent || ""));
+    expect(nextBtn).toBeTruthy();
+    nextBtn.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    await api.waitTick(40);
+    expect(api.getState().activeCardLabel).toBe("Figure");
+    expect(api.getState().cardsDrawerOpen).toBe(true);
+
+    const prevBtn = [...document.querySelectorAll("[data-cards-drawer] button")].find((b) => /^Prev$/i.test(b.textContent || ""));
+    expect(prevBtn).toBeTruthy();
+    prevBtn.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    await api.waitTick(40);
+    expect(api.getState().activeCardLabel).toBe("Pocket");
+
+    const mini = document.querySelector('[data-cards-drawer] .card-mini[data-card="1"]');
+    expect(mini).toBeTruthy();
+    mini.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    await api.waitTick(40);
+    expect(api.getState().activeCardLabel).toBe("Figure");
+    expect(api.getState().hasInsightPanel).toBe(true);
+    expect(document.querySelector("[data-cards-drawer] .card-insight")).toBeTruthy();
+
+    const closeBtn = document.querySelector('[data-cards-drawer] [data-drawer="close"]');
+    expect(closeBtn).toBeTruthy();
+    closeBtn.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    await api.waitTick(40);
+    expect(api.getState().cardsDrawerOpen).toBe(false);
+    expect(document.querySelector("[data-cards-drawer]")?.hidden).toBe(true);
+    expect(document.body.classList.contains("cards-drawer-open")).toBe(false);
+  });
+
+  it("backdrop closes the drawer", async () => {
+    const api = await bootPlayer({ width: 390, height: 844 });
+    api.openCardsDrawer();
+    expect(api.getState().cardsDrawerOpen).toBe(true);
+    const backdrop = document.querySelector(".cards-drawer-backdrop");
+    expect(backdrop).toBeTruthy();
+    expect(backdrop.hidden).toBe(false);
+    backdrop.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    await api.waitTick(40);
+    expect(api.getState().cardsDrawerOpen).toBe(false);
+  });
+
+  it("Escape closes open drawer before clearing subsection", async () => {
+    const api = await bootPlayer({ width: 390, height: 844 });
+    api.pickSection(2);
+    api.setLoopBars(18, 20);
+    api.openCardsDrawer();
+    expect(api.getState().cardsDrawerOpen).toBe(true);
+    expect(api.getState().lo).toBe(18);
+
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+    await api.waitTick(30);
+    expect(api.getState().cardsDrawerOpen).toBe(false);
+    // Subsection still selected — Escape only closed the drawer
+    expect(api.getState().lo).toBe(18);
+    expect(api.getState().hi).toBe(20);
+
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+    await api.waitTick(30);
+    expect(api.getState().lo).toBe(16);
+    expect(api.getState().hi).toBe(23);
+  });
+
+  it("play while drawer open keeps cards tappable (next + mini)", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true, width: 390, height: 844 });
+    api.pickSection(2);
+    api.openCardsDrawer();
+    api.play();
+    await api.waitTick(100);
+    expect(api.getState().playing).toBe(true);
+    expect(api.getState().cardsDrawerOpen).toBe(true);
+
+    const nextBtn = [...document.querySelectorAll("[data-cards-drawer] button")].find((b) => /Next card/i.test(b.textContent || ""));
+    nextBtn.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    await api.waitTick(60);
+    expect(api.getState().playing).toBe(true);
+    expect(api.getState().cardsDrawerOpen).toBe(true);
+    expect(api.getState().activeCardLabel).toBe("Figure");
+
+    const mini = document.querySelector('[data-cards-drawer] .card-mini[data-card="0"]');
+    mini.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    await api.waitTick(60);
+    expect(api.getState().playing).toBe(true);
+    expect(api.getState().activeCardLabel).toBe("Pocket");
+    expect(document.querySelector("[data-cards-drawer] .card-insight")).toBeTruthy();
+  });
+
+  it("section change while drawer open keeps drawer open with new section cards", async () => {
+    const api = await bootPlayer({ width: 390, height: 844 });
+    api.pickSection(2);
+    api.openCardsDrawer();
+    api.setCard(1);
+    expect(api.getState().activeCardLabel).toBe("Figure");
+    expect(api.getState().cardsDrawerOpen).toBe(true);
+
+    api.pickSection(0);
+    await api.waitTick(30);
+    const s = api.getState();
+    expect(s.secIdx).toBe(0);
+    expect(s.cardsDrawerOpen).toBe(true);
+    expect(s.cardIdx).toBe(0);
+    expect(document.querySelector("[data-cards-drawer]")?.hidden).toBe(false);
+    expect(document.querySelector("[data-cards-drawer] [data-cards-panel]")).toBeTruthy();
+  });
+
+  it("section change while drawer closed stays closed", async () => {
+    const api = await bootPlayer({ width: 390, height: 844 });
+    api.pickSection(2);
+    expect(api.getState().cardsDrawerOpen).toBe(false);
+    api.pickSection(1);
+    await api.waitTick(20);
+    expect(api.getState().cardsDrawerOpen).toBe(false);
+    expect(document.querySelector(".phone-cards-peek")).toBeTruthy();
+    expect(document.querySelector("[data-cards-drawer]")?.hidden).toBe(true);
+  });
+
+  it("crossing breakpoint via resize: phone→desktop removes drawer; desktop→phone mounts peek", async () => {
+    const api = await bootPlayer({ width: 390, height: 844 });
+    api.openCardsDrawer();
+    expect(api.getState().cardsInDrawer).toBe(true);
+
+    setViewport(1280, 800);
+    window.dispatchEvent(new Event("resize"));
+    await api.waitTick(40);
+    expect(api.getState().isPhoneLayout).toBe(false);
+    expect(api.getState().cardsDrawerOpen).toBe(false);
+    expect(api.getState().cardsInGrid).toBe(true);
+    expect(document.querySelector("[data-cards-drawer]")).toBeNull();
+
+    setViewport(390, 844);
+    window.dispatchEvent(new Event("resize"));
+    await api.waitTick(40);
+    expect(api.getState().isPhoneLayout).toBe(true);
+    expect(api.getState().cardsInDrawer).toBe(true);
+    expect(document.querySelector(".phone-cards-peek")).toBeTruthy();
+  });
+
+  it("insight redesign still renders inside phone drawer (Figure + legend)", async () => {
+    const api = await bootPlayer({ width: 390, height: 844 });
+    api.pickSection(2);
+    api.openCardsDrawer();
+    api.setCard(1);
+    const panel = document.querySelector("[data-cards-drawer] .card-insight");
+    expect(panel).toBeTruthy();
+    expect(panel.getAttribute("data-insight-layer")).toBe("figure");
+    expect(document.querySelector("[data-cards-drawer] [data-insight-legend]")).toBeTruthy();
+    const labels = [...document.querySelectorAll("[data-cards-drawer] [data-insight-label]")].map((n) => n.getAttribute("data-insight-label"));
+    expect(labels.length).toBeGreaterThan(0);
   });
 });
