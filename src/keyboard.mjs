@@ -19,7 +19,9 @@ export function shouldHandleTransportKey(e) {
   if (e.metaKey || e.ctrlKey || e.altKey) return false;
   if (e.shiftKey && (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === " ")) return false;
   if (isEditableKeyTarget(e.target)) return false;
-  return e.key === " " || e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "Escape" || e.key === "l" || e.key === "L";
+  const k = e.key;
+  return k === " " || k === "ArrowLeft" || k === "ArrowRight" || k === "Escape"
+    || k === "l" || k === "L";
 }
 
 /**

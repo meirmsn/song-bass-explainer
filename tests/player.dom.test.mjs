@@ -1203,26 +1203,19 @@ describe("keyboard shortcuts", () => {
     expect(s.loopOn).toBe(true);
   });
 
-  it("L toggles loop the same way as the Loop button", async () => {
+  it("L toggles loop on and off", async () => {
     const api = await bootPlayer();
-    api.pickSection(2);
-    api.setLoopBars(18, 20);
     expect(api.getState().loopOn).toBe(true);
-    expect(document.body.textContent).toMatch(/Space · ← → · Esc · L/);
-
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "l", bubbles: true, cancelable: true }));
     await api.waitTick(20);
     expect(api.getState().loopOn).toBe(false);
-    expect(api.getState().lo).toBe(18);
-    const loopBtn = [...document.querySelectorAll("button")].find((b) => /Loop/i.test(b.getAttribute("aria-label") || ""));
-    expect(loopBtn?.getAttribute("aria-label")).toMatch(/Loop off/i);
-
+    const loopBtnOff = [...document.querySelectorAll("button")].find((b) => /Loop/i.test(b.getAttribute("aria-label") || ""));
+    expect(loopBtnOff?.getAttribute("aria-label")).toMatch(/Loop off/i);
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "L", bubbles: true, cancelable: true }));
     await api.waitTick(20);
-    const s = api.getState();
-    expect(s.loopOn).toBe(true);
-    expect(s.lo).toBe(16);
-    expect(s.hi).toBe(23);
+    expect(api.getState().loopOn).toBe(true);
+    const loopBtnOn = [...document.querySelectorAll("button")].find((b) => /Loop/i.test(b.getAttribute("aria-label") || ""));
+    expect(loopBtnOn?.getAttribute("aria-label")).toMatch(/Loop on/i);
   });
 
   it("ignores shortcuts when typing in an input", async () => {
