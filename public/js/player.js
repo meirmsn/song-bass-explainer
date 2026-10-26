@@ -35,17 +35,17 @@
 
   const CARDS = {
     intro: [
-      { label: "Drums", body: "Kit is out at the top — no kick/snare/hats under the fade; staff shows rests until the groove enters." },
-      { label: "Bass", body: "D pedal with an A–A–D–D pickup into the verse — tonic stated before the vocal." },
+      { label: "Pocket", body: "Kit is out at the top — no kick/snare/hats under the fade; staff shows rests until the groove enters." },
+      { label: "Figure", body: "D pedal with an A–A–D–D pickup into the verse — tonic stated before the vocal." },
       { label: "Harmony", body: "Dm (i). The A→D pickup is a miniature V→i push." },
-      { label: "Feel", body: "Leave air. Bass alone carries the open until the kit lands." },
+      { label: "Missable", body: "Leave air on purpose: bass alone carries the open until the kit lands — empty kit is vocabulary, not a gap to fill." },
     ],
     verse: [
       {
-        label: "Drums",
-        body: "Straight backbeat: kick 1+3, snare 2+4, hat on every 8th.",
+        label: "Pocket",
+        body: "Straight backbeat locks the grid: kick 1+3, snare 2+4, hat on every 8th — bass sits on that kick frame.",
         insight: {
-          layer: "drums",
+          layer: "pocket",
           patternId: "pedal",
           title: "Kick locks the grid",
           barRange: [0, 0],
@@ -58,78 +58,92 @@
         },
       },
       {
-        label: "Bass",
-        body: "Mostly D, with C as flat-seven color. Pedal keeps the vocal roomy.",
+        label: "Figure",
+        body: "Mostly D pedal, with C as flat-seven color. Pedal keeps the vocal roomy.",
         insight: {
-          layer: "bass",
+          layer: "figure",
           patternId: "pedal",
           title: "D pedal · C as color",
-          barRange: [0, 1],
+          barRange: [0, 0],
           highlights: [
             { step: 0, midi: 38, text: "this note — D pedal" },
             { step: 8, midi: 38, text: "holds the grid" },
-            { step: 15, midi: 36, text: "C = ♭7 color (passing)", kind: "note" },
+            { step: 14, midi: 38, text: "still on D" },
           ],
         },
       },
-      { label: "Harmony", body: "Dm / C / Gm / Bb territory in D minor (i, bVII, iv, bVI) — estimates." },
-      { label: "Feel", body: "Bass stays simple so the lyric carries; lift comes from the bVII, not busyness." },
+      { label: "Harmony", body: "Dm / C / Gm / Bb territory in D minor (i, bVII, iv, bVI) — estimates; bass stays near the tonic." },
+      { label: "Missable", body: "Bass stays simple so the lyric carries; lift comes from the bVII, not busyness." },
     ],
     v1: [
       {
-        label: "Drums",
+        label: "Pocket",
         body: "Drums stay out through most of Verse 1 (stem-silent). Kit enters on the last bar as a pickup into the chorus — do not invent a full 8th-hat grid earlier.",
       },
       {
-        label: "Bass",
+        label: "Figure",
         body: "Mostly D pedal under the vocal — bass is present while the kit is still out.",
       },
       { label: "Harmony", body: "Dm / C / Gm / Bb territory in D minor (i, bVII, iv, bVI) — estimates." },
-      { label: "Feel", body: "Thin on purpose: bass + vocal first, then the kit slams the door into Chorus 1." },
+      { label: "Missable", body: "Thin on purpose: bass + vocal first, then the kit slams the door into Chorus 1." },
     ],
     v2: [
       {
-        label: "Drums",
-        body: "Rhythm section drops out — no kick, snare, or hats under the vocal. Staff shows rests, not a ghost backbeat.",
+        label: "Pocket",
+        body: "Rhythm section out — no kick, snare, or hats under the vocal. Staff shows rests, not a ghost backbeat.",
+        insight: {
+          layer: "pocket",
+          patternId: "empty",
+          title: "Rhythm section out",
+          barRange: [0, 0],
+          highlights: [],
+        },
       },
       {
-        label: "Bass",
+        label: "Figure",
         body: "Bass is out with the drums. Leave the tab/staff empty (rests) — do not invent a turnaround here.",
+        insight: {
+          layer: "figure",
+          patternId: "empty",
+          title: "Empty",
+          barRange: [0, 0],
+          highlights: [],
+        },
       },
       {
         label: "Harmony",
         body: "Chords still move (Bb / F / C / Dm color) under the vocal; no bass statement of the roots.",
       },
       {
-        label: "Feel",
-        body: "Thin on purpose: voice and pads carry Verse 2 until the kit and bass slam back for Chorus 2.",
+        label: "Missable",
+        body: "Intentional dropout: voice and pads carry Verse 2 until kit and bass slam back for Chorus 2 — empty is the insight.",
       },
     ],
     chorus: [
       {
-        label: "Drums",
-        body: "Same backbeat; kick on 1 and 3 while the bass adds offbeat 16th pushes between the grid.",
+        label: "Pocket",
+        body: "Kick on 1 and 3; bass drop on the & of 1 sits against the kick, and a late pickup on the e of 3 pushes into the next chord.",
         insight: {
-          layer: "drums",
+          layer: "pocket",
           patternId: "sync_oct",
-          title: "Bass vs kick",
+          title: "Against kick",
           barRange: [0, 0],
           highlights: [
             { step: 0, kind: "kick", text: "kick on 1" },
             { step: 4, kind: "bass", midi: 29, text: "bass drop against kick" },
             { step: 8, kind: "kick", text: "kick on 3" },
-            { step: 11, kind: "bass", midi: 41, text: "late pickup (e of 3)" },
+            { step: 11, kind: "bass", midi: 41, text: "late pickup" },
           ],
         },
       },
       {
-        label: "Bass",
-        body: "Syncopated high→low octave drop on the roots (~6 hits/bar), late pickups into the next chord; Dm bars walk A–C–D.",
+        label: "Figure",
+        body: "Syncopated high→low octave drop on the roots (~6 hits/bar) with late pickups into the next chord — not straight 8th octaves.",
         insight: {
-          layer: "bass",
+          layer: "figure",
           patternId: "sync_oct",
           title: "Syncopated octave drop",
-          barRange: [0, 1],
+          barRange: [0, 0],
           highlights: [
             { step: 0, midi: 41, text: "this note — high F" },
             { step: 4, midi: 29, text: "octave drop" },
@@ -140,7 +154,7 @@
       },
       {
         label: "Harmony",
-        body: "F–C–Bb–Dm reads I–V–IV–vi in F (or bIII–bVII–bVI–i in Dm).",
+        body: "F–C–Bb–Dm reads I–V–IV–vi in F (or bIII–bVII–bVI–i in Dm); bass states roots with an octave drop, not a walking line.",
         insight: {
           layer: "harmony",
           title: "Chorus loop in F",
@@ -154,45 +168,45 @@
         },
       },
       {
-        label: "Feel",
-        body: "Not straight 8th octaves — the drop and syncopated reattacks make the hook surge.",
+        label: "Missable",
+        body: "Easy to misread as straight 8th octaves — count ~6 hits/bar; the reattack after the drop is the trap.",
         insight: {
-          layer: "feel",
+          layer: "missable",
           patternId: "sync_oct",
-          title: "This pattern (not straight 8ths)",
+          title: "Not straight 8ths",
           barRange: [0, 0],
           highlights: [
-            { step: 0, midi: 41, text: "high" },
-            { step: 4, midi: 29, text: "drop" },
+            { step: 0, midi: 41, text: "this note" },
+            { step: 4, midi: 29, text: "octave drop" },
             { step: 6, midi: 29, text: "reattack" },
-            { step: 11, midi: 41, text: "syncopation" },
+            { step: 11, midi: 41, text: "this pattern" },
           ],
         },
       },
     ],
     ah: [
-      { label: "Drums", body: "Backbeat with busier 16th-hat surface; kick/snare stay put." },
-      { label: "Bass", body: "One-chord Dm vamp — D with C passing. Energy from rhythm, not changes." },
+      { label: "Pocket", body: "Backbeat with busier 16th-hat surface; kick/snare stay put while hats climb." },
+      { label: "Figure", body: "One-chord Dm vamp — D with C passing. Energy from rhythm, not changes." },
       { label: "Harmony", body: "Static i. Passing C/F in the bass are color, not real chord moves." },
-      { label: "Feel", body: "Build without leaving Dm; hats and dynamics do the climb." },
+      { label: "Missable", body: "Build without leaving Dm; hats and dynamics do the climb — do not invent a new progression." },
     ],
     bridge: [
-      { label: "Drums", body: "16th hats over the same kick 1+3 / snare 2+4 grid." },
-      { label: "Bass", body: "Root–b7 16ths on D; pushes on the & of 1 and 3 syncopate the backbeat." },
+      { label: "Pocket", body: "16th hats over the same kick 1+3 / snare 2+4 grid; bass pushes sit against that backbeat." },
+      { label: "Figure", body: "Root–b7 16ths on D; pushes on the & of 1 and 3 syncopate the backbeat." },
       { label: "Harmony", body: "Dm pedal with C/D color, then a short turnaround into the loop." },
-      { label: "Feel", body: "Motion lives in the bass subdivisions while harmony holds still." },
+      { label: "Missable", body: "Motion lives in the bass subdivisions while harmony holds still — easy to overplay chords that are not moving." },
     ],
     vamp: [
-      { label: "Drums", body: "Chorus backbeat with busier hats — extra energy on the kit." },
-      { label: "Bass", body: "Same chorus octave-drop groove on F–C–Bb–Dm; leave space for the hats." },
+      { label: "Pocket", body: "Chorus backbeat with busier hats — extra energy on the kit while bass keeps the pocket." },
+      { label: "Figure", body: "Same chorus octave-drop groove on F–C–Bb–Dm; leave space for the hats." },
       { label: "Harmony", body: "Same chorus loop again; Bb→Dm turns the phrase back to the top." },
-      { label: "Feel", body: "Bass anchors; vocal and hats carry the lift." },
+      { label: "Missable", body: "Bass anchors; vocal and hats carry the lift — do not thicken the figure just because hats get busy." },
     ],
     tag: [
-      { label: "Drums", body: "16th-hat backbeat into the hard cut." },
-      { label: "Bass", body: "Back to the Dm pedal and b7 motion — settle on tonic." },
+      { label: "Pocket", body: "16th-hat backbeat into the hard cut." },
+      { label: "Figure", body: "Back to the Dm pedal and b7 motion — settle on tonic." },
       { label: "Harmony", body: "Dm = i, with a brief Ab flavor in the estimate. Ends on i." },
-      { label: "Feel", body: "Close the circle: same tonic the song opened on." },
+      { label: "Missable", body: "Close the circle: same tonic the song opened on — resist inventing a final fill." },
     ],
   };
 
@@ -678,7 +692,7 @@
   function resolveInsightPattern(insight, patsEff) {
     if (!insight || typeof insight !== "object") return null;
     const builtins = {
-      sync_oct: SYNC_OCT, walk: WALK, pedal: PEDAL, b7: B7, turn: TURN,
+      sync_oct: SYNC_OCT, walk: WALK, pedal: PEDAL, b7: B7, turn: TURN, empty: EMPTY,
       oct: SYNC_OCT, desc: WALK,
     };
     if (insight.patternId && builtins[insight.patternId]) return builtins[insight.patternId];
@@ -695,23 +709,29 @@
   }
 
   /**
-   * Compact flashcard insight schematic — highlights bars/notes with crisp labels.
+   * Compact flashcard insight schematic — claim window + crisp labels.
    * insight: { layer, patternId?, title?, barRange?, highlights:[{step,text,kind?,midi?,chord?}] }
+   * Layers: pocket (bass↔drums) | figure | harmony | missable (plus legacy drums/bass/feel).
+   * Schematic span = claim window (barRange). Dim hits stay; legend explains lit vs dim.
    */
   function makeCardInsight(insight, pattern) {
     if (!insight || typeof insight !== "object") return null;
-    const layer = insight.layer || "bass";
-    const highlights = Array.isArray(insight.highlights) ? insight.highlights : [];
+    const layer = insight.layer || "figure";
+    const isPocket = layer === "pocket" || layer === "drums";
+    const isHarmony = layer === "harmony";
+    const highlightsAll = Array.isArray(insight.highlights) ? insight.highlights : [];
+    // One insight per card: 2–4 callouts max on the schematic.
+    const highlights = highlightsAll.filter((h) => h && (h.text || h.kind || h.chord || Number.isFinite(h.step))).slice(0, 4);
     const barRange = Array.isArray(insight.barRange) && insight.barRange.length >= 2
       ? [insight.barRange[0] | 0, insight.barRange[1] | 0]
-      : [0, 1];
+      : [0, 0];
     const nBars = Math.max(1, barRange[1] - barRange[0] + 1);
     const step0 = barRange[0] * 16;
     const totalSteps = nBars * 16;
     const wrap = el("div", { className: "card-insight", "data-insight-layer": layer });
     if (insight.title) wrap.appendChild(el("div", { className: "card-insight-title" }, [insight.title]));
 
-    if (layer === "harmony") {
+    if (isHarmony) {
       const row = el("div", { className: "card-insight-chords" });
       const chords = highlights.filter((h) => h && (h.kind === "chord" || h.chord));
       const list = chords.length ? chords : [
@@ -777,9 +797,21 @@
     highlights.forEach((h) => {
       if (h && Number.isFinite(h.step)) hiByStep.set(h.step | 0, h);
     });
+    let dimCount = 0;
+    let litCount = 0;
 
-    if (layer === "drums") {
-      // Kick / snare lanes + optional bass overlay
+    const patternEmpty = insight.patternId === "empty" || (pattern && pattern.id === "empty");
+    if (isPocket && patternEmpty) {
+      for (let bar = 0; bar < nBars; bar++) {
+        const cx = gx0 + ((bar + 0.5) / nBars) * gw;
+        svg.appendChild(svgEl("text", {
+          x: cx, y: gridY + 4, "text-anchor": "middle",
+          "font-size": 11, "font-weight": 700, fill: "#9ca3af",
+          "data-insight-kind": "empty",
+        }, [document.createTextNode("rest")]));
+      }
+    } else if (isPocket) {
+      // Kick / snare lanes + optional bass overlay (pocket = bass↔drums)
       const lane = { kick: gridY - 4, snare: gridY + 12, bass: gridY - 14 };
       svg.appendChild(svgEl("text", { x: 4, y: lane.kick + 3, "font-size": 8, fill: "#9ca3af" }, [document.createTextNode("K")]));
       svg.appendChild(svgEl("text", { x: 4, y: lane.snare + 3, "font-size": 8, fill: "#9ca3af" }, [document.createTextNode("S")]));
@@ -788,40 +820,54 @@
         [0, 8].forEach((off) => {
           const st = base + off;
           const lit = hiByStep.has(st) && (hiByStep.get(st).kind === "kick" || !hiByStep.get(st).kind);
+          if (lit) litCount++; else dimCount++;
           svg.appendChild(svgEl("circle", {
             cx: sx(st), cy: lane.kick, r: lit ? 6 : 3.5,
             fill: lit ? "#f59e0b" : "#4b5563",
             "data-insight-step": String(st),
             "data-insight-kind": "kick",
+            "data-insight-lit": lit ? "1" : "0",
           }));
         });
         [4, 12].forEach((off) => {
           const st = base + off;
           const lit = hiByStep.has(st) && hiByStep.get(st).kind === "snare";
+          if (lit) litCount++; else dimCount++;
           svg.appendChild(svgEl("circle", {
             cx: sx(st), cy: lane.snare, r: lit ? 5 : 3,
             fill: lit ? "#a855f7" : "#4b5563",
             "data-insight-step": String(st),
             "data-insight-kind": "snare",
+            "data-insight-lit": lit ? "1" : "0",
           }));
         });
       }
-      // Bass overlay notes from pattern at highlight steps marked kind=bass
       highlights.forEach((h) => {
         if (!h || h.kind !== "bass") return;
         const st = h.step | 0;
         if (st < step0 || st >= step0 + totalSteps) return;
+        litCount++;
         svg.appendChild(svgEl("circle", {
           cx: sx(st), cy: lane.bass, r: 5.5,
           fill: "#3b82f6", stroke: "#93c5fd", "stroke-width": 1.5,
           "data-insight-step": String(st),
           "data-insight-kind": "bass",
+          "data-insight-lit": "1",
         }));
       });
+    } else if (!patNotes.length) {
+      // Empty / silence: first-class — rests in the claim window, no invented hits.
+      for (let bar = 0; bar < nBars; bar++) {
+        const cx = gx0 + ((bar + 0.5) / nBars) * gw;
+        svg.appendChild(svgEl("text", {
+          x: cx, y: gridY + 4, "text-anchor": "middle",
+          "font-size": 11, "font-weight": 700, fill: "#9ca3af",
+          "data-insight-kind": "empty",
+        }, [document.createTextNode("rest")]));
+      }
     } else {
-      // Bass / feel: all pattern notes as dots; highlights lit + labeled
+      // Figure / missable / bass: all pattern notes as dots; highlights lit + labeled
       const inRange = patNotes.filter((n) => n.step >= step0 && n.step < step0 + totalSteps);
-      // Pitch y mapping within band
       const midis = inRange.map((n) => n.midi);
       const loM = midis.length ? Math.min.apply(null, midis) : 28;
       const hiM = midis.length ? Math.max.apply(null, midis) : 48;
@@ -831,6 +877,7 @@
       };
       inRange.forEach((n) => {
         const lit = hiByStep.has(n.step);
+        if (lit) litCount++; else dimCount++;
         svg.appendChild(svgEl("circle", {
           cx: sx(n.step), cy: py(n.midi), r: lit ? 6 : 3.2,
           fill: lit ? "#3b82f6" : "#4b5563",
@@ -839,27 +886,29 @@
           "data-insight-step": String(n.step),
           "data-insight-kind": "note",
           "data-insight-midi": String(n.midi),
+          "data-insight-lit": lit ? "1" : "0",
         }));
       });
-      // Highlights that may not be in pattern (still show)
       highlights.forEach((h) => {
         if (!h || !Number.isFinite(h.step)) return;
         const st = h.step | 0;
         if (st < step0 || st >= step0 + totalSteps) return;
         if (inRange.some((n) => n.step === st)) return;
         const m = Number.isFinite(h.midi) ? h.midi : loM;
+        litCount++;
         svg.appendChild(svgEl("circle", {
           cx: sx(st), cy: py(m), r: 6,
           fill: "#3b82f6", stroke: "#93c5fd", "stroke-width": 1.5,
           "data-insight-step": String(st),
           "data-insight-kind": h.kind || "note",
+          "data-insight-lit": "1",
         }));
       });
     }
 
-    // Annotation labels (top band) with leader lines
+    // Annotation labels (top band) with leader lines — max 4
     const labelSlots = highlights.filter((h) => h && h.text && Number.isFinite(h.step)
-      && h.step >= step0 && h.step < step0 + totalSteps);
+      && h.step >= step0 && h.step < step0 + totalSteps).slice(0, 4);
     labelSlots.forEach((h, i) => {
       const st = h.step | 0;
       const x = sx(st);
@@ -887,6 +936,17 @@
     });
 
     wrap.appendChild(svg);
+    if (dimCount > 0 && litCount > 0) {
+      wrap.appendChild(el("div", {
+        className: "card-insight-legend",
+        "data-insight-legend": "1",
+      }, ["dim = other hits in the figure · lit = this card’s point"]));
+    } else if (patternEmpty && (insight.patternId === "empty" || (pattern && pattern.id === "empty"))) {
+      wrap.appendChild(el("div", {
+        className: "card-insight-legend",
+        "data-insight-legend": "empty",
+      }, ["empty = silence / rhythm section out"]));
+    }
     return wrap;
   }
 
@@ -947,6 +1007,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 .card-insight-chord.lit { border-color:#3b82f6; background:#1e3a5f; }
 .card-insight-chord-name { font-size:16px; font-weight:800; color:#e5e7eb; }
 .card-insight-chord-fn { font-size:10px; font-weight:700; color:#93c5fd; margin-top:2px; }
+.card-insight-legend { flex:0 0 auto; font-size:9px; line-height:1.25; color:#6b7280; padding:0 2px 2px; }
 .card-actions { display:flex; align-items:center; gap:8px; flex:0 0 auto; }
 .btn { min-height:36px; min-width:100px; padding:0 12px; cursor:pointer; border-radius:8px; border:1px solid #374151; background:#111827; color:#e5e7eb; font-size:13px; font-weight:600; }
 .btn.primary { background:#3b82f6; border-color:#3b82f6; color:#fff; }

@@ -181,11 +181,11 @@
   "cards": {
     "intro": [
       {
-        "label": "Drums",
+        "label": "Pocket",
         "body": "Steady pulse for testing."
       },
       {
-        "label": "Bass",
+        "label": "Figure",
         "body": "Root notes on the beat."
       },
       {
@@ -193,18 +193,18 @@
         "body": "I\u2013V\u2013vi\u2013IV loop."
       },
       {
-        "label": "Feel",
+        "label": "Missable",
         "body": "Keep it simple."
       }
     ],
     "chorus": [
       {
-        "label": "Drums",
-        "body": "Same grid, slightly louder.",
+        "label": "Pocket",
+        "body": "Same grid; bass sits against the kick.",
         "insight": {
-          "layer": "drums",
+          "layer": "pocket",
           "patternId": "sync_oct",
-          "title": "Bass against kick",
+          "title": "Against kick",
           "barRange": [
             0,
             0
@@ -225,12 +225,12 @@
         }
       },
       {
-        "label": "Bass",
+        "label": "Figure",
         "body": "Syncopated octave drop.",
         "insight": {
-          "layer": "bass",
+          "layer": "figure",
           "patternId": "sync_oct",
-          "title": "Octave drop",
+          "title": "Syncopated octave drop",
           "barRange": [
             0,
             0
@@ -254,17 +254,17 @@
         "body": "Same loop again."
       },
       {
-        "label": "Feel",
-        "body": "Lift without new changes."
+        "label": "Missable",
+        "body": "Lift without new changes \u2014 do not invent a fill."
       }
     ],
     "verse": [
       {
-        "label": "Drums",
+        "label": "Pocket",
         "body": "Steady pulse for testing."
       },
       {
-        "label": "Bass",
+        "label": "Figure",
         "body": "Root notes on the beat."
       },
       {
@@ -272,17 +272,17 @@
         "body": "I\u2013V\u2013vi\u2013IV loop."
       },
       {
-        "label": "Feel",
+        "label": "Missable",
         "body": "Keep it simple."
       }
     ],
     "v2": [
       {
-        "label": "Drums",
+        "label": "Pocket",
         "body": "Out \u2014 rests only."
       },
       {
-        "label": "Bass",
+        "label": "Figure",
         "body": "Out \u2014 rests only."
       }
     ]

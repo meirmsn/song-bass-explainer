@@ -287,7 +287,7 @@ describe("player DOM shell transport", () => {
     expect(start.tabLabel).toMatch(/Syncopated octave drop/);
     const baseCards = start.cardLabels.slice();
     const baseBodies = start.cardBodies.slice();
-    expect(baseCards).toEqual(["Drums", "Bass", "Harmony", "Feel"]);
+    expect(baseCards).toEqual(["Pocket", "Figure", "Harmony", "Missable"]);
     expect(baseBodies.some((b) => /octave drop/i.test(b))).toBe(true);
 
     // Advance t across several bars inside the same section (bars 16–23).
@@ -350,13 +350,13 @@ describe("player DOM shell transport", () => {
     // Side-by-side mockup order: layers then cards (not a lone row under everything).
     expect([...grid.children].map((c) => c.className)).toEqual(["layers", "cards"]);
     expect(document.querySelector(".cards-title")?.textContent).toBe("Flashcards");
-    expect(document.querySelector(".card-label")?.textContent).toBe("Drums");
-    expect(document.querySelector(".card-body")?.textContent).toMatch(/Same grid, slightly louder/);
+    expect(document.querySelector(".card-label")?.textContent).toBe("Pocket");
+    expect(document.querySelector(".card-body")?.textContent).toMatch(/Same grid; bass sits against the kick/);
     const minis = [...document.querySelectorAll(".card-mini-label")].map((n) => n.textContent);
-    expect(minis).toEqual(["Drums", "Bass", "Harmony", "Feel"]);
+    expect(minis).toEqual(["Pocket", "Figure", "Harmony", "Missable"]);
 
     api.pickSection(0);
-    expect(api.getState().activeCardLabel).toBe("Drums");
+    expect(api.getState().activeCardLabel).toBe("Pocket");
     expect(document.querySelector(".card-body")?.textContent).toMatch(/Steady pulse for testing/);
     expect(document.querySelector(".cards-head .sub")?.textContent).toMatch(/^A ·/);
   });
@@ -1100,7 +1100,7 @@ describe("flashcards while playing", () => {
   it("flashcards stay tappable while playing (Next card + mini via delegated pointerup)", async () => {
     const api = await bootPlayer({ privateMode: true, withStems: true });
     api.pickSection(2);
-    expect(api.getState().activeCardLabel).toBe("Drums");
+    expect(api.getState().activeCardLabel).toBe("Pocket");
     api.play();
     await api.waitTick(100);
     expect(api.getState().playing).toBe(true);
@@ -1112,7 +1112,7 @@ describe("flashcards while playing", () => {
     await api.waitTick(60);
     expect(api.getState().playing).toBe(true);
     expect(api.getState().cardIdx % 4).toBe(1);
-    expect(api.getState().activeCardLabel).toBe("Bass");
+    expect(api.getState().activeCardLabel).toBe("Figure");
 
     await api.waitTick(30);
     const mini = document.querySelector('.card-mini[data-card="3"]');
@@ -1120,7 +1120,7 @@ describe("flashcards while playing", () => {
     mini.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
     await api.waitTick(80);
     expect(api.getState().playing).toBe(true);
-    expect(api.getState().activeCardLabel).toBe("Feel");
+    expect(api.getState().activeCardLabel).toBe("Missable");
     expect(api.getState().cardIdx % 4).toBe(3);
   });
 });
@@ -1196,19 +1196,19 @@ describe("flashcard insight panel", () => {
     teardownPlayer();
   });
 
-  it("renders insight schematic with annotation labels for chorus Bass", async () => {
+  it("renders insight schematic with annotation labels for chorus Figure", async () => {
     const api = await bootPlayer();
     api.pickSection(2); // chorus
-    api.setCard(1); // Bass
+    api.setCard(1); // Figure
     const s = api.getState();
-    expect(s.activeCardLabel).toBe("Bass");
+    expect(s.activeCardLabel).toBe("Figure");
     expect(s.activeCardInsight).toBeTruthy();
     expect(s.activeCardInsight.patternId).toBe("sync_oct");
     expect(s.hasInsightPanel).toBe(true);
 
     const panel = document.querySelector(".card-insight");
     expect(panel).toBeTruthy();
-    expect(panel.getAttribute("data-insight-layer")).toBe("bass");
+    expect(panel.getAttribute("data-insight-layer")).toBe("figure");
     expect(document.querySelector(".card-insight-title")?.textContent).toMatch(/octave drop/i);
 
     const labels = [...document.querySelectorAll("[data-insight-label]")].map((n) => n.getAttribute("data-insight-label"));
@@ -1216,6 +1216,8 @@ describe("flashcard insight panel", () => {
 
     const lit = document.querySelectorAll('circle[data-insight-kind="note"]');
     expect(lit.length).toBeGreaterThan(0);
+    // Dim hits remain in the claim window with a one-line legend (lean B).
+    expect(document.querySelector("[data-insight-legend]")).toBeTruthy();
 
     // Locked dashboard: shell stays overflow-hidden (no page scroll from cards).
     const shell = document.querySelector(".shell");
@@ -1223,12 +1225,12 @@ describe("flashcard insight panel", () => {
     expect(getComputedStyle(shell).overflow).toMatch(/hidden|clip/);
   });
 
-  it("Drums insight shows bass-against-kick annotations", async () => {
+  it("Pocket insight shows bass-against-kick annotations", async () => {
     const api = await bootPlayer();
     api.pickSection(2);
     api.setCard(0);
-    expect(api.getState().activeCardLabel).toBe("Drums");
-    expect(document.querySelector(".card-insight")?.getAttribute("data-insight-layer")).toBe("drums");
+    expect(api.getState().activeCardLabel).toBe("Pocket");
+    expect(document.querySelector(".card-insight")?.getAttribute("data-insight-layer")).toBe("pocket");
     const labels = [...document.querySelectorAll("[data-insight-label]")].map((n) => n.getAttribute("data-insight-label"));
     expect(labels.join(" ")).toMatch(/bass note against that drum hit/i);
     expect(document.querySelector('circle[data-insight-kind="bass"]')).toBeTruthy();
@@ -1253,10 +1255,10 @@ describe("flashcard insight panel", () => {
     expect(N.resolveInsightPattern({ patternId: "walk" }, null).id).toBe("walk");
 
     const node = N.makeCardInsight({
-      layer: "bass",
+      layer: "figure",
       patternId: "walk",
       title: "A–C–D walk",
-      barRange: [0, 1],
+      barRange: [0, 0],
       highlights: [
         { step: 0, midi: 33, text: "A" },
         { step: 6, midi: 36, text: "C" },
@@ -1264,10 +1266,25 @@ describe("flashcard insight panel", () => {
       ],
     }, N.WALK);
     expect(node).toBeTruthy();
-    expect(node.getAttribute("data-insight-layer")).toBe("bass");
+    expect(node.getAttribute("data-insight-layer")).toBe("figure");
     document.body.appendChild(node);
     const labels = [...node.querySelectorAll("[data-insight-label]")].map((n) => n.getAttribute("data-insight-label"));
     expect(labels).toEqual(["A", "C", "D"]);
+    expect(node.querySelector("[data-insight-legend]")?.textContent).toMatch(/dim = other hits/i);
+    expect(N.resolveInsightPattern({ patternId: "empty" }, null).id).toBe("empty");
+  });
+
+  it("chorus slot model is Pocket/Figure/Harmony/Missable", async () => {
+    const api = await bootPlayer();
+    api.pickSection(2);
+    expect(api.getState().cardLabels).toEqual(["Pocket", "Figure", "Harmony", "Missable"]);
+    const N = window.__BASS_NOTATION__;
+    const chorus = N.CARDS.chorus;
+    expect(chorus.map((c) => c.label)).toEqual(["Pocket", "Figure", "Harmony", "Missable"]);
+    expect(chorus[0].insight.layer).toBe("pocket");
+    expect(chorus[1].insight.layer).toBe("figure");
+    expect(chorus[1].insight.barRange).toEqual([0, 0]); // claim window, not crop-hack of empty bar 2
+    expect(chorus[3].insight.layer).toBe("missable");
   });
 
   it("harmony insight renders chord chips with functions", async () => {
@@ -1316,8 +1333,8 @@ describe("v2-empty: silent section shows rests not invented grooves", () => {
         // Paint verse section B as stem-silent empty (mirrors LAP v2).
         payload.patterns.s1 = [{ id: "empty", name: "Rest (rhythm section out)", notes: [] }];
         payload.cards.s1 = [
-          { label: "Drums", body: "Out — rests only." },
-          { label: "Bass", body: "Out — rests only." },
+          { label: "Pocket", body: "Out — rests only." },
+          { label: "Figure", body: "Out — rests only." },
         ];
       },
     });
@@ -1351,7 +1368,7 @@ describe("v2-empty: silent section shows rests not invented grooves", () => {
     expect(drums.querySelectorAll("g[data-rhythm='rest']").length).toBeGreaterThan(0);
 
     // Cards prefer sec.id (s1) over kind=verse
-    expect(document.querySelector(".card-label")?.textContent).toMatch(/Drums|Bass/);
+    expect(document.querySelector(".card-label")?.textContent).toMatch(/Pocket|Figure|Drums|Bass/);
     const body = document.querySelector(".card-body")?.textContent || "";
     expect(body).toMatch(/rest|out/i);
   });
@@ -1542,8 +1559,8 @@ describe("v1-drums-empty: drums-out independent of bass PEDAL", () => {
         payload.drumsOutBars = [[8, 15]];
         payload.patterns.s1 = [{ id: "pedal", name: "Pedal point on D", notes: payload.patterns.s1[0].notes }];
         payload.cards.s1 = [
-          { label: "Drums", body: "Out early — rests, not an invented 8th-hat grid." },
-          { label: "Bass", body: "Pedal stays — bass present while drums are out." },
+          { label: "Pocket", body: "Out early — rests, not an invented 8th-hat grid." },
+          { label: "Figure", body: "Pedal stays — bass present while drums are out." },
         ];
       },
     });
