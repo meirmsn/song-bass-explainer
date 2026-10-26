@@ -2420,7 +2420,7 @@ describe("phone layout — cards bottom drawer", () => {
     const css = document.getElementById("bass-player-styles")?.textContent || "";
     expect(css).toMatch(/@media \(max-width:640px\)[\s\S]*\.header\s*\{[^}]*flex-direction:\s*column/);
     expect(css).toMatch(/@media \(max-width:640px\)[\s\S]*\.meta \.badge/);
-    expect(css).toMatch(/@media \(max-width:640px\)[\s\S]*\.layer\.chords\s*\{[^}]*flex:\s*0 0 68px/);
+    expect(css).toMatch(/@media \(max-width:640px\)[\s\S]*\.layer\.chords\s*\{[^}]*flex:\s*0 0 104px/);
   });
 
   it("desktop 2-col unchanged at 1280 — cards in grid, no phone timeline/badge shortening", async () => {
@@ -2871,7 +2871,7 @@ describe("insight-card MIDI + two-staff schematic", () => {
     teardownPlayer();
   });
 
-  it("schematic is two staves (bass above drums) with Bass/Drums/Both", async () => {
+  it("schematic is two staves (bass above drums) with Play and Bass/Drums toggles", async () => {
     const api = await bootPlayer();
     api.pickSection(2);
     api.setCard(1); // Figure
@@ -2886,16 +2886,26 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(staffLabelY("Bass")).toBeLessThan(staffLabelY("Drums"));
     expect(document.querySelectorAll('[data-insight-staff="bass"]').length).toBeGreaterThan(0);
     expect(document.querySelectorAll('[data-insight-staff="drums"]').length).toBeGreaterThan(0);
-    const voices = [...document.querySelectorAll("[data-insight-midi-strip] button")].map((b) => b.getAttribute("data-insight-voice"));
-    expect(voices).toEqual(["bass", "drums", "all"]);
+    expect(document.querySelector("[data-insight-midi-strip]")).toBeTruthy();
+    const play = document.querySelector("button[data-insight-play]");
+    expect(play).toBeTruthy();
+    expect(play.textContent).toMatch(/Play/i);
+    expect(play.getAttribute("data-transport")).toBe("insight-midi-play");
     expect(document.querySelector('button[data-insight-voice="bass"]').textContent).toBe("Bass");
     expect(document.querySelector('button[data-insight-voice="drums"]').textContent).toBe("Drums");
-    expect(document.querySelector('button[data-insight-voice="all"]').textContent).toBe("Both");
+    // Bass/Drums toggles ON by default (not a Bass/Drums/Both radio).
+    expect(document.querySelector('button[data-insight-voice="bass"].on')).toBeTruthy();
+    expect(document.querySelector('button[data-insight-voice="drums"].on')).toBeTruthy();
+    expect(document.querySelector('button[data-insight-voice="all"]')).toBeNull();
+    expect(api.getState().insightMidiBassOn).toBe(true);
+    expect(api.getState().insightMidiDrumsOn).toBe(true);
+    expect(api.getState().insightMidiChordsOn).toBe(true);
 
-    api.setCard(2); // Harmony
+    api.setCard(2); // Harmony — Play + Chords, chords toggle ON
     const harmVoices = [...document.querySelectorAll("[data-insight-midi-strip] button")].map((b) => b.textContent);
-    expect(harmVoices).toEqual(["Chords"]);
-    expect(document.querySelector('button[data-insight-voice="chords"]')).toBeTruthy();
+    expect(harmVoices).toEqual(["Play", "Chords"]);
+    expect(document.querySelector('button[data-insight-voice="chords"].on')).toBeTruthy();
+    expect(document.querySelector("button[data-insight-play]")).toBeTruthy();
   });
 
   it("buildInsightMidiEvents plays the claim window and invents nothing when empty", async () => {
@@ -2942,43 +2952,81 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(harm.drums).toEqual([]);
   });
 
-  it("insight card MIDI button schedules the claim window and leaves the main staff unmarked", async () => {
+  it("insight card Play loops the claim window, pauses main, and leaves the main staff unmarked", async () => {
     const api = await bootPlayer({ privateMode: true, withStems: false });
     api.pickSection(2);
     api.setCard(1);
+    await api.ensureAudio();
+    api.play();
+    expect(api.getState().playing).toBe(true);
     const gen0 = api.getState().insightMidiGen || 0;
-    document.querySelector('button[data-insight-voice="all"]').dispatchEvent(
+    document.querySelector("button[data-insight-play]").dispatchEvent(
       new MouseEvent("pointerup", { bubbles: true, cancelable: true }),
     );
     await api.waitTick(30);
     expect(api.getState().insightMidiGen).toBeGreaterThan(gen0);
     expect(api.getState().insightMidiVoice).toBe("all");
+    expect(api.getState().insightMidiPlaying).toBe(true);
+    expect(api.getState().insightMidiLooping).toBe(true);
+    expect(api.getState().playing).toBe(false);
     expect(api.getState().insightMidiNodeCount).toBeGreaterThan(0);
-    expect(document.querySelector('button[data-insight-voice="all"]').classList.contains("on")).toBe(true);
+    const playBtn = document.querySelector("button[data-insight-play]");
+    expect(playBtn.classList.contains("on")).toBe(true);
+    expect(playBtn.textContent).toMatch(/Stop/i);
     expect(document.querySelectorAll("[data-chord-tones]").length).toBe(0);
+    expect(document.querySelectorAll('svg[aria-label="Bass staff"] [data-chord-tone]').length).toBe(0);
 
-    const bassR = api.playInsightMidi("bass");
-    expect(bassR.insightMidiResult.ok).toBe(true);
+    // Toggle drums off while looping → reschedule bass-only from the remaining toggle.
+    const bassR = api.toggleInsightMidiVoice("drums");
+    expect(api.getState().insightMidiDrumsOn).toBe(false);
     expect(bassR.insightMidiResult.voice).toBe("bass");
     expect(bassR.insightMidiResult.bass).toBeGreaterThan(0);
     expect(bassR.insightMidiResult.drums).toBe(0);
+    expect(bassR.insightMidiResult.looping).toBe(true);
+    expect(api.getState().insightMidiPlaying).toBe(true);
 
     const drumsR = api.playInsightMidi("drums");
+    expect(drumsR.insightMidiResult.ok).toBe(true);
+    expect(drumsR.insightMidiResult.voice).toBe("drums");
     expect(drumsR.insightMidiResult.drums).toBeGreaterThan(0);
     expect(drumsR.insightMidiResult.bass).toBe(0);
-
-    api.setCard(2);
-    const chordR = api.playInsightMidi("chords");
-    expect(chordR.insightMidiResult.ok).toBe(true);
-    expect(chordR.insightMidiResult.chords).toBeGreaterThan(0);
-    expect(document.querySelector('button[data-insight-voice="chords"]').classList.contains("on")).toBe(true);
+    expect(drumsR.insightMidiResult.looping).toBe(true);
 
     const ctx = window.__LAST_AUDIO_CTX__;
     const oscBefore = ctx._oscillators.length;
-    api.cancelInsightMidi();
+    document.querySelector("button[data-insight-play]").dispatchEvent(
+      new MouseEvent("pointerup", { bubbles: true, cancelable: true }),
+    );
+    await api.waitTick(20);
+    expect(api.getState().insightMidiPlaying).toBe(false);
     expect(api.getState().insightMidiVoice).toBeNull();
     expect(api.getState().insightMidiNodeCount).toBe(0);
+    expect(document.querySelector("button[data-insight-play]").textContent).toMatch(/Play/i);
     expect(ctx._oscillators.slice(0, oscBefore).every((o) => o._stopped)).toBe(true);
+
+    api.setCard(2); // Harmony — card change cancels; Chords toggle stays ON
+    expect(api.getState().insightMidiPlaying).toBe(false);
+    expect(document.querySelector('button[data-insight-voice="chords"].on')).toBeTruthy();
+    const chordR = api.playInsightMidi("chords");
+    expect(chordR.insightMidiResult.ok).toBe(true);
+    expect(chordR.insightMidiResult.chords).toBeGreaterThan(0);
+    expect(chordR.insightMidiResult.looping).toBe(true);
+    expect(document.querySelector('button[data-insight-voice="chords"]').classList.contains("on")).toBe(true);
+    api.cancelInsightMidi();
+    expect(api.getState().insightMidiPlaying).toBe(false);
+    expect(api.getState().insightMidiVoice).toBeNull();
+  });
+
+  it("chord names layer is tall enough that SVG is not vertically crushed", async () => {
+    const api = await bootPlayer({ width: 1280, height: 800 });
+    const css = document.getElementById("bass-player-styles")?.textContent || "";
+    expect(css).toMatch(/\.layer\.chords\s*\{[^}]*flex:\s*0 0 120px/);
+    expect(css).toMatch(/\.layer\.chords \.layer-body\s*\{[^}]*min-height:\s*64px/);
+    const chordsSvg = document.querySelector('svg[aria-label="Chord names"]');
+    expect(chordsSvg).toBeTruthy();
+    expect(chordsSvg.getAttribute("preserveAspectRatio")).toMatch(/xMidYMid meet/i);
+    expect(css).toMatch(/@media \(max-width:640px\)[\s\S]*\.layer\.chords\s*\{[^}]*flex:\s*0 0 104px/);
+    expect(api.getState().isPhoneLayout).toBe(false);
   });
 
   it("empty insight MIDI stays silent (no invented bass or drums)", async () => {

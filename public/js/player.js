@@ -1094,40 +1094,41 @@
     if (insight.title) head.appendChild(el("div", { className: "card-insight-title" }, [insight.title]));
     else head.appendChild(el("div", { className: "card-insight-title" }, [layer]));
     const midiStrip = el("div", { className: "card-insight-midi-strip", "data-insight-midi-strip": "1" });
+    // Play is the primary affordance; Bass/Drums (or Chords) are independent toggles (default ON).
+    midiStrip.appendChild(el("button", {
+      type: "button",
+      className: "ch-btn card-insight-midi play-btn",
+      "data-transport": "insight-midi-play",
+      "data-insight-play": "1",
+      "aria-label": "Play or stop this card’s claim-window MIDI",
+      title: "Play — loop this card’s claim window (pauses the main player)",
+    }, ["Play"]));
     if (isHarmony) {
       midiStrip.appendChild(el("button", {
         type: "button",
         className: "ch-btn card-insight-midi",
-        "data-transport": "insight-midi",
+        "data-transport": "insight-midi-tog",
         "data-insight-voice": "chords",
-        "aria-label": "Play insight chords as MIDI",
-        title: "MIDI — hear this card’s chords",
+        "aria-label": "Toggle chords voice for card MIDI",
+        title: "Chords — include chord pads when playing",
       }, ["Chords"]));
     } else {
       midiStrip.appendChild(el("button", {
         type: "button",
         className: "ch-btn card-insight-midi",
-        "data-transport": "insight-midi",
+        "data-transport": "insight-midi-tog",
         "data-insight-voice": "bass",
-        "aria-label": "Play insight bass as MIDI",
-        title: "MIDI — hear bass line on this card",
+        "aria-label": "Toggle bass voice for card MIDI",
+        title: "Bass — include bass line when playing",
       }, ["Bass"]));
       midiStrip.appendChild(el("button", {
         type: "button",
         className: "ch-btn card-insight-midi",
-        "data-transport": "insight-midi",
+        "data-transport": "insight-midi-tog",
         "data-insight-voice": "drums",
-        "aria-label": "Play insight drums as MIDI",
-        title: "MIDI — hear drums on this card",
+        "aria-label": "Toggle drums voice for card MIDI",
+        title: "Drums — include drums when playing",
       }, ["Drums"]));
-      midiStrip.appendChild(el("button", {
-        type: "button",
-        className: "ch-btn card-insight-midi",
-        "data-transport": "insight-midi",
-        "data-insight-voice": "all",
-        "aria-label": "Play insight bass and drums as MIDI",
-        title: "MIDI — hear this card’s claim window",
-      }, ["Both"]));
     }
     head.appendChild(midiStrip);
     wrap.appendChild(head);
@@ -1543,10 +1544,11 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 .grid { flex:1; min-height:0; display:grid; grid-template-columns:minmax(0,1.7fr) minmax(0,1fr); gap:8px; overflow:hidden; }
 .layers { display:flex; flex-direction:column; gap:4px; min-height:0; overflow:hidden; }
 .layer { flex:1; min-height:0; display:flex; flex-direction:column; border:1px solid #374151; border-radius:10px; overflow:hidden; background:#0b0f14; }
-.layer.chords { flex:0 0 84px; }
+.layer.chords { flex:0 0 120px; }
 .layer-head { flex:0 0 auto; padding:2px 8px; font-size:11px; font-weight:600; color:#9ca3af; border-bottom:1px solid #1f2937; display:flex; align-items:center; justify-content:space-between; gap:8px; }
 .layer-head.with-ch-strip { flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:4px; padding-top:4px; padding-bottom:4px; }
 .layer-body { flex:1; min-height:0; padding:2px 4px; }
+.layer.chords .layer-body { min-height:64px; }
 .cards { display:flex; flex-direction:column; gap:8px; min-height:0; overflow:hidden; border:1px solid #374151; border-radius:10px; padding:10px; }
 .cards-head { display:flex; align-items:center; justify-content:space-between; flex:0 0 auto; }
 .cards-title { font-size:14px; font-weight:700; }
@@ -1555,9 +1557,11 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 .card-insight { flex:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:4px; border:1px solid #1f2937; border-radius:8px; background:#0a0e13; padding:6px 6px 4px; }
 .card-insight-head { display:flex; align-items:center; justify-content:space-between; gap:6px; flex:0 0 auto; }
 .card-insight-title { font-size:10px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; color:#93c5fd; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.card-insight-midi-strip { display:inline-flex; align-items:center; gap:3px; flex:0 0 auto; }
+.card-insight-midi-strip { display:inline-flex; align-items:center; gap:3px; flex:0 0 auto; flex-wrap:wrap; }
 .card-insight-midi { min-width:36px; height:22px; padding:0 6px; font-size:9px; font-weight:800; letter-spacing:.02em; }
 .card-insight-midi.on { background:#1e3a5f; border-color:#3b82f6; color:#93c5fd; }
+.card-insight-midi.play-btn { min-width:44px; background:#14532d; border-color:#22c55e; color:#86efac; }
+.card-insight-midi.play-btn.on { background:#3f1d1d; border-color:#ef4444; color:#fca5a5; }
 .card-insight-svg { flex:1; min-height:0; width:100%; }
 .card-insight-chords { flex:1; min-height:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; align-content:center; }
 .card-insight-chord { border:1px solid #374151; border-radius:8px; padding:8px 4px; text-align:center; background:#111827; }
@@ -1608,7 +1612,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
   .timeline { flex:0 0 auto; }
   .timeline svg { max-height:88px !important; }
   .layers { gap:3px; }
-  .layer.chords { flex:0 0 68px; }
+  .layer.chords { flex:0 0 104px; }
   .layer-head { font-size:10px; padding:1px 6px; }
   .layer-head.with-ch-strip { gap:2px; padding-top:2px; padding-bottom:2px; }
   .layer-body { padding:1px 2px; }
@@ -1847,6 +1851,11 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let insightMidiNodes = [];
     let insightMidiGen = 0;
     let insightMidiVoice = null;
+    let insightMidiPlaying = false;
+    let insightMidiLoopTimer = null;
+    let insightMidiBassOn = true;
+    let insightMidiDrumsOn = true;
+    let insightMidiChordsOn = true;
     let insightBassGain = null, insightDrumsGain = null, insightChordsGain = null;
     let audioReady = false;
     let stemLoading = false;
@@ -2137,6 +2146,10 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       return audioCtx;
     }
     function cancelInsightMidi() {
+      if (insightMidiLoopTimer) {
+        clearTimeout(insightMidiLoopTimer);
+        insightMidiLoopTimer = null;
+      }
       for (let i = 0; i < insightMidiNodes.length; i++) {
         const n = insightMidiNodes[i];
         try { if (n.stop) n.stop(0); } catch (e) {}
@@ -2144,6 +2157,22 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       }
       insightMidiNodes = [];
       insightMidiVoice = null;
+      insightMidiPlaying = false;
+    }
+    function insightVoiceFromToggles(layer) {
+      if (layer === "harmony") return insightMidiChordsOn ? "chords" : null;
+      if (insightMidiBassOn && insightMidiDrumsOn) return "all";
+      if (insightMidiBassOn) return "bass";
+      if (insightMidiDrumsOn) return "drums";
+      return null;
+    }
+    function stopInsightMidiNodesOnly() {
+      for (let i = 0; i < insightMidiNodes.length; i++) {
+        const n = insightMidiNodes[i];
+        try { if (n.stop) n.stop(0); } catch (e) {}
+        try { if (n.disconnect) n.disconnect(); } catch (e) {}
+      }
+      insightMidiNodes = [];
     }
     function playInsightBassNote(when, dur, midi) {
       const v = BASS_MIDI_VOICE;
@@ -2264,28 +2293,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       }
       insightMidiNodes.push(g);
     }
-    /** Play the active insight card claim-window as MIDI (scoped; does not invent on empty). */
-    function playInsightMidi(voice) {
-      const sec = SECS[secIdx];
-      const deck = CARDS_EFF[sec.id] || CARDS_EFF[sec.kind] || CARDS[sec.id] || CARDS[sec.kind] || CARDS.intro;
-      const card = deck[cardIdx % deck.length];
-      const insight = card && card.insight;
-      if (!insight) return { ok: false, reason: "no-insight" };
-      const patsRaw = PATS_EFF[sec.id] || PATS_EFF[sec.kind] || PATS[sec.id] || PATS[sec.kind] || PATS.intro;
-      const pats = Array.isArray(patsRaw) ? patsRaw : [patsRaw];
-      const secPat = pats[0] || PEDAL;
-      const pat = resolveInsightPattern(insight, PATS_EFF) || secPat;
-      const which = voice || (insight.layer === "harmony" ? "chords" : "all");
-      const events = buildInsightMidiEvents(insight, pat, which);
-      cancelInsightMidi();
-      insightMidiGen += 1;
-      insightMidiVoice = which;
-      ensureInsightMidiGraph();
-      if (audioCtx.state === "suspended" && audioCtx.resume) audioCtx.resume();
-      const bpm = Number(demo.bpm) > 0 ? Number(demo.bpm) : 120;
-      const secPerBar = (60 / bpm) * 4; // 4/4 claim window
-      const secPerStep = secPerBar / 16;
-      const when0 = audioCtx.currentTime + 0.04;
+    /** Schedule one claim-window pass of insight MIDI at audio time when0. */
+    function scheduleInsightMidiPass(events, which, when0, secPerStep) {
       const step0 = events.step0;
       if (which === "all" || which === "bass") {
         const notes = events.bass.slice().sort((a, b) => a.step - b.step);
@@ -2314,7 +2323,47 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           }
         }
       }
-      // Light the pressed button briefly via re-render attribute
+    }
+    /**
+     * Play the active insight card claim-window as MIDI (scoped; does not invent on empty).
+     * Loops while insightMidiPlaying. Pauses the main transport if it is running.
+     * voice: optional override; otherwise derived from Bass/Drums/Chords toggles.
+     */
+    function playInsightMidi(voice) {
+      const sec = SECS[secIdx];
+      const deck = CARDS_EFF[sec.id] || CARDS_EFF[sec.kind] || CARDS[sec.id] || CARDS[sec.kind] || CARDS.intro;
+      const card = deck[cardIdx % deck.length];
+      const insight = card && card.insight;
+      if (!insight) return { ok: false, reason: "no-insight" };
+      const patsRaw = PATS_EFF[sec.id] || PATS_EFF[sec.kind] || PATS[sec.id] || PATS[sec.kind] || PATS.intro;
+      const pats = Array.isArray(patsRaw) ? patsRaw : [patsRaw];
+      const secPat = pats[0] || PEDAL;
+      const pat = resolveInsightPattern(insight, PATS_EFF) || secPat;
+      const which = voice || insightVoiceFromToggles(insight.layer || "figure");
+      if (!which) return { ok: false, reason: "no-voice" };
+      const events = buildInsightMidiEvents(insight, pat, which);
+      // Card Play must stop/pause the main player if it is running.
+      if (playing) onPause();
+      cancelInsightMidi();
+      insightMidiGen += 1;
+      const myGen = insightMidiGen;
+      insightMidiVoice = which;
+      insightMidiPlaying = true;
+      ensureInsightMidiGraph();
+      if (audioCtx.state === "suspended" && audioCtx.resume) audioCtx.resume();
+      const bpm = Number(demo.bpm) > 0 ? Number(demo.bpm) : 120;
+      const secPerBar = (60 / bpm) * 4; // 4/4 claim window
+      const secPerStep = secPerBar / 16;
+      const windowDur = Math.max(0.25, (events.totalSteps || 16) * secPerStep);
+      function armPass() {
+        if (myGen !== insightMidiGen || !insightMidiPlaying) return;
+        stopInsightMidiNodesOnly();
+        const when0 = audioCtx.currentTime + 0.04;
+        scheduleInsightMidiPass(events, which, when0, secPerStep);
+        if (insightMidiLoopTimer) clearTimeout(insightMidiLoopTimer);
+        insightMidiLoopTimer = setTimeout(armPass, Math.round(windowDur * 1000));
+      }
+      armPass();
       render();
       return {
         ok: true,
@@ -2323,8 +2372,39 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         drums: events.drums.length,
         chords: events.chords.length,
         empty: events.empty,
+        looping: true,
+        playing: true,
         gen: insightMidiGen,
         nodeCount: insightMidiNodes.length,
+        windowDur,
+      };
+    }
+    function toggleInsightMidiPlay() {
+      if (insightMidiPlaying) {
+        cancelInsightMidi();
+        render();
+        return { ok: true, playing: false };
+      }
+      return playInsightMidi();
+    }
+    function toggleInsightMidiVoice(voice) {
+      const v = String(voice || "");
+      if (v === "bass") insightMidiBassOn = !insightMidiBassOn;
+      else if (v === "drums") insightMidiDrumsOn = !insightMidiDrumsOn;
+      else if (v === "chords" || v === "chord") insightMidiChordsOn = !insightMidiChordsOn;
+      else return { ok: false, reason: "bad-voice" };
+      if (insightMidiPlaying) {
+        const r = playInsightMidi();
+        return Object.assign({ toggled: v }, r);
+      }
+      render();
+      return {
+        ok: true,
+        toggled: v,
+        playing: false,
+        bassOn: insightMidiBassOn,
+        drumsOn: insightMidiDrumsOn,
+        chordsOn: insightMidiChordsOn,
       };
     }
     function setListenMode(mode) {
@@ -2733,6 +2813,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     }
     function pickSection(i) {
       if (i < 0 || i >= SECS.length) return;
+      cancelInsightMidi();
       applySection(i, true);
       // Timeline tap: always loop the whole section and dim others (locked UX).
       loopOn = true;
@@ -2800,6 +2881,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     function onPlay() {
       // Toggle: while playing (or kick in flight), pause must win for Safari.
       if (playing) { onPause(); return; }
+      if (insightMidiPlaying) cancelInsightMidi();
       const ls = BARS[lo].t, le = barTime(hi + 1);
       if (loopOn && (t < ls || t >= le)) t = ls;
       if (t >= DURATION) t = ls;
@@ -2988,7 +3070,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     }
 
     function makeChords(viewLo, viewHi, n, playX, bar, kind) {
-      const svg = svgEl("svg", { viewBox: "0 0 " + VBW + " 64", width: "100%", height: "100%", preserveAspectRatio: "none", role: "img", "aria-label": "Chord names", style: { cursor: "crosshair", userSelect: "none", touchAction: "none" } });
+      const svg = svgEl("svg", { viewBox: "0 0 " + VBW + " 64", width: "100%", height: "100%", preserveAspectRatio: "xMidYMid meet", role: "img", "aria-label": "Chord names", style: { cursor: "crosshair", userSelect: "none", touchAction: "none" } });
       svg.appendChild(selectionOverlay(viewLo, viewHi, 2, 60));
       const bw = W / n;
       for (let i = 0; i < n; i++) {
@@ -3516,6 +3598,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         }
         if (tEl.hasAttribute("data-card-next")) {
           cardIdx++;
+          cancelInsightMidi();
           render();
           return;
         }
@@ -3526,12 +3609,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
             return Math.max(1, d.length);
           })();
           cardIdx = (cardIdx % deckLen + deckLen - 1) % deckLen;
+          cancelInsightMidi();
           render();
           return;
         }
         if (tEl.hasAttribute("data-card")) {
           const i = Number(tEl.getAttribute("data-card"));
-          if (Number.isFinite(i)) { cardIdx = i; render(); }
+          if (Number.isFinite(i)) { cardIdx = i; cancelInsightMidi(); render(); }
           return;
         }
         const action = tEl.getAttribute("data-transport");
@@ -3548,7 +3632,12 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           setListenMode(mode);
         } else if (action === "midi") {
           toggleMidi(tEl.getAttribute("data-midi") || "bass");
+        } else if (action === "insight-midi-play") {
+          toggleInsightMidiPlay();
+        } else if (action === "insight-midi-tog") {
+          toggleInsightMidiVoice(tEl.getAttribute("data-insight-voice") || "bass");
         } else if (action === "insight-midi") {
+          // Legacy: treat voice buttons as play-with-that-voice (tests / old bookmarks).
           playInsightMidi(tEl.getAttribute("data-insight-voice") || "all");
         } else if (action === "rate") {
           const r = Number(tEl.getAttribute("data-rate"));
@@ -4034,10 +4123,21 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       const insightPat = resolveInsightPattern(card.insight, PATS_EFF) || pat;
       const insightView = makeCardInsight(card.insight, insightPat);
       if (insightView) {
-        if (insightMidiVoice) {
-          const btn = insightView.querySelector('[data-insight-voice="' + insightMidiVoice + '"]');
-          if (btn) btn.classList.add("on");
+        const playBtn = insightView.querySelector("[data-insight-play]");
+        if (playBtn) {
+          if (insightMidiPlaying) {
+            playBtn.classList.add("on");
+            playBtn.textContent = "Stop";
+            playBtn.setAttribute("aria-label", "Stop card MIDI");
+            playBtn.title = "Stop — end looping card MIDI";
+          }
         }
+        const bassBtn = insightView.querySelector('[data-insight-voice="bass"]');
+        if (bassBtn && insightMidiBassOn) bassBtn.classList.add("on");
+        const drumsBtn = insightView.querySelector('[data-insight-voice="drums"]');
+        if (drumsBtn && insightMidiDrumsOn) drumsBtn.classList.add("on");
+        const chordsBtn = insightView.querySelector('[data-insight-voice="chords"]');
+        if (chordsBtn && insightMidiChordsOn) chordsBtn.classList.add("on");
         cards.appendChild(insightView);
       }
       // Panel order (desktop + drawer): label → body → insight → mini-grid → Prev/Next.
@@ -4143,7 +4243,9 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           usingAudio, audioReady, stemLoading, muteBass, muteBassSupported, privateMode, activeSongId,
           songCatalog,
           listenMode, drumsSupported, midiBass, midiDrums, midiChords, midiScheduleGen, midiNodeCount: midiNodes.length,
-          insightMidiGen, insightMidiNodeCount: insightMidiNodes.length, insightMidiVoice, playbackRate,
+          insightMidiGen, insightMidiNodeCount: insightMidiNodes.length, insightMidiVoice,
+          insightMidiPlaying, insightMidiLooping: Boolean(insightMidiPlaying && insightMidiLoopTimer),
+          insightMidiBassOn, insightMidiDrumsOn, insightMidiChordsOn, playbackRate,
           pitchPreserveMode, stemSourcePlaybackRate: lastStemSourcePlaybackRate, stemTempoUsesRawPlaybackRate: stemTempoUsesRawPlaybackRate(),
           stretchWindowSongSec: STRETCH_WINDOW_SONG_S,
           stretchWindowSongStart, stretchWindowSongEnd,
@@ -4200,6 +4302,14 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         const r = playInsightMidi(voice);
         return Object.assign({}, window.__BASS_PLAYER__.getState(), { insightMidiResult: r });
       },
+      toggleInsightMidiPlay: () => {
+        const r = toggleInsightMidiPlay();
+        return Object.assign({}, window.__BASS_PLAYER__.getState(), { insightMidiResult: r });
+      },
+      toggleInsightMidiVoice: (voice) => {
+        const r = toggleInsightMidiVoice(voice);
+        return Object.assign({}, window.__BASS_PLAYER__.getState(), { insightMidiResult: r });
+      },
       cancelInsightMidi: () => { cancelInsightMidi(); return window.__BASS_PLAYER__.getState(); },
       seek: onSeek,
       pickSection,
@@ -4228,7 +4338,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         render();
         return window.__BASS_PLAYER__.getState();
       },
-      setCard: (i) => { cardIdx = i; render(); return window.__BASS_PLAYER__.getState(); },
+      setCard: (i) => { cardIdx = i; cancelInsightMidi(); render(); return window.__BASS_PLAYER__.getState(); },
       openCardsDrawer: () => { cardsDrawerOpen = true; render(); return window.__BASS_PLAYER__.getState(); },
       closeCardsDrawer: () => { cardsDrawerOpen = false; render(); return window.__BASS_PLAYER__.getState(); },
       toggleCardsDrawer: () => { cardsDrawerOpen = !cardsDrawerOpen; render(); return window.__BASS_PLAYER__.getState(); },
