@@ -1298,9 +1298,14 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     ensurePlayerStyles();
     const privateMode = Boolean(window.__BASS_PRIVATE__) || location.pathname.startsWith("/private/");
     let demo;
+    // Multi-song public: ?song= / ?id= allowlisted slug; default Komiku. (Tempo/WSOLA path untouched.)
+    const PUBLIC_SONG_RE = /^(a-good-bass-for-gambling|make-funk|maple-leaf-rag)$/;
+    const q = new URLSearchParams(location.search);
+    const songParam = String(q.get("song") || q.get("id") || "").trim();
+    const publicSlug = PUBLIC_SONG_RE.test(songParam) ? songParam : "a-good-bass-for-gambling";
     const endpoints = privateMode
       ? ["/private/api/demo/like-a-prayer", "/api/demo/like-a-prayer", "/js/demo-data.json"]
-      : ["/api/demo/a-good-bass-for-gambling", "/js/demo-data.json"];
+      : [`/api/demo/${publicSlug}`, "/api/demo/a-good-bass-for-gambling", "/js/demo-data.json"];
     let lastErr = null;
     for (const ep of endpoints) {
       try {
@@ -1315,7 +1320,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     // Public pages: allow CC0/public stems only. Never enable licensed/private stems on the public player.
     if (!privateMode) {
       const access = String(demo.stems.access || "");
-      const publicOk = access === "public" || (demo.stems.available && /\/api\/demo\/a-good-bass-for-gambling\//.test(String(demo.stems.bass || "")));
+      const publicOk = access === "public" || (demo.stems.available && /\/api\/demo\/(a-good-bass-for-gambling|make-funk|maple-leaf-rag)\//.test(String(demo.stems.bass || "")));
       if (!publicOk) {
         demo.stems = { available: false, muteBassSupported: false, access: "blocked" };
       }
@@ -1394,9 +1399,16 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let stemRawBuffers = null; // { bass, noBass, drums? } ArrayBuffers after fetch
     let ensureAudioPromise = null;
     let stemFetchCount = 0;
-    let stretchCache = new Map(); // rate -> { bass, noBass, drums }
+    let stretchCache = new Map(); // key -> { bass, noBass, drums, windowSongStart, windowSongEnd }
     let lastStemSourcePlaybackRate = 1; // always 1 when pitch-preserved WSOLA path is used
     let pitchPreserveMode = "wsola"; // not "playbackRate"
+    // Full-track WSOLA on ~156s stereo×3 stems freezes the main thread for ~1min and can OOM phones.
+    // Interactive tempo changes stretch only a song-time window ahead of the playhead (seekWin:0 OLA).
+    const STRETCH_WINDOW_SONG_S = 16;
+    const STRETCH_RELOAD_MARGIN_S = 1.25;
+    const INTERACTIVE_STRETCH_OPTS = { seekWin: 0 };
+    let stretchWindowSongStart = 0;
+    let stretchWindowSongEnd = 0;
 
     function applyListenGains() {
       const g = listenGains(listenMode, drumsSupported && !!drumsBuf);
@@ -1696,26 +1708,111 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       suspendAudioCtx();
       if (resetToLoopStart) t = BARS[lo].t;
     }
-    function getStretchedStemBuffers(rate) {
-      if (rate === 1) return { bass: bassBuf, noBass: noBassBuf, drums: drumsBuf };
-      const key = String(rate);
-      if (stretchCache.has(key)) return stretchCache.get(key);
+    function sliceAudioBuffer(buffer, songStart, songEnd, createBuf) {
+      const sr = buffer.sampleRate || 44100;
+      const chans = buffer.numberOfChannels || 1;
+      // Map song-time through reported duration → real samples. Test fixtures (and
+      // some decoders) may set buffer.duration to study length while length is short;
+      // real stems have duration ≈ length/sampleRate (scale ≈ 1).
+      const realDur = buffer.length > 0 ? buffer.length / sr : 0;
+      const reportedDur = (buffer.duration > 0 ? buffer.duration : realDur) || realDur || 1;
+      const scale = realDur / reportedDur;
+      const a0 = Math.max(0, Math.min(realDur, (songStart || 0) * scale));
+      const a1 = Math.max(a0 + (1 / sr), Math.min(realDur, (songEnd || 0) * scale));
+      const i0 = Math.max(0, Math.min(buffer.length, Math.floor(a0 * sr)));
+      const i1 = Math.max(i0 + 1, Math.min(buffer.length, Math.ceil(a1 * sr)));
+      const len = Math.max(1, i1 - i0);
+      const out = createBuf(chans, len, sr);
+      for (let c = 0; c < chans; c++) {
+        const ch = buffer.getChannelData(c);
+        const dest = out.getChannelData(c);
+        dest.set(ch.subarray(i0, Math.min(i0 + dest.length, ch.length)));
+      }
+      return out;
+    }
+    function getStretchedStemBuffers(rate, songStart) {
       const createBuf = (ch, len, sr) => audioCtx.createBuffer(ch, len, sr);
+      const maxSong = Math.min(
+        DURATION,
+        bassBuf.duration || DURATION,
+        noBassBuf.duration || DURATION,
+        drumsBuf ? (drumsBuf.duration || DURATION) : DURATION,
+      );
+      const start = Math.max(0, Math.min(Math.max(0, maxSong - 0.01), songStart || 0));
+      if (rate === 1) {
+        stretchWindowSongStart = 0;
+        stretchWindowSongEnd = maxSong;
+        return {
+          bass: bassBuf,
+          noBass: noBassBuf,
+          drums: drumsBuf,
+          windowSongStart: 0,
+          windowSongEnd: maxSong,
+          bufferOffsetSong: start,
+          fullBuffer: true,
+        };
+      }
+      const sr0 = bassBuf.sampleRate || 44100;
+      const realDur = bassBuf.length > 0 ? bassBuf.length / sr0 : maxSong;
+      // Short stems (≤ window): full stretch is cheap — used by fixtures and short demos.
+      // Long stems: ONLY stretch a playhead window (full-track WSOLA freezes/OOMs the page).
+      if (realDur <= STRETCH_WINDOW_SONG_S + 0.05) {
+        const key = String(rate) + "@full";
+        if (stretchCache.has(key)) {
+          const hit = stretchCache.get(key);
+          stretchWindowSongStart = hit.windowSongStart;
+          stretchWindowSongEnd = hit.windowSongEnd;
+          return hit;
+        }
+        const packed = {
+          bass: stretchAudioBuffer(bassBuf, rate, createBuf, INTERACTIVE_STRETCH_OPTS),
+          noBass: stretchAudioBuffer(noBassBuf, rate, createBuf, INTERACTIVE_STRETCH_OPTS),
+          drums: drumsBuf ? stretchAudioBuffer(drumsBuf, rate, createBuf, INTERACTIVE_STRETCH_OPTS) : null,
+          windowSongStart: 0,
+          windowSongEnd: maxSong,
+          bufferOffsetSong: start,
+          fullBuffer: true,
+        };
+        stretchCache.set(key, packed);
+        stretchWindowSongStart = 0;
+        stretchWindowSongEnd = maxSong;
+        return packed;
+      }
+      const winEnd = Math.min(maxSong, start + STRETCH_WINDOW_SONG_S);
+      const key = String(rate) + "@" + start.toFixed(2) + "-" + winEnd.toFixed(2);
+      if (stretchCache.has(key)) {
+        const hit = stretchCache.get(key);
+        stretchWindowSongStart = hit.windowSongStart;
+        stretchWindowSongEnd = hit.windowSongEnd;
+        return hit;
+      }
+      // Pitch-preserving path: WSOLA/OLA-stretch a playhead window, play at source rate 1.
+      // Never drive tempo via BufferSource.playbackRate alone (that shifts pitch).
+      // Never stretch the full track synchronously (freeze/OOM on multi-minute stems).
       const packed = {
-        bass: stretchAudioBuffer(bassBuf, rate, createBuf),
-        noBass: stretchAudioBuffer(noBassBuf, rate, createBuf),
-        drums: drumsBuf ? stretchAudioBuffer(drumsBuf, rate, createBuf) : null,
+        bass: stretchAudioBuffer(sliceAudioBuffer(bassBuf, start, winEnd, createBuf), rate, createBuf, INTERACTIVE_STRETCH_OPTS),
+        noBass: stretchAudioBuffer(sliceAudioBuffer(noBassBuf, start, winEnd, createBuf), rate, createBuf, INTERACTIVE_STRETCH_OPTS),
+        drums: drumsBuf
+          ? stretchAudioBuffer(sliceAudioBuffer(drumsBuf, start, winEnd, createBuf), rate, createBuf, INTERACTIVE_STRETCH_OPTS)
+          : null,
+        windowSongStart: start,
+        windowSongEnd: winEnd,
+        bufferOffsetSong: start,
+        fullBuffer: false,
       };
+      // Keep a couple of recent windows only — full-track cache was a memory bomb.
       stretchCache.set(key, packed);
+      if (stretchCache.size > 4) {
+        const first = stretchCache.keys().next().value;
+        stretchCache.delete(first);
+      }
+      stretchWindowSongStart = start;
+      stretchWindowSongEnd = winEnd;
       return packed;
     }
     function startStemNodes(atTime) {
       if (!audioReady || !audioCtx || !bassBuf || !noBassBuf) return;
-      stopStemNodes();
       const rate = playbackRate > 0 ? playbackRate : 1;
-      // Pitch-preserving path: WSOLA-stretch buffers, play at source rate 1.
-      // Never drive tempo via BufferSource.playbackRate alone (that shifts pitch).
-      const playBufs = getStretchedStemBuffers(rate);
       // Clamp to both study duration and *original* buffer lengths (song time domain).
       const maxStart = Math.min(
         DURATION,
@@ -1724,14 +1821,32 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         drumsBuf ? (drumsBuf.duration || DURATION) : DURATION,
       ) - 0.01;
       const start = Math.max(0, Math.min(maxStart, atTime));
-      // Stretched buffer is longer by 1/rate; song time `start` maps to buffer offset start/rate.
-      const bufferOffset = rate === 1 ? start : start / rate;
+      let playBufs;
+      try {
+        // Build stretched window BEFORE stopping current audio so a slow/failed stretch
+        // does not leave the player silent/broken mid-tap.
+        playBufs = getStretchedStemBuffers(rate, start);
+      } catch (err) {
+        console.warn("stem stretch failed", err);
+        return;
+      }
+      // rate=1 / short full-stretch: offset into buffer. Long windowed stretch: offset 0.
+      let bufferOffset = 0;
+      if (rate === 1) {
+        bufferOffset = start;
+      } else if (playBufs.fullBuffer) {
+        const reported = bassBuf.duration > 0 ? bassBuf.duration : (bassBuf.length / (bassBuf.sampleRate || 44100));
+        const real = bassBuf.length / (bassBuf.sampleRate || 44100);
+        const scale = reported > 0 ? real / reported : 1;
+        bufferOffset = (start * scale) / rate;
+      }
       const maxBuf = Math.min(
         playBufs.bass.duration || bufferOffset,
         playBufs.noBass.duration || bufferOffset,
         playBufs.drums ? (playBufs.drums.duration || bufferOffset) : bufferOffset,
       ) - 0.01;
       const bufStart = Math.max(0, Math.min(Math.max(0, maxBuf), bufferOffset));
+      stopStemNodes();
       bassSrc = audioCtx.createBufferSource();
       noBassSrc = audioCtx.createBufferSource();
       bassSrc.buffer = playBufs.bass;
@@ -1779,10 +1894,16 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       if (!PLAYBACK_RATES.includes(r)) return;
       // Keep song position continuous across rate changes.
       if (usingAudio && audioCtx) syncTransportFromAudio();
+      const prev = playbackRate;
       playbackRate = r;
-      if (playing) {
-        if (usingAudio) startStemNodes(t);
-        else if (midiBass || midiDrums) scheduleMidi(t);
+      try {
+        if (playing) {
+          if (audioReady && bassBuf && noBassBuf) startStemNodes(t);
+          else if (midiBass || midiDrums) scheduleMidi(t);
+        }
+      } catch (err) {
+        console.warn("setPlaybackRate failed", err);
+        playbackRate = prev;
       }
       render();
     }
@@ -1981,6 +2102,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           if (usingAudio) {
             syncTransportFromAudio();
             if (loopOn && t >= le2) { t = ls2; startStemNodes(t); }
+            else if (
+              playbackRate !== 1 &&
+              stretchWindowSongEnd > stretchWindowSongStart &&
+              t >= stretchWindowSongEnd - STRETCH_RELOAD_MARGIN_S
+            ) {
+              startStemNodes(t);
+            }
           } else {
             t += 0.05 * (playbackRate > 0 ? playbackRate : 1);
             if (loopOn && t >= le2) {
@@ -2959,6 +3087,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           usingAudio, audioReady, stemLoading, muteBass, muteBassSupported, privateMode,
           listenMode, drumsSupported, midiBass, midiDrums, playbackRate,
           pitchPreserveMode, stemSourcePlaybackRate: lastStemSourcePlaybackRate, stemTempoUsesRawPlaybackRate: stemTempoUsesRawPlaybackRate(),
+          stretchWindowSongSec: STRETCH_WINDOW_SONG_S,
+          stretchWindowSongStart, stretchWindowSongEnd,
           stemUrls: { bass: stemUrls.bass, noBass: stemUrls.noBass, drums: stemUrls.drums },
           stemFetchCount,
           audioCtxState: audioCtx ? audioCtx.state : null,
@@ -3084,6 +3214,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     stretchChannel,
     stretchAudioBuffer,
     stemTempoUsesRawPlaybackRate,
+    STRETCH_WINDOW_SONG_S: 16,
+    INTERACTIVE_STRETCH_OPTS: { seekWin: 0 },
     tabPos,
     OPEN: OPEN.slice(),
     midiToName,

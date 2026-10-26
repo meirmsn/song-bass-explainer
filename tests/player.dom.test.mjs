@@ -39,7 +39,7 @@ function setViewport(width, height = 844) {
   Object.defineProperty(window, "innerHeight", { configurable: true, writable: true, value: height });
 }
 
-async function bootPlayer({ privateMode = true, withStems = false, mutatePayload = null, width = null, height = 844 } = {}) {
+async function bootPlayer({ privateMode = true, withStems = false, mutatePayload = null, width = null, height = 844, stemSeconds = 0.25, stemChannels = 1 } = {}) {
   if (width != null) setViewport(width, height);
   document.body.innerHTML = '<div id="app"></div>';
   window.__BASS_PRIVATE__ = privateMode;
@@ -178,26 +178,33 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
       return f;
     }
     createBuffer(channels, length, sampleRate) {
-      const data = [new Float32Array(length)];
+      const ch = Math.max(1, channels || 1);
+      const data = Array.from({ length: ch }, () => new Float32Array(length));
       return {
         duration: length / sampleRate,
         length,
         sampleRate,
-        numberOfChannels: channels,
+        numberOfChannels: ch,
         getChannelData: (i) => data[i] || data[0],
       };
     }
     async decodeAudioData() {
-      // Short but stretchable buffer (0.25s). duration reports study length for clamp math.
+      // Default short stretchable buffer. Tests may request long stems to catch full-track WSOLA freezes.
       const sampleRate = 44100;
-      const length = Math.floor(sampleRate * 0.25);
-      const data = [new Float32Array(length)];
-      for (let i = 0; i < length; i++) data[0][i] = Math.sin(2 * Math.PI * 110 * i / sampleRate);
+      const secs = stemSeconds > 0 ? stemSeconds : 0.25;
+      const ch = Math.max(1, stemChannels || 1);
+      const length = Math.floor(sampleRate * secs);
+      const data = Array.from({ length: ch }, () => new Float32Array(length));
+      for (let c = 0; c < ch; c++) {
+        for (let i = 0; i < length; i++) data[c][i] = Math.sin(2 * Math.PI * 110 * i / sampleRate);
+      }
+      // Short fixtures lie duration=study length (clamp math); long-stem tests use real duration=secs.
+      const duration = secs > demo.duration ? secs : demo.duration;
       return {
-        duration: demo.duration,
+        duration,
         length,
         sampleRate,
-        numberOfChannels: 1,
+        numberOfChannels: ch,
         getChannelData: (i) => data[i] || data[0],
       };
     }
@@ -2124,6 +2131,7 @@ describe("playback rate + public CC0 stems", () => {
     expect(st.playbackRate).toBe(0.5);
     expect(st.usingAudio).toBe(true);
     expect(st.stemSourcePlaybackRate).toBe(1);
+    expect(st.stretchWindowSongSec).toBe(16);
 
     const ctx = window.__LAST_AUDIO_CTX__;
     expect(ctx).toBeTruthy();
@@ -2131,7 +2139,7 @@ describe("playback rate + public CC0 stems", () => {
     expect(started.length).toBeGreaterThanOrEqual(2);
     for (const s of started) {
       expect(s.playbackRate.value).toBe(1);
-      // Stretched buffer should be ~2x the decoded stem sample length (0.25s → ~0.5s).
+      // Windowed stretch of the short fixture stem (~0.25s samples) at 0.5 → ~0.5s.
       expect(s.buffer.length).toBeGreaterThan(Math.floor(44100 * 0.25) * 1.5);
     }
   });
@@ -2150,5 +2158,68 @@ describe("playback rate + public CC0 stems", () => {
     expect(rawRateUsed).toBe(false);
     expect(api.getState().stemSourcePlaybackRate).toBe(1);
     expect(api.getState().playbackRate).toBe(0.75);
+  });
+
+  it("mid-play tempo tap on long stereo stems stays bounded and does not break the player", async () => {
+    // Regression: shipping full-track WSOLA on ~156s stereo×3 froze/OOM'd the page on rate tap.
+    // Interactive path must stretch only STRETCH_WINDOW_SONG_S ahead of the playhead.
+    const stemSeconds = 60;
+    const api = await bootPlayer({
+      privateMode: true,
+      withStems: true,
+      stemSeconds,
+      stemChannels: 2,
+      mutatePayload: (p) => { p.duration = stemSeconds; },
+    });
+    expect(window.__BASS_NOTATION__.STRETCH_WINDOW_SONG_S).toBe(16);
+    expect(window.__BASS_NOTATION__.INTERACTIVE_STRETCH_OPTS.seekWin).toBe(0);
+
+    await api.ensureAudio();
+    api.play();
+    await api.waitTick(40);
+    expect(api.getState().playing).toBe(true);
+    expect(api.getState().usingAudio).toBe(true);
+
+    const t0 = Date.now();
+    let threw = null;
+    try {
+      api.setPlaybackRate(0.5);
+    } catch (e) {
+      threw = e;
+    }
+    const elapsed = Date.now() - t0;
+    expect(threw).toBeNull();
+    // Full-track default-seek stretch on 60s×2ch×3 is multi-second; windowed path must stay snappy.
+    expect(elapsed).toBeLessThan(2500);
+
+    const st = api.getState();
+    expect(st.playbackRate).toBe(0.5);
+    expect(st.playing).toBe(true);
+    expect(st.usingAudio).toBe(true);
+    expect(st.stemSourcePlaybackRate).toBe(1);
+    expect(st.pitchPreserveMode).toBe("wsola");
+    expect(st.stretchWindowSongSec).toBe(16);
+    expect(st.stretchWindowSongEnd - st.stretchWindowSongStart).toBeLessThanOrEqual(16.01);
+    expect(st.stretchWindowSongEnd - st.stretchWindowSongStart).toBeGreaterThan(0);
+
+    const ctx = window.__LAST_AUDIO_CTX__;
+    const started = (ctx._sources || []).filter((s) => s.buffer && s.startedAt != null);
+    expect(started.length).toBeGreaterThanOrEqual(2);
+    // Ignore sources from the earlier rate=1 play(); only the post-tempo-change window matters.
+    const recent = started.slice(-3);
+    const maxAllowed = Math.ceil(44100 * (16 / 0.5) * 1.05) + 44100; // window/rate + slack
+    for (const s of recent) {
+      expect(s.playbackRate.value).toBe(1);
+      expect(s.buffer.length).toBeLessThan(maxAllowed);
+      // Must not have stretched the entire 60s stem (would be ~120s at rate 0.5).
+      expect(s.buffer.length).toBeLessThan(Math.floor(44100 * stemSeconds / 0.5) * 0.5);
+    }
+
+    // UI still alive — rate strip present, another tempo tap works without refresh.
+    expect(document.querySelector("[data-rate-strip]")).toBeTruthy();
+    api.setPlaybackRate(0.75);
+    expect(api.getState().playbackRate).toBe(0.75);
+    expect(api.getState().playing).toBe(true);
+    expect(document.querySelector('.rate-btn[data-rate="0.75"].on')).toBeTruthy();
   });
 });
