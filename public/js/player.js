@@ -549,13 +549,16 @@
     return hits.filter((h) => !isBarDrumsSilent(lo + Math.floor(h.step / 16), ranges));
   }
 
-  /** Plain clear electric/acoustic-like bass MIDI voice (not harsh saw/square grit). */
+  /** Plain clear electric/acoustic-like bass MIDI voice (not harsh saw/square grit).
+   *  Fundamental sine + quieter +12st layer so the line reads clearly without grit. */
   const BASS_MIDI_VOICE = {
     oscType: "sine",
     filterType: "lowpass",
-    filterFreq: 900,
+    filterFreq: 1200,
     filterQ: 0.7,
-    peakGain: 0.18,
+    peakGain: 0.16,
+    octaveSemitones: 12,
+    octaveGain: 0.07,
     attack: 0.018,
     release: 0.06,
     minDur: 0.08,
@@ -1088,31 +1091,38 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     }
     function playBassSynthNote(when, dur, midi) {
       const v = BASS_MIDI_VOICE;
-      const osc = audioCtx.createOscillator();
       const filt = audioCtx.createBiquadFilter();
-      const g = audioCtx.createGain();
-      osc.type = v.oscType; // soft sine — no saw/square grit
-      osc.frequency.value = midiToFreq(midi);
       filt.type = v.filterType;
       filt.frequency.value = v.filterFreq;
       if (filt.Q) filt.Q.value = v.filterQ;
+      filt.connect(midiBassGain);
       const len = Math.max(v.minDur, dur || 0.2);
       const attack = Math.min(v.attack, len * 0.35);
       const release = Math.min(v.release, len * 0.45);
       const peakAt = when + attack;
       const releaseAt = Math.max(peakAt, when + len - release);
-      g.gain.setValueAtTime(0.0001, when);
-      g.gain.exponentialRampToValueAtTime(v.peakGain, peakAt);
-      g.gain.exponentialRampToValueAtTime(Math.max(0.0001, v.peakGain * 0.9), releaseAt);
-      g.gain.exponentialRampToValueAtTime(0.0001, when + len);
-      osc.connect(filt);
-      filt.connect(g);
-      g.connect(midiBassGain);
-      osc.start(when);
-      osc.stop(when + len + 0.02);
-      midiNodes.push(osc);
+      const layers = [
+        { midiOffset: 0, peak: v.peakGain },
+        { midiOffset: v.octaveSemitones || 0, peak: v.octaveGain || 0 },
+      ];
+      for (const layer of layers) {
+        if (!(layer.peak > 0)) continue;
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = v.oscType; // soft sine — no saw/square grit
+        osc.frequency.value = midiToFreq(Number(midi) + layer.midiOffset);
+        g.gain.setValueAtTime(0.0001, when);
+        g.gain.exponentialRampToValueAtTime(layer.peak, peakAt);
+        g.gain.exponentialRampToValueAtTime(Math.max(0.0001, layer.peak * 0.9), releaseAt);
+        g.gain.exponentialRampToValueAtTime(0.0001, when + len);
+        osc.connect(g);
+        g.connect(filt);
+        osc.start(when);
+        osc.stop(when + len + 0.02);
+        midiNodes.push(osc);
+        midiNodes.push(g);
+      }
       midiNodes.push(filt);
-      midiNodes.push(g);
     }
     function playDrumSynthHit(when, kind) {
       const g = audioCtx.createGain();

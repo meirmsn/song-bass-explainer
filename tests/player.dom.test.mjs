@@ -1453,6 +1453,17 @@ describe("bass-midi-tone: plain clear bass voice (not harsh synth grit)", () => 
     expect(["sawtooth", "square"]).not.toContain(N.BASS_MIDI_VOICE.oscType);
   });
 
+  it("BASS_MIDI_VOICE adds a quieter +12st clarity layer (not harsh)", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    const v = window.__BASS_NOTATION__.BASS_MIDI_VOICE;
+    expect(v.octaveSemitones).toBe(12);
+    expect(v.octaveGain).toBeGreaterThan(0);
+    expect(v.octaveGain).toBeLessThan(v.peakGain);
+    expect(v.octaveGain).toBeLessThanOrEqual(0.12);
+    expect(v.oscType).toBe("sine");
+    expect(["sawtooth", "square"]).not.toContain(v.oscType);
+  });
+
   it("scheduling bass MIDI creates sine osc through lowpass filter", async () => {
     const api = await bootPlayer({ privateMode: true, withStems: true });
     api.pickSection(2); // chorus with notes
@@ -1468,6 +1479,31 @@ describe("bass-midi-tone: plain clear bass voice (not harsh synth grit)", () => 
     expect(ctx._filters.length).toBeGreaterThan(0);
     expect(ctx._filters.some((f) => f.type === "lowpass")).toBe(true);
     expect(ctx._oscillators.some((o) => o.type === "sawtooth" || o.type === "square")).toBe(false);
+    api.pause();
+  });
+
+  it("scheduling bass MIDI stacks fundamental + octave sine (ratio ~2)", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    const N = window.__BASS_NOTATION__;
+    api.pickSection(2);
+    api.setMidiBass(true);
+    api.setMidiDrums(false);
+    await api.ensureAudio();
+    api.play();
+    await api.waitTick(80);
+    const ctx = window.__LAST_AUDIO_CTX__;
+    expect(ctx._oscillators.length).toBeGreaterThanOrEqual(2);
+    const freqs = ctx._oscillators.map((o) => o.frequency.value).filter((f) => f > 0).sort((a, b) => a - b);
+    // Find at least one octave pair among scheduled layers
+    let foundOctave = false;
+    for (let i = 0; i < freqs.length; i++) {
+      for (let j = i + 1; j < freqs.length; j++) {
+        const ratio = freqs[j] / freqs[i];
+        if (ratio > 1.95 && ratio < 2.05) foundOctave = true;
+      }
+    }
+    expect(foundOctave).toBe(true);
+    expect(N.BASS_MIDI_VOICE.octaveSemitones).toBe(12);
     api.pause();
   });
 });
