@@ -2380,8 +2380,8 @@ describe("phone layout — cards bottom drawer", () => {
     }
     // Stylesheet must pin a min-height so flex cannot crush the schematic in the drawer.
     const css = document.getElementById("bass-player-styles")?.textContent || "";
-    expect(css).toMatch(/\.cards-drawer \.card-insight[^{]*\{[^}]*min-height:\s*152px/);
-    expect(css).toMatch(/\.cards-drawer \.card-insight-svg[^{]*\{[^}]*min-height:\s*110px/);
+    expect(css).toMatch(/\.cards-drawer \.card-insight[^{]*\{[^}]*min-height:\s*196px/);
+    expect(css).toMatch(/\.cards-drawer \.card-insight-svg[^{]*\{[^}]*min-height:\s*148px/);
   });
 
   it("phone chrome: title/meta stay in header, timeline labels larger, stems badge short", async () => {
@@ -2737,7 +2737,7 @@ describe("staff time + key signatures", () => {
   });
 });
 
-describe("chord-midi: playable chords + sounding note highlight", () => {
+describe("chord-midi: playable chords + chord-row highlight (no main-staff diamonds)", () => {
   afterEach(() => {
     teardownPlayer();
   });
@@ -2790,15 +2790,10 @@ describe("chord-midi: playable chords + sounding note highlight", () => {
     expect(soundingChord).toBeTruthy();
     expect(soundingChord.getAttribute("data-chord")).toBeTruthy();
 
-    const toneMarks = document.querySelectorAll('[data-chord-tones] [data-chord-tone="1"]');
-    expect(toneMarks.length).toBeGreaterThanOrEqual(3);
-    const diamonds = [...toneMarks].filter((el) => el.tagName === "rect");
-    expect(diamonds.length).toBeGreaterThanOrEqual(3);
-    for (const d of diamonds) {
-      expect(d.getAttribute("fill")).toBe("none");
-      expect(d.getAttribute("stroke")).toBe("#60a5fa");
-      expect(d.getAttribute("transform") || "").toMatch(/rotate\(45/);
-    }
+    // Chord pads stay; diamonds and chord-tone ink do not land on the main bass staff.
+    expect(document.querySelectorAll("[data-chord-tones]").length).toBe(0);
+    expect(document.querySelectorAll('svg[aria-label="Bass staff"] [data-chord-tone]').length).toBe(0);
+    expect(document.querySelectorAll('svg[aria-label="Bass tab"] [data-chord-tone]').length).toBe(0);
 
     const ctx = window.__LAST_AUDIO_CTX__;
     const chordOsc = ctx._oscillators.filter((o) => o.type === "sine" && !o._stopped);
@@ -2868,5 +2863,141 @@ describe("chord-midi: playable chords + sounding note highlight", () => {
     expect(live.length).toBeGreaterThanOrEqual(3);
     expect(live.every((o) => o.type === "sine")).toBe(true);
     api.pause();
+  });
+});
+
+describe("insight-card MIDI + two-staff schematic", () => {
+  afterEach(() => {
+    teardownPlayer();
+  });
+
+  it("schematic is two staves (bass above drums) with Bass/Drums/Both", async () => {
+    const api = await bootPlayer();
+    api.pickSection(2);
+    api.setCard(1); // Figure
+    const panel = document.querySelector(".card-insight");
+    expect(panel).toBeTruthy();
+    const svg = document.querySelector(".card-insight-svg");
+    expect(svg?.getAttribute("data-insight-two-staff")).toBe("1");
+    const staffLabelY = (name) => {
+      const node = [...svg.querySelectorAll("text")].find((n) => n.textContent === name);
+      return Number(node?.getAttribute("y"));
+    };
+    expect(staffLabelY("Bass")).toBeLessThan(staffLabelY("Drums"));
+    expect(document.querySelectorAll('[data-insight-staff="bass"]').length).toBeGreaterThan(0);
+    expect(document.querySelectorAll('[data-insight-staff="drums"]').length).toBeGreaterThan(0);
+    const voices = [...document.querySelectorAll("[data-insight-midi-strip] button")].map((b) => b.getAttribute("data-insight-voice"));
+    expect(voices).toEqual(["bass", "drums", "all"]);
+    expect(document.querySelector('button[data-insight-voice="bass"]').textContent).toBe("Bass");
+    expect(document.querySelector('button[data-insight-voice="drums"]').textContent).toBe("Drums");
+    expect(document.querySelector('button[data-insight-voice="all"]').textContent).toBe("Both");
+
+    api.setCard(2); // Harmony
+    const harmVoices = [...document.querySelectorAll("[data-insight-midi-strip] button")].map((b) => b.textContent);
+    expect(harmVoices).toEqual(["Chords"]);
+    expect(document.querySelector('button[data-insight-voice="chords"]')).toBeTruthy();
+  });
+
+  it("buildInsightMidiEvents plays the claim window and invents nothing when empty", async () => {
+    await bootPlayer();
+    const N = window.__BASS_NOTATION__;
+    const fig = {
+      layer: "figure",
+      patternId: "sync_oct",
+      barRange: [0, 0],
+      highlights: [{ step: 0, midi: 41, text: "high" }, { step: 4, midi: 29, text: "drop" }],
+    };
+    const ev = N.buildInsightMidiEvents(fig, N.SYNC_OCT, "all");
+    expect(ev.bass.length).toBeGreaterThan(0);
+    expect(ev.bass.every((n) => n.step >= 0 && n.step < 16)).toBe(true);
+    expect(ev.drums.map((d) => d.step + ":" + d.kind)).toEqual(["0:kick", "4:snare", "8:kick", "12:snare"]);
+    expect(ev.empty).toBe(false);
+
+    const emptyEv = N.buildInsightMidiEvents({
+      layer: "figure", patternId: "empty", barRange: [0, 0], highlights: [],
+    }, N.EMPTY, "all");
+    expect(emptyEv.empty).toBe(true);
+    expect(emptyEv.bass).toEqual([]);
+    expect(emptyEv.drums).toEqual([]);
+
+    const bassOnly = N.buildInsightMidiEvents(fig, N.SYNC_OCT, "bass");
+    expect(bassOnly.bass.length).toBeGreaterThan(0);
+    expect(bassOnly.drums).toEqual([]);
+
+    const drumsOnly = N.buildInsightMidiEvents(fig, N.SYNC_OCT, "drums");
+    expect(drumsOnly.drums.length).toBe(4);
+    expect(drumsOnly.bass).toEqual([]);
+
+    const harm = N.buildInsightMidiEvents({
+      layer: "harmony",
+      barRange: [0, 3],
+      highlights: [
+        { step: 0, kind: "chord", chord: "F", text: "I" },
+        { step: 16, kind: "chord", chord: "C", text: "V" },
+      ],
+    }, null, "chords");
+    expect(harm.chords.length).toBe(2);
+    expect(harm.chords[0].tones.length).toBeGreaterThanOrEqual(3);
+    expect(harm.bass).toEqual([]);
+    expect(harm.drums).toEqual([]);
+  });
+
+  it("insight card MIDI button schedules the claim window and leaves the main staff unmarked", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: false });
+    api.pickSection(2);
+    api.setCard(1);
+    const gen0 = api.getState().insightMidiGen || 0;
+    document.querySelector('button[data-insight-voice="all"]').dispatchEvent(
+      new MouseEvent("pointerup", { bubbles: true, cancelable: true }),
+    );
+    await api.waitTick(30);
+    expect(api.getState().insightMidiGen).toBeGreaterThan(gen0);
+    expect(api.getState().insightMidiVoice).toBe("all");
+    expect(api.getState().insightMidiNodeCount).toBeGreaterThan(0);
+    expect(document.querySelector('button[data-insight-voice="all"]').classList.contains("on")).toBe(true);
+    expect(document.querySelectorAll("[data-chord-tones]").length).toBe(0);
+
+    const bassR = api.playInsightMidi("bass");
+    expect(bassR.insightMidiResult.ok).toBe(true);
+    expect(bassR.insightMidiResult.voice).toBe("bass");
+    expect(bassR.insightMidiResult.bass).toBeGreaterThan(0);
+    expect(bassR.insightMidiResult.drums).toBe(0);
+
+    const drumsR = api.playInsightMidi("drums");
+    expect(drumsR.insightMidiResult.drums).toBeGreaterThan(0);
+    expect(drumsR.insightMidiResult.bass).toBe(0);
+
+    api.setCard(2);
+    const chordR = api.playInsightMidi("chords");
+    expect(chordR.insightMidiResult.ok).toBe(true);
+    expect(chordR.insightMidiResult.chords).toBeGreaterThan(0);
+    expect(document.querySelector('button[data-insight-voice="chords"]').classList.contains("on")).toBe(true);
+
+    const ctx = window.__LAST_AUDIO_CTX__;
+    const oscBefore = ctx._oscillators.length;
+    api.cancelInsightMidi();
+    expect(api.getState().insightMidiVoice).toBeNull();
+    expect(api.getState().insightMidiNodeCount).toBe(0);
+    expect(ctx._oscillators.slice(0, oscBefore).every((o) => o._stopped)).toBe(true);
+  });
+
+  it("empty insight MIDI stays silent (no invented bass or drums)", async () => {
+    const api = await bootPlayer({
+      privateMode: true,
+      mutatePayload: (payload) => {
+        const fig = payload.cards.chorus[1];
+        fig.insight.patternId = "empty";
+        fig.insight.highlights = [];
+      },
+    });
+    api.pickSection(2);
+    api.setCard(1);
+    const r = api.playInsightMidi("all");
+    expect(r.insightMidiResult.ok).toBe(true);
+    expect(r.insightMidiResult.empty).toBe(true);
+    expect(r.insightMidiResult.bass).toBe(0);
+    expect(r.insightMidiResult.drums).toBe(0);
+    expect(r.insightMidiResult.nodeCount).toBe(0);
+    expect(document.querySelectorAll('[data-insight-kind="empty"]').length).toBeGreaterThan(0);
   });
 });

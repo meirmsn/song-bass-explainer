@@ -1070,10 +1070,11 @@
   }
 
   /**
-   * Compact flashcard insight schematic — claim window + crisp labels.
+   * Compact flashcard insight schematic — two staves (bass on top, drums below)
+   * mirroring the main left layout. Claim-window highlights stay lit; dim = other
+   * hits in the figure. Hand annotations explain the claim.
    * insight: { layer, patternId?, title?, barRange?, highlights:[{step,text,kind?,midi?,chord?}] }
-   * Layers: pocket (bass↔drums) | figure | harmony | missable (plus legacy drums/bass/feel).
-   * Schematic span = claim window (barRange). Dim hits stay; legend explains lit vs dim.
+   * Layers: pocket | figure | harmony | missable (plus legacy drums/bass/feel).
    */
   function makeCardInsight(insight, pattern) {
     if (!insight || typeof insight !== "object") return null;
@@ -1081,7 +1082,6 @@
     const isPocket = layer === "pocket" || layer === "drums";
     const isHarmony = layer === "harmony";
     const highlightsAll = Array.isArray(insight.highlights) ? insight.highlights : [];
-    // One insight per card: 2–4 callouts max on the schematic.
     const highlights = highlightsAll.filter((h) => h && (h.text || h.kind || h.chord || Number.isFinite(h.step))).slice(0, 4);
     const barRange = Array.isArray(insight.barRange) && insight.barRange.length >= 2
       ? [insight.barRange[0] | 0, insight.barRange[1] | 0]
@@ -1090,7 +1090,47 @@
     const step0 = barRange[0] * 16;
     const totalSteps = nBars * 16;
     const wrap = el("div", { className: "card-insight", "data-insight-layer": layer });
-    if (insight.title) wrap.appendChild(el("div", { className: "card-insight-title" }, [insight.title]));
+    const head = el("div", { className: "card-insight-head" });
+    if (insight.title) head.appendChild(el("div", { className: "card-insight-title" }, [insight.title]));
+    else head.appendChild(el("div", { className: "card-insight-title" }, [layer]));
+    const midiStrip = el("div", { className: "card-insight-midi-strip", "data-insight-midi-strip": "1" });
+    if (isHarmony) {
+      midiStrip.appendChild(el("button", {
+        type: "button",
+        className: "ch-btn card-insight-midi",
+        "data-transport": "insight-midi",
+        "data-insight-voice": "chords",
+        "aria-label": "Play insight chords as MIDI",
+        title: "MIDI — hear this card’s chords",
+      }, ["Chords"]));
+    } else {
+      midiStrip.appendChild(el("button", {
+        type: "button",
+        className: "ch-btn card-insight-midi",
+        "data-transport": "insight-midi",
+        "data-insight-voice": "bass",
+        "aria-label": "Play insight bass as MIDI",
+        title: "MIDI — hear bass line on this card",
+      }, ["Bass"]));
+      midiStrip.appendChild(el("button", {
+        type: "button",
+        className: "ch-btn card-insight-midi",
+        "data-transport": "insight-midi",
+        "data-insight-voice": "drums",
+        "aria-label": "Play insight drums as MIDI",
+        title: "MIDI — hear drums on this card",
+      }, ["Drums"]));
+      midiStrip.appendChild(el("button", {
+        type: "button",
+        className: "ch-btn card-insight-midi",
+        "data-transport": "insight-midi",
+        "data-insight-voice": "all",
+        "aria-label": "Play insight bass and drums as MIDI",
+        title: "MIDI — hear this card’s claim window",
+      }, ["Both"]));
+    }
+    head.appendChild(midiStrip);
+    wrap.appendChild(head);
 
     if (isHarmony) {
       const row = el("div", { className: "card-insight-chords" });
@@ -1111,9 +1151,10 @@
     }
 
     const VW = 320;
-    const VH = 128;
-    const gx0 = 24, gw = VW - 36;
-    const gridY = 72;
+    const VH = 168;
+    const gx0 = 28, gw = VW - 40;
+    const bassY = 52;   // center of bass staff band
+    const drumY = 118;  // center of drums staff band
     const svg = svgEl("svg", {
       viewBox: "0 0 " + VW + " " + VH,
       width: "100%",
@@ -1122,149 +1163,190 @@
       role: "img",
       "aria-label": insight.title || "Pattern insight",
       class: "card-insight-svg",
+      "data-insight-two-staff": "1",
     });
     const sx = (s) => gx0 + ((s - step0 + 0.5) / totalSteps) * gw;
 
-    // Bar backgrounds
-    for (let b = 0; b < nBars; b++) {
-      const x = gx0 + (b / nBars) * gw;
-      svg.appendChild(svgEl("rect", {
-        x: x, y: gridY - 18, width: gw / nBars, height: 44,
-        fill: b % 2 === 0 ? "#111827" : "#0f172a", rx: 4,
-      }));
+    function drawStaffBand(y0, h, label) {
+      for (let b = 0; b < nBars; b++) {
+        const x = gx0 + (b / nBars) * gw;
+        svg.appendChild(svgEl("rect", {
+          x: x, y: y0, width: gw / nBars, height: h,
+          fill: b % 2 === 0 ? "#111827" : "#0f172a", rx: 3,
+        }));
+      }
+      for (let s = 0; s <= totalSteps; s++) {
+        if (s % 4 !== 0) continue;
+        const x = gx0 + (s / totalSteps) * gw;
+        const barline = s % 16 === 0;
+        svg.appendChild(svgEl("line", {
+          x1: x, x2: x, y1: y0, y2: y0 + h,
+          stroke: barline ? "#6b7280" : "#374151",
+          "stroke-width": barline ? 1.4 : 1,
+        }));
+      }
+      svg.appendChild(svgEl("text", {
+        x: 4, y: y0 + h / 2 + 3, "font-size": 8, "font-weight": 700, fill: "#9ca3af",
+      }, [document.createTextNode(label)]));
     }
-    // Beat ticks + barlines
-    for (let s = 0; s <= totalSteps; s++) {
-      if (s % 4 !== 0) continue;
-      const x = gx0 + (s / totalSteps) * gw;
-      const barline = s % 16 === 0;
-      svg.appendChild(svgEl("line", {
-        x1: x, x2: x, y1: gridY - 18, y2: gridY + 26,
-        stroke: barline ? "#6b7280" : "#374151",
-        "stroke-width": barline ? 1.5 : 1,
-      }));
-    }
-    // Beat numbers
+
+    drawStaffBand(bassY - 22, 44, "Bass");
+    drawStaffBand(drumY - 22, 44, "Drums");
+
+    // Beat numbers under drums
     for (let s = 0; s < totalSteps; s += 4) {
       const beat = ((s % 16) / 4) + 1;
       svg.appendChild(svgEl("text", {
-        x: sx(step0 + s), y: gridY + 38, "text-anchor": "middle",
-        "font-size": 9, fill: "#6b7280",
+        x: sx(step0 + s), y: drumY + 30, "text-anchor": "middle",
+        "font-size": 8, fill: "#6b7280",
       }, [document.createTextNode(String(beat))]));
     }
 
     const patNotes = (pattern && Array.isArray(pattern.notes)) ? pattern.notes : [];
     const hiByStep = new Map();
     highlights.forEach((h) => {
-      if (h && Number.isFinite(h.step)) hiByStep.set(h.step | 0, h);
+      if (h && Number.isFinite(h.step)) {
+        const st = h.step | 0;
+        if (!hiByStep.has(st)) hiByStep.set(st, []);
+        hiByStep.get(st).push(h);
+      }
     });
+    const hasHi = (st, kind) => {
+      const arr = hiByStep.get(st) || [];
+      if (!kind) return arr.length > 0;
+      return arr.some((h) => h.kind === kind || (!h.kind && kind === "note"));
+    };
     let dimCount = 0;
     let litCount = 0;
 
     const patternEmpty = insight.patternId === "empty" || (pattern && pattern.id === "empty");
-    if (isPocket && patternEmpty) {
+
+    // --- Bass staff (top) ---
+    if (patternEmpty) {
       for (let bar = 0; bar < nBars; bar++) {
         const cx = gx0 + ((bar + 0.5) / nBars) * gw;
         svg.appendChild(svgEl("text", {
-          x: cx, y: gridY + 4, "text-anchor": "middle",
+          x: cx, y: bassY + 4, "text-anchor": "middle",
           "font-size": 11, "font-weight": 700, fill: "#9ca3af",
           "data-insight-kind": "empty",
-        }, [document.createTextNode("rest")]));
-      }
-    } else if (isPocket) {
-      // Kick / snare lanes + optional bass overlay (pocket = bass↔drums)
-      const lane = { kick: gridY - 4, snare: gridY + 12, bass: gridY - 14 };
-      svg.appendChild(svgEl("text", { x: 4, y: lane.kick + 3, "font-size": 8, fill: "#9ca3af" }, [document.createTextNode("K")]));
-      svg.appendChild(svgEl("text", { x: 4, y: lane.snare + 3, "font-size": 8, fill: "#9ca3af" }, [document.createTextNode("S")]));
-      for (let bar = 0; bar < nBars; bar++) {
-        const base = step0 + bar * 16;
-        [0, 8].forEach((off) => {
-          const st = base + off;
-          const lit = hiByStep.has(st) && (hiByStep.get(st).kind === "kick" || !hiByStep.get(st).kind);
-          if (lit) litCount++; else dimCount++;
-          svg.appendChild(svgEl("circle", {
-            cx: sx(st), cy: lane.kick, r: lit ? 6 : 3.5,
-            fill: lit ? "#f59e0b" : "#4b5563",
-            "data-insight-step": String(st),
-            "data-insight-kind": "kick",
-            "data-insight-lit": lit ? "1" : "0",
-          }));
-        });
-        [4, 12].forEach((off) => {
-          const st = base + off;
-          const lit = hiByStep.has(st) && hiByStep.get(st).kind === "snare";
-          if (lit) litCount++; else dimCount++;
-          svg.appendChild(svgEl("circle", {
-            cx: sx(st), cy: lane.snare, r: lit ? 5 : 3,
-            fill: lit ? "#a855f7" : "#4b5563",
-            "data-insight-step": String(st),
-            "data-insight-kind": "snare",
-            "data-insight-lit": lit ? "1" : "0",
-          }));
-        });
-      }
-      highlights.forEach((h) => {
-        if (!h || h.kind !== "bass") return;
-        const st = h.step | 0;
-        if (st < step0 || st >= step0 + totalSteps) return;
-        litCount++;
-        svg.appendChild(svgEl("circle", {
-          cx: sx(st), cy: lane.bass, r: 5.5,
-          fill: "#3b82f6", stroke: "#93c5fd", "stroke-width": 1.5,
-          "data-insight-step": String(st),
-          "data-insight-kind": "bass",
-          "data-insight-lit": "1",
-        }));
-      });
-    } else if (!patNotes.length) {
-      // Empty / silence: first-class — rests in the claim window, no invented hits.
-      for (let bar = 0; bar < nBars; bar++) {
-        const cx = gx0 + ((bar + 0.5) / nBars) * gw;
-        svg.appendChild(svgEl("text", {
-          x: cx, y: gridY + 4, "text-anchor": "middle",
-          "font-size": 11, "font-weight": 700, fill: "#9ca3af",
-          "data-insight-kind": "empty",
+          "data-insight-staff": "bass",
         }, [document.createTextNode("rest")]));
       }
     } else {
-      // Figure / missable / bass: all pattern notes as dots; highlights lit + labeled
       const inRange = patNotes.filter((n) => n.step >= step0 && n.step < step0 + totalSteps);
+      // Also include bass-kind highlights not already in pattern
       const midis = inRange.map((n) => n.midi);
+      highlights.forEach((h) => {
+        if (h && (h.kind === "bass" || h.kind === "note" || (!h.kind && Number.isFinite(h.midi))) && Number.isFinite(h.midi)) {
+          midis.push(h.midi);
+        }
+      });
       const loM = midis.length ? Math.min.apply(null, midis) : 28;
       const hiM = midis.length ? Math.max.apply(null, midis) : 48;
       const py = (m) => {
-        if (hiM === loM) return gridY;
-        return gridY + 10 - ((m - loM) / (hiM - loM)) * 28;
+        if (hiM === loM) return bassY;
+        return bassY + 10 - ((m - loM) / (hiM - loM)) * 28;
       };
       inRange.forEach((n) => {
-        const lit = hiByStep.has(n.step);
-        if (lit) litCount++; else dimCount++;
+        const arr = hiByStep.get(n.step) || [];
+        const bassHi = arr.find((h) => h.kind === "bass");
+        const litBass = arr.some((h) => {
+          if (h.kind === "kick" || h.kind === "snare" || h.kind === "hat" || h.kind === "chord") return false;
+          return true; // bass / note / untyped highlight
+        });
+        const isLit = Boolean(litBass);
+        if (isLit) litCount++; else dimCount++;
+        const kind = bassHi ? "bass" : "note";
         svg.appendChild(svgEl("circle", {
-          cx: sx(n.step), cy: py(n.midi), r: lit ? 6 : 3.2,
-          fill: lit ? "#3b82f6" : "#4b5563",
-          stroke: lit ? "#93c5fd" : "none",
-          "stroke-width": lit ? 1.5 : 0,
+          cx: sx(n.step), cy: py(n.midi), r: isLit ? 6 : 3.2,
+          fill: isLit ? "#3b82f6" : "#4b5563",
+          stroke: isLit ? "#93c5fd" : "none",
+          "stroke-width": isLit ? 1.5 : 0,
           "data-insight-step": String(n.step),
-          "data-insight-kind": "note",
+          "data-insight-kind": kind,
           "data-insight-midi": String(n.midi),
-          "data-insight-lit": lit ? "1" : "0",
+          "data-insight-lit": isLit ? "1" : "0",
+          "data-insight-staff": "bass",
         }));
       });
+      // Bass highlights that aren't pattern notes (e.g. pocket bass overlay)
       highlights.forEach((h) => {
         if (!h || !Number.isFinite(h.step)) return;
+        if (h.kind === "kick" || h.kind === "snare" || h.kind === "hat" || h.kind === "chord") return;
         const st = h.step | 0;
         if (st < step0 || st >= step0 + totalSteps) return;
         if (inRange.some((n) => n.step === st)) return;
         const m = Number.isFinite(h.midi) ? h.midi : loM;
         litCount++;
+        const kind = h.kind === "bass" ? "bass" : (h.kind || "note");
         svg.appendChild(svgEl("circle", {
-          cx: sx(st), cy: py(m), r: 6,
+          cx: sx(st), cy: py(m), r: 5.5,
           fill: "#3b82f6", stroke: "#93c5fd", "stroke-width": 1.5,
           "data-insight-step": String(st),
-          "data-insight-kind": h.kind || "note",
+          "data-insight-kind": kind,
+          "data-insight-midi": String(m),
           "data-insight-lit": "1",
+          "data-insight-staff": "bass",
         }));
       });
+      if (!inRange.length && !highlights.some((h) => h && h.kind === "bass")) {
+        // No bass material — rest
+        for (let bar = 0; bar < nBars; bar++) {
+          const cx = gx0 + ((bar + 0.5) / nBars) * gw;
+          svg.appendChild(svgEl("text", {
+            x: cx, y: bassY + 4, "text-anchor": "middle",
+            "font-size": 11, "font-weight": 700, fill: "#9ca3af",
+            "data-insight-kind": "empty",
+            "data-insight-staff": "bass",
+          }, [document.createTextNode("rest")]));
+        }
+      }
+    }
+
+    // --- Drums staff (bottom) ---
+    const lane = { kick: drumY - 10, snare: drumY + 6, hat: drumY - 18 };
+    if (patternEmpty) {
+      for (let bar = 0; bar < nBars; bar++) {
+        const cx = gx0 + ((bar + 0.5) / nBars) * gw;
+        svg.appendChild(svgEl("text", {
+          x: cx, y: drumY + 4, "text-anchor": "middle",
+          "font-size": 11, "font-weight": 700, fill: "#9ca3af",
+          "data-insight-kind": "empty",
+          "data-insight-staff": "drums",
+        }, [document.createTextNode("rest")]));
+      }
+    } else {
+      svg.appendChild(svgEl("text", { x: 4, y: lane.kick + 3, "font-size": 7, fill: "#6b7280" }, [document.createTextNode("K")]));
+      svg.appendChild(svgEl("text", { x: 4, y: lane.snare + 3, "font-size": 7, fill: "#6b7280" }, [document.createTextNode("S")]));
+      for (let bar = 0; bar < nBars; bar++) {
+        const base = step0 + bar * 16;
+        [0, 8].forEach((off) => {
+          const st = base + off;
+          const litKick = hasHi(st, "kick");
+          if (litKick) litCount++; else dimCount++;
+          svg.appendChild(svgEl("circle", {
+            cx: sx(st), cy: lane.kick, r: litKick ? 5.5 : 3,
+            fill: litKick ? "#f59e0b" : "#4b5563",
+            "data-insight-step": String(st),
+            "data-insight-kind": "kick",
+            "data-insight-lit": litKick ? "1" : "0",
+            "data-insight-staff": "drums",
+          }));
+        });
+        [4, 12].forEach((off) => {
+          const st = base + off;
+          const litSnare = hasHi(st, "snare");
+          if (litSnare) litCount++; else dimCount++;
+          svg.appendChild(svgEl("circle", {
+            cx: sx(st), cy: lane.snare, r: litSnare ? 5 : 2.8,
+            fill: litSnare ? "#a855f7" : "#4b5563",
+            "data-insight-step": String(st),
+            "data-insight-kind": "snare",
+            "data-insight-lit": litSnare ? "1" : "0",
+            "data-insight-staff": "drums",
+          }));
+        });
+      }
     }
 
     // Annotation labels (top band) with leader lines — max 4
@@ -1274,24 +1356,26 @@
       const st = h.step | 0;
       const x = sx(st);
       const row = i % 2;
-      const ty = 14 + row * 22;
+      const ty = 12 + row * 14;
+      const isDrum = h.kind === "kick" || h.kind === "snare" || h.kind === "hat";
       const color = h.kind === "kick" ? "#f59e0b"
         : h.kind === "snare" ? "#a855f7"
         : h.kind === "bass" ? "#3b82f6"
         : "#93c5fd";
+      const yTarget = isDrum ? drumY - 24 : bassY - 24;
       svg.appendChild(svgEl("line", {
-        x1: x, x2: x, y1: ty + 4, y2: gridY - 20,
+        x1: x, x2: x, y1: ty + 3, y2: yTarget,
         stroke: color, "stroke-width": 1, "stroke-dasharray": "2 2", opacity: 0.85,
       }));
       const label = h.text;
-      const tw = Math.min(110, 6 + label.length * 5.2);
+      const tw = Math.min(120, 6 + label.length * 5.0);
       svg.appendChild(svgEl("rect", {
-        x: x - tw / 2, y: ty - 10, width: tw, height: 14, rx: 3,
+        x: x - tw / 2, y: ty - 9, width: tw, height: 13, rx: 3,
         fill: "#1f2937", stroke: color, "stroke-width": 1,
       }));
       svg.appendChild(svgEl("text", {
         x: x, y: ty, "text-anchor": "middle",
-        "font-size": 9, "font-weight": 700, fill: "#e5e7eb",
+        "font-size": 8, "font-weight": 700, fill: "#e5e7eb",
         "data-insight-label": label,
       }, [document.createTextNode(label)]));
     });
@@ -1302,7 +1386,7 @@
         className: "card-insight-legend",
         "data-insight-legend": "1",
       }, ["dim = other hits in the figure · lit = this card’s point"]));
-    } else if (patternEmpty && (insight.patternId === "empty" || (pattern && pattern.id === "empty"))) {
+    } else if (patternEmpty) {
       wrap.appendChild(el("div", {
         className: "card-insight-legend",
         "data-insight-legend": "empty",
@@ -1310,6 +1394,101 @@
     }
     return wrap;
   }
+
+  /**
+   * Collect claim-window MIDI events for an insight card (no invent on empty).
+   * voice: "all" | "bass" | "drums" | "chords"
+   * Returns { bass:[{step,midi}], drums:[{step,kind}], chords:[{step,chord,tones}], step0, totalSteps, empty }
+   */
+  function buildInsightMidiEvents(insight, pattern, voice) {
+    const v = voice || "all";
+    const out = { bass: [], drums: [], chords: [], step0: 0, totalSteps: 16, empty: false, layer: "figure" };
+    if (!insight || typeof insight !== "object") { out.empty = true; return out; }
+    const layer = insight.layer || "figure";
+    out.layer = layer;
+    const barRange = Array.isArray(insight.barRange) && insight.barRange.length >= 2
+      ? [insight.barRange[0] | 0, insight.barRange[1] | 0]
+      : [0, 0];
+    const nBars = Math.max(1, barRange[1] - barRange[0] + 1);
+    const step0 = barRange[0] * 16;
+    const totalSteps = nBars * 16;
+    out.step0 = step0;
+    out.totalSteps = totalSteps;
+    const patternEmpty = insight.patternId === "empty" || (pattern && pattern.id === "empty");
+    out.empty = Boolean(patternEmpty);
+    const highlights = Array.isArray(insight.highlights) ? insight.highlights : [];
+
+    if (layer === "harmony" || v === "chords") {
+      const chords = highlights.filter((h) => h && (h.kind === "chord" || h.chord));
+      const list = chords.length ? chords : [];
+      for (let i = 0; i < list.length; i++) {
+        const h = list[i];
+        const tones = chordToneMidis(h.chord || "");
+        if (!tones.length) continue;
+        out.chords.push({
+          step: Number.isFinite(h.step) ? (h.step | 0) : step0 + i * 16,
+          chord: h.chord || "",
+          tones,
+        });
+      }
+      if (v === "chords" || layer === "harmony") return out;
+    }
+
+    if (patternEmpty) return out; // no invent
+
+    if (v === "all" || v === "bass") {
+      const patNotes = (pattern && Array.isArray(pattern.notes)) ? pattern.notes : [];
+      const inRange = patNotes.filter((n) => n.step >= step0 && n.step < step0 + totalSteps);
+      const seen = new Set();
+      for (let i = 0; i < inRange.length; i++) {
+        const n = inRange[i];
+        const key = n.step + ":" + n.midi;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.bass.push({ step: n.step, midi: n.midi });
+      }
+      // Bass highlights not in pattern
+      for (let i = 0; i < highlights.length; i++) {
+        const h = highlights[i];
+        if (!h || !Number.isFinite(h.step)) continue;
+        if (h.kind === "kick" || h.kind === "snare" || h.kind === "hat" || h.kind === "chord") continue;
+        const st = h.step | 0;
+        if (st < step0 || st >= step0 + totalSteps) continue;
+        const m = Number.isFinite(h.midi) ? h.midi : null;
+        if (m == null) continue;
+        const key = st + ":" + m;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.bass.push({ step: st, midi: m });
+      }
+      out.bass.sort((a, b) => a.step - b.step);
+    }
+
+    if (v === "all" || v === "drums") {
+      // Play the schematic drum grid for non-empty cards (what’s drawn), not song invent
+      // when empty — already returned. Pedagogical claim-window kicks/snares.
+      for (let bar = 0; bar < nBars; bar++) {
+        const base = step0 + bar * 16;
+        out.drums.push({ step: base, kind: "kick" });
+        out.drums.push({ step: base + 8, kind: "kick" });
+        out.drums.push({ step: base + 4, kind: "snare" });
+        out.drums.push({ step: base + 12, kind: "snare" });
+      }
+      // Extra drum highlights outside the grid
+      for (let i = 0; i < highlights.length; i++) {
+        const h = highlights[i];
+        if (!h || !Number.isFinite(h.step)) continue;
+        if (h.kind !== "kick" && h.kind !== "snare" && h.kind !== "hat") continue;
+        const st = h.step | 0;
+        if (st < step0 || st >= step0 + totalSteps) continue;
+        if (out.drums.some((d) => d.step === st && d.kind === h.kind)) continue;
+        out.drums.push({ step: st, kind: h.kind });
+      }
+      out.drums.sort((a, b) => a.step - b.step || String(a.kind).localeCompare(String(b.kind)));
+    }
+    return out;
+  }
+
 
   // Phone breakpoint: ≤640 CSS px. iPad (768+) and desktop keep the fixed 2-col dashboard.
   const PHONE_MAX_WIDTH = 640;
@@ -1374,7 +1553,11 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 .card-label { font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:#9ca3af; flex:0 0 auto; }
 .card-body { flex:0 1 auto; max-height:5.4em; min-height:0; overflow:hidden; font-size:15px; line-height:1.4; color:#d1d5db; }
 .card-insight { flex:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:4px; border:1px solid #1f2937; border-radius:8px; background:#0a0e13; padding:6px 6px 4px; }
-.card-insight-title { font-size:10px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; color:#93c5fd; flex:0 0 auto; }
+.card-insight-head { display:flex; align-items:center; justify-content:space-between; gap:6px; flex:0 0 auto; }
+.card-insight-title { font-size:10px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; color:#93c5fd; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.card-insight-midi-strip { display:inline-flex; align-items:center; gap:3px; flex:0 0 auto; }
+.card-insight-midi { min-width:36px; height:22px; padding:0 6px; font-size:9px; font-weight:800; letter-spacing:.02em; }
+.card-insight-midi.on { background:#1e3a5f; border-color:#3b82f6; color:#93c5fd; }
 .card-insight-svg { flex:1; min-height:0; width:100%; }
 .card-insight-chords { flex:1; min-height:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; align-content:center; }
 .card-insight-chord { border:1px solid #374151; border-radius:8px; padding:8px 4px; text-align:center; background:#111827; }
@@ -1478,9 +1661,9 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 /* Keep lean-B insight schematic visible in the drawer (do not flex-crush to 0). */
 .cards-drawer .card-body { max-height:3.6em; font-size:13px; line-height:1.35; flex:0 0 auto; }
 .cards-drawer .card-insight {
-  flex:1 0 auto; min-height:152px; overflow:hidden;
+  flex:1 0 auto; min-height:196px; overflow:hidden;
 }
-.cards-drawer .card-insight-svg { flex:1 1 auto; min-height:110px; width:100%; }
+.cards-drawer .card-insight-svg { flex:1 1 auto; min-height:148px; width:100%; }
 .cards-drawer .card-insight-chords { min-height:88px; }
 .cards-drawer .card-grid { flex:0 0 auto; }
 .cards-drawer .card-actions { flex:0 0 auto; }
@@ -1661,6 +1844,10 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let midiBassGain = null, midiDrumsGain = null, midiChordsGain = null;
     let midiNodes = [];
     let midiScheduleGen = 0;
+    let insightMidiNodes = [];
+    let insightMidiGen = 0;
+    let insightMidiVoice = null;
+    let insightBassGain = null, insightDrumsGain = null, insightChordsGain = null;
     let audioReady = false;
     let stemLoading = false;
     let audioStartedAt = 0;
@@ -1933,6 +2120,212 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       } catch (err) {
         console.warn("midi reschedule failed", err);
       }
+    }
+    function ensureInsightMidiGraph() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!insightBassGain) {
+        insightBassGain = audioCtx.createGain();
+        insightDrumsGain = audioCtx.createGain();
+        insightChordsGain = audioCtx.createGain();
+        insightBassGain.gain.value = 1;
+        insightDrumsGain.gain.value = 1;
+        insightChordsGain.gain.value = 1;
+        insightBassGain.connect(audioCtx.destination);
+        insightDrumsGain.connect(audioCtx.destination);
+        insightChordsGain.connect(audioCtx.destination);
+      }
+      return audioCtx;
+    }
+    function cancelInsightMidi() {
+      for (let i = 0; i < insightMidiNodes.length; i++) {
+        const n = insightMidiNodes[i];
+        try { if (n.stop) n.stop(0); } catch (e) {}
+        try { if (n.disconnect) n.disconnect(); } catch (e) {}
+      }
+      insightMidiNodes = [];
+      insightMidiVoice = null;
+    }
+    function playInsightBassNote(when, dur, midi) {
+      const v = BASS_MIDI_VOICE;
+      const filt = audioCtx.createBiquadFilter();
+      filt.type = v.filterType;
+      filt.frequency.value = v.filterFreq;
+      if (filt.Q) filt.Q.value = v.filterQ;
+      filt.connect(insightBassGain);
+      const len = Math.max(v.minDur, dur || 0.2);
+      const attack = Math.min(v.attack, len * 0.35);
+      const release = Math.min(v.release, len * 0.45);
+      const peakAt = when + attack;
+      const releaseAt = Math.max(peakAt, when + len - release);
+      const layers = [
+        { midiOffset: 0, peak: v.peakGain },
+        { midiOffset: v.octaveSemitones || 0, peak: v.octaveGain || 0 },
+      ];
+      for (const layer of layers) {
+        if (!(layer.peak > 0)) continue;
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = v.oscType;
+        osc.frequency.value = midiToFreq(Number(midi) + layer.midiOffset);
+        g.gain.setValueAtTime(0.0001, when);
+        g.gain.exponentialRampToValueAtTime(layer.peak, peakAt);
+        g.gain.exponentialRampToValueAtTime(Math.max(0.0001, layer.peak * 0.9), releaseAt);
+        g.gain.exponentialRampToValueAtTime(0.0001, when + len);
+        osc.connect(g);
+        g.connect(filt);
+        osc.start(when);
+        osc.stop(when + len + 0.02);
+        insightMidiNodes.push(osc);
+        insightMidiNodes.push(g);
+      }
+      insightMidiNodes.push(filt);
+    }
+    function playInsightChordNote(when, dur, midi) {
+      const v = CHORD_MIDI_VOICE;
+      const filt = audioCtx.createBiquadFilter();
+      filt.type = v.filterType;
+      filt.frequency.value = v.filterFreq;
+      if (filt.Q) filt.Q.value = v.filterQ;
+      filt.connect(insightChordsGain);
+      const len = Math.max(v.minDur, dur || 0.4);
+      const attack = Math.min(v.attack, len * 0.35);
+      const release = Math.min(v.release, len * 0.4);
+      const peakAt = when + attack;
+      const releaseAt = Math.max(peakAt, when + len - release);
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = v.oscType;
+      osc.frequency.value = midiToFreq(Number(midi));
+      g.gain.setValueAtTime(0.0001, when);
+      g.gain.exponentialRampToValueAtTime(v.peakGain, peakAt);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.0001, v.peakGain * 0.85), releaseAt);
+      g.gain.exponentialRampToValueAtTime(0.0001, when + len);
+      osc.connect(g);
+      g.connect(filt);
+      osc.start(when);
+      osc.stop(when + len + 0.03);
+      insightMidiNodes.push(osc);
+      insightMidiNodes.push(g);
+      insightMidiNodes.push(filt);
+    }
+    function playInsightDrumHit(when, kind) {
+      const g = audioCtx.createGain();
+      g.connect(insightDrumsGain);
+      if (kind === "kick") {
+        const osc = audioCtx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(140, when);
+        osc.frequency.exponentialRampToValueAtTime(45, when + 0.12);
+        g.gain.setValueAtTime(0.0001, when);
+        g.gain.exponentialRampToValueAtTime(0.7, when + 0.005);
+        g.gain.exponentialRampToValueAtTime(0.0001, when + 0.18);
+        osc.connect(g);
+        osc.start(when);
+        osc.stop(when + 0.2);
+        insightMidiNodes.push(osc);
+      } else if (kind === "snare") {
+        const bufLen = Math.max(1, Math.floor(audioCtx.sampleRate * 0.12));
+        const buf = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
+        const srcN = audioCtx.createBufferSource();
+        srcN.buffer = buf;
+        const filt = audioCtx.createBiquadFilter();
+        filt.type = "bandpass";
+        filt.frequency.value = 1800;
+        g.gain.setValueAtTime(0.0001, when);
+        g.gain.exponentialRampToValueAtTime(0.45, when + 0.004);
+        g.gain.exponentialRampToValueAtTime(0.0001, when + 0.12);
+        srcN.connect(filt);
+        filt.connect(g);
+        srcN.start(when);
+        srcN.stop(when + 0.13);
+        insightMidiNodes.push(srcN);
+        insightMidiNodes.push(filt);
+      } else {
+        const bufLen = Math.max(1, Math.floor(audioCtx.sampleRate * 0.04));
+        const buf = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
+        const srcN = audioCtx.createBufferSource();
+        srcN.buffer = buf;
+        const filt = audioCtx.createBiquadFilter();
+        filt.type = "highpass";
+        filt.frequency.value = 7000;
+        g.gain.setValueAtTime(0.0001, when);
+        g.gain.exponentialRampToValueAtTime(0.22, when + 0.002);
+        g.gain.exponentialRampToValueAtTime(0.0001, when + 0.04);
+        srcN.connect(filt);
+        filt.connect(g);
+        srcN.start(when);
+        srcN.stop(when + 0.05);
+        insightMidiNodes.push(srcN);
+        insightMidiNodes.push(filt);
+      }
+      insightMidiNodes.push(g);
+    }
+    /** Play the active insight card claim-window as MIDI (scoped; does not invent on empty). */
+    function playInsightMidi(voice) {
+      const sec = SECS[secIdx];
+      const deck = CARDS_EFF[sec.id] || CARDS_EFF[sec.kind] || CARDS[sec.id] || CARDS[sec.kind] || CARDS.intro;
+      const card = deck[cardIdx % deck.length];
+      const insight = card && card.insight;
+      if (!insight) return { ok: false, reason: "no-insight" };
+      const patsRaw = PATS_EFF[sec.id] || PATS_EFF[sec.kind] || PATS[sec.id] || PATS[sec.kind] || PATS.intro;
+      const pats = Array.isArray(patsRaw) ? patsRaw : [patsRaw];
+      const secPat = pats[0] || PEDAL;
+      const pat = resolveInsightPattern(insight, PATS_EFF) || secPat;
+      const which = voice || (insight.layer === "harmony" ? "chords" : "all");
+      const events = buildInsightMidiEvents(insight, pat, which);
+      cancelInsightMidi();
+      insightMidiGen += 1;
+      insightMidiVoice = which;
+      ensureInsightMidiGraph();
+      if (audioCtx.state === "suspended" && audioCtx.resume) audioCtx.resume();
+      const bpm = Number(demo.bpm) > 0 ? Number(demo.bpm) : 120;
+      const secPerBar = (60 / bpm) * 4; // 4/4 claim window
+      const secPerStep = secPerBar / 16;
+      const when0 = audioCtx.currentTime + 0.04;
+      const step0 = events.step0;
+      if (which === "all" || which === "bass") {
+        const notes = events.bass.slice().sort((a, b) => a.step - b.step);
+        for (let i = 0; i < notes.length; i++) {
+          const note = notes[i];
+          const next = i + 1 < notes.length ? notes[i + 1].step : note.step + 4;
+          const dur = Math.max(0.06, Math.min(0.45, (next - note.step) * secPerStep * 0.9));
+          playInsightBassNote(when0 + (note.step - step0) * secPerStep, dur, note.midi);
+        }
+      }
+      if (which === "all" || which === "drums") {
+        for (let i = 0; i < events.drums.length; i++) {
+          const h = events.drums[i];
+          playInsightDrumHit(when0 + (h.step - step0) * secPerStep, h.kind);
+        }
+      }
+      if (which === "chords" || (which === "all" && events.chords.length)) {
+        const chords = events.chords;
+        for (let i = 0; i < chords.length; i++) {
+          const c = chords[i];
+          const nextStep = i + 1 < chords.length ? chords[i + 1].step : c.step + 16;
+          const dur = Math.max(0.18, (nextStep - c.step) * secPerStep * 0.92);
+          const when = when0 + (c.step - step0) * secPerStep;
+          for (let ti = 0; ti < c.tones.length; ti++) {
+            playInsightChordNote(when, dur, c.tones[ti]);
+          }
+        }
+      }
+      // Light the pressed button briefly via re-render attribute
+      render();
+      return {
+        ok: true,
+        voice: which,
+        bass: events.bass.length,
+        drums: events.drums.length,
+        chords: events.chords.length,
+        empty: events.empty,
+        gen: insightMidiGen,
+        nodeCount: insightMidiNodes.length,
+      };
     }
     function setListenMode(mode) {
       const next = mode === listenMode ? "full" : mode;
@@ -2643,18 +3036,15 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         pat.notes.forEach((note) => { if (note.step < 32) notes.push({ step: note.step + off, midi: note.midi }); });
       }
       const soundingSteps = (midiBass && playing) ? soundingBassNoteSteps(t, viewLo, n, pat) : new Set();
-      const chordPcs = (midiChords && playing) ? new Set(chordPitchClasses((BARS[barAt(t)] || {}).chord || "")) : new Set();
       notes.filter((note) => note.step < steps).forEach((note) => {
         const pos = tabPos(note.midi);
         const label = String(pos.f);
         const isSounding = soundingSteps.has(note.step);
-        const isChordTone = chordPcs.has(((note.midi % 12) + 12) % 12);
-        const lit = isSounding || isChordTone;
+        const lit = isSounding;
         const g = svgEl("g", {
           "data-midi": String(note.midi),
           "data-step": String(note.step),
           "data-sounding": isSounding ? "1" : "0",
-          "data-chord-tone": isChordTone ? "1" : "0",
         });
         g.appendChild(svgEl("rect", { x: sx(note.step) - 6 - (label.length - 1) * 3, y: sy(pos.s) - 8, width: 12 + (label.length - 1) * 6, height: 15, fill: lit ? "#1e3a5f" : "#0b0f14", stroke: lit ? SOUNDING_HL : "none", "stroke-width": lit ? 1.5 : 0 }));
         g.appendChild(svgEl("text", { x: sx(note.step), y: sy(pos.s) + 4, "text-anchor": "middle", "font-size": 12, "font-weight": 700, fill: lit ? SOUNDING_HL : "#e5e7eb" }, [document.createTextNode(label)]));
@@ -2692,7 +3082,6 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       }
       const inView = notes.filter((note) => note.step < steps);
       const bassSoundingSteps = (midiBass && playing) ? soundingBassNoteSteps(t, viewLo, n, pat) : new Set();
-      const chordPcs = (midiChords && playing) ? new Set(chordPitchClasses((BARS[barAt(t)] || {}).chord || "")) : new Set();
       const events = buildRhythmVoice(inView, steps);
       const noteEvents = events.filter((e) => e.type === "note");
       const groups = beamGroups(noteEvents);
@@ -2771,8 +3160,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 
         laid.forEach((L) => {
           const isSounding = bassSoundingSteps.has(L.ev.step);
-          const isChordTone = chordPcs.has((((L.ev.midi % 12) + 12) % 12));
-          const lit = isSounding || (midiChords && playing && isChordTone);
+          const lit = isSounding;
           const noteInk = lit ? SOUNDING_HL : ink;
           const gAttrs = {
             "data-rhythm": "note",
@@ -2783,7 +3171,6 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
             "data-pos": String(L.sp.pos),
             "data-step": String(L.ev.step),
             "data-sounding": isSounding ? "1" : "0",
-            "data-chord-tone": isChordTone ? "1" : "0",
           };
           if (L.ev.tie) gAttrs["data-tie"] = L.ev.tie;
           if (L.ev.attack === false) gAttrs["data-attack"] = "0";
@@ -2868,27 +3255,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 
       appendBassTiePaths(svg, events, sx, yy, ink);
 
-      // Chord MIDI: sounding chord tones as open diamonds at the playhead.
-      if (midiChords && playing) {
-        const curChord = ((BARS[barAt(t)] || {}).chord) || "";
-        const tones = chordToneMidis(curChord);
-        const cg = svgEl("g", { "data-chord-tones": curChord || "", "pointer-events": "none" });
-        for (let ti = 0; ti < tones.length; ti++) {
-          const sp = staffPos(tones[ti]);
-          const cy = yy(sp.pos);
-          drawLedgers(cg, sp.pos, playX);
-          cg.appendChild(svgEl("rect", {
-            x: playX - 4.5, y: cy - 4.5, width: 9, height: 9,
-            fill: "none", stroke: SOUNDING_HL, "stroke-width": 1.8,
-            transform: "rotate(45 " + playX + " " + cy + ")",
-            "data-sounding": "1",
-            "data-midi": String(tones[ti]),
-            "data-chord-tone": "1",
-          }));
-        }
-        svg.appendChild(cg);
-      }
-
+      // Chord MIDI pads still sound; no diamond / chord-tone markers on the main bass staff.
       svg.appendChild(svgEl("line", { x1: playX, x2: playX, y1: 6, y2: 94, stroke: NEG, "stroke-width": 2.5, "pointer-events": "none" }));
       bindStaffDrag(svg, () => ({ viewLo, viewHi }), onSeek, onLoopBars);
       return svg;
@@ -3127,7 +3494,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           : tEl.hasAttribute("data-card-prev") ? "card-prev"
           : tEl.hasAttribute("data-card") ? "card:" + tEl.getAttribute("data-card")
           : tEl.hasAttribute("data-drawer") ? "drawer:" + tEl.getAttribute("data-drawer")
-          : "tr:" + (tEl.getAttribute("data-transport") || "") + ":" + (tEl.getAttribute("data-listen") || "") + ":" + (tEl.getAttribute("data-midi") || "");
+          : "tr:" + (tEl.getAttribute("data-transport") || "") + ":" + (tEl.getAttribute("data-listen") || "") + ":" + (tEl.getAttribute("data-midi") || "") + ":" + (tEl.getAttribute("data-insight-voice") || "");
         const now = Date.now();
         // Debounce only the same control's pointerup+click double-fire — not a quick tap on a different control.
         if (key === lastTransportKey && now - lastTransportTs < 80) return;
@@ -3181,6 +3548,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           setListenMode(mode);
         } else if (action === "midi") {
           toggleMidi(tEl.getAttribute("data-midi") || "bass");
+        } else if (action === "insight-midi") {
+          playInsightMidi(tEl.getAttribute("data-insight-voice") || "all");
         } else if (action === "rate") {
           const r = Number(tEl.getAttribute("data-rate"));
           if (Number.isFinite(r)) setPlaybackRate(r);
@@ -3664,7 +4033,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       cards.appendChild(el("div", { className: "card-body" }, [card.body]));
       const insightPat = resolveInsightPattern(card.insight, PATS_EFF) || pat;
       const insightView = makeCardInsight(card.insight, insightPat);
-      if (insightView) cards.appendChild(insightView);
+      if (insightView) {
+        if (insightMidiVoice) {
+          const btn = insightView.querySelector('[data-insight-voice="' + insightMidiVoice + '"]');
+          if (btn) btn.classList.add("on");
+        }
+        cards.appendChild(insightView);
+      }
       // Panel order (desktop + drawer): label → body → insight → mini-grid → Prev/Next.
       const gridCards = el("div", { className: "card-grid" });
       deck.forEach((c, i) => {
@@ -3767,7 +4142,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           t, playing, loopOn, secIdx, cardIdx, lo, hi,
           usingAudio, audioReady, stemLoading, muteBass, muteBassSupported, privateMode, activeSongId,
           songCatalog,
-          listenMode, drumsSupported, midiBass, midiDrums, midiChords, midiScheduleGen, midiNodeCount: midiNodes.length, playbackRate,
+          listenMode, drumsSupported, midiBass, midiDrums, midiChords, midiScheduleGen, midiNodeCount: midiNodes.length,
+          insightMidiGen, insightMidiNodeCount: insightMidiNodes.length, insightMidiVoice, playbackRate,
           pitchPreserveMode, stemSourcePlaybackRate: lastStemSourcePlaybackRate, stemTempoUsesRawPlaybackRate: stemTempoUsesRawPlaybackRate(),
           stretchWindowSongSec: STRETCH_WINDOW_SONG_S,
           stretchWindowSongStart, stretchWindowSongEnd,
@@ -3820,6 +4196,11 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       toggleMidiBass: () => { toggleMidi("bass"); return window.__BASS_PLAYER__.getState(); },
       toggleMidiDrums: () => { toggleMidi("drums"); return window.__BASS_PLAYER__.getState(); },
       toggleMidiChords: () => { toggleMidi("chords"); return window.__BASS_PLAYER__.getState(); },
+      playInsightMidi: (voice) => {
+        const r = playInsightMidi(voice);
+        return Object.assign({}, window.__BASS_PLAYER__.getState(), { insightMidiResult: r });
+      },
+      cancelInsightMidi: () => { cancelInsightMidi(); return window.__BASS_PLAYER__.getState(); },
       seek: onSeek,
       pickSection,
       clearSubsection,
@@ -3859,6 +4240,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         destroyed = true;
         cardsDrawerOpen = false;
         document.body.classList.remove("cards-drawer-open");
+        cancelInsightMidi();
         haltPlayback({ syncTime: false, resetToLoopStart: false });
         if (timer) { clearInterval(timer); timer = null; }
       },
@@ -3913,6 +4295,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     midiToName,
     resolveInsightPattern,
     makeCardInsight,
+    buildInsightMidiEvents,
     CARDS,
     PATS,
     EMPTY,
