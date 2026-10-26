@@ -25,6 +25,7 @@ function teardownPlayer() {
   delete window.__BASS_PLAYER__;
   delete window.__BASS_NOTATION__;
   delete window.__BASS_PRIVATE__;
+  delete window.__BASS_SONG_NAV__;
   delete window.__LAST_AUDIO_CTX__;
   document.body.classList.remove("cards-drawer-open");
   try {
@@ -2573,37 +2574,76 @@ describe("playback rate + public CC0 stems", () => {
   });
 });
 
-describe("quiet public → private entry + private song picker", () => {
+describe("public has no Private link + private song typeahead", () => {
   afterEach(() => teardownPlayer());
 
-  it("public player shows a quiet data-private-entry link to /private/player/", async () => {
+  it("public player does not expose a Private / private-entry link", async () => {
     await bootPlayer({ privateMode: false, withStems: true });
-    const link = document.querySelector("[data-private-entry]");
-    expect(link).toBeTruthy();
-    expect(link.getAttribute("href")).toBe("/private/player/");
-    expect(link.className).toMatch(/private-entry/);
-    // Must not be a big CTA button
-    expect(link.tagName.toLowerCase()).toBe("a");
-    expect(link.closest("button")).toBeNull();
+    expect(document.querySelector("[data-private-entry]")).toBeNull();
+    expect(document.querySelector('a[href="/private/player/"]')).toBeNull();
+    expect(document.querySelector('a[href*="/private/"]')).toBeNull();
+    const credit = document.querySelector("[data-credit]");
+    expect(credit).toBeTruthy();
+    expect(credit.textContent).not.toMatch(/\bPrivate\b/);
+    expect(document.querySelector("[data-song-picker]")).toBeNull();
   });
 
-  it("private player shows Demo vs Processed song picker groups", async () => {
+  it("private player typeahead shows Demo vs Processed groups", async () => {
     await bootPlayer({ privateMode: true, withStems: true });
-    const sel = document.querySelector("[data-song-picker]");
-    expect(sel).toBeTruthy();
-    const groups = [...sel.querySelectorAll("optgroup")];
-    expect(groups.map((g) => g.label)).toEqual(["Demo", "Processed"]);
-    expect(groups[0].getAttribute("data-group")).toBe("demo");
-    expect(groups[1].getAttribute("data-group")).toBe("processed");
-    const demoIds = [...groups[0].querySelectorAll("option")].map((o) => o.value);
-    const procIds = [...groups[1].querySelectorAll("option")].map((o) => o.value);
+    const picker = document.querySelector("[data-song-picker][data-song-typeahead]");
+    expect(picker).toBeTruthy();
+    const input = document.querySelector("[data-song-typeahead-input]");
+    expect(input).toBeTruthy();
+    expect(input.tagName.toLowerCase()).toBe("input");
+    expect(document.querySelector("select[data-song-picker]")).toBeNull();
+
+    input.focus();
+    input.dispatchEvent(new Event("focus", { bubbles: true }));
+    const list = document.querySelector("[data-song-listbox]");
+    expect(list).toBeTruthy();
+    expect(list.hasAttribute("hidden")).toBe(false);
+
+    const demoGroup = list.querySelector('[data-group="demo"].song-typeahead-group');
+    const procGroup = list.querySelector('[data-group="processed"].song-typeahead-group');
+    expect(demoGroup).toBeTruthy();
+    expect(procGroup).toBeTruthy();
+    expect(demoGroup.querySelector("[data-group-label=\"demo\"]").textContent).toBe("Demo");
+    expect(procGroup.querySelector("[data-group-label=\"processed\"]").textContent).toBe("Processed");
+
+    const demoIds = [...demoGroup.querySelectorAll("[data-song-id]")].map((o) => o.getAttribute("data-song-id"));
+    const procIds = [...procGroup.querySelectorAll("[data-song-id]")].map((o) => o.getAttribute("data-song-id"));
     expect(demoIds).toContain("a-good-bass-for-gambling");
     expect(demoIds).toContain("make-funk");
     expect(demoIds).toContain("maple-leaf-rag");
     expect(procIds).toContain("like-a-prayer");
     expect(demoIds).not.toContain("like-a-prayer");
-    // Public quiet link must not appear on private
     expect(document.querySelector("[data-private-entry]")).toBeNull();
+  });
+
+  it("private typeahead filters and keyboard Enter selects via ?song=", async () => {
+    await bootPlayer({ privateMode: true, withStems: true });
+    const assigns = [];
+    window.__BASS_SONG_NAV__ = (url, id) => assigns.push({ url: String(url), id: String(id) });
+    try {
+      const input = document.querySelector("[data-song-typeahead-input]");
+      expect(input).toBeTruthy();
+      input.focus();
+      input.value = "maple";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      const list = document.querySelector("[data-song-listbox]");
+      const opts = [...list.querySelectorAll('[role="option"]')];
+      expect(opts.length).toBeGreaterThanOrEqual(1);
+      expect(opts.some((o) => o.getAttribute("data-song-id") === "maple-leaf-rag")).toBe(true);
+      expect(list.querySelector('[data-group-label="demo"]')).toBeTruthy();
+      expect(list.querySelector('[data-song-id="like-a-prayer"]')).toBeNull();
+
+      input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+      expect(assigns.length).toBe(1);
+      expect(assigns[0].id).toBe("maple-leaf-rag");
+      expect(assigns[0].url).toMatch(/[?&]song=maple-leaf-rag/);
+    } finally {
+      delete window.__BASS_SONG_NAV__;
+    }
   });
 });
 

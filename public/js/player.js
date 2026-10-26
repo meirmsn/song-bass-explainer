@@ -1402,15 +1402,35 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
   .cards-drawer:not([hidden]) { display:flex; }
   body.cards-drawer-open { overflow:hidden; }
 }
-.private-entry { font-size:10px; color:#4b5563; text-decoration:none; letter-spacing:.02em; white-space:nowrap; }
-.private-entry:hover { color:#9ca3af; text-decoration:underline; }
 .song-picker-row { display:flex; align-items:center; gap:8px; flex:0 0 auto; min-width:0; }
 .song-picker-row label { font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#6b7280; flex:0 0 auto; }
-.song-picker { font-size:12px; max-width:min(280px,55vw); min-width:140px; background:#111827; color:#e5e7eb; border:1px solid #374151; border-radius:6px; padding:4px 8px; }
-.song-picker optgroup { font-style:normal; font-weight:700; color:#9ca3af; }
+.song-typeahead { position:relative; flex:0 1 auto; min-width:160px; max-width:min(320px,70vw); }
+.song-typeahead-input {
+  width:100%; box-sizing:border-box; font-size:12px; background:#111827; color:#e5e7eb;
+  border:1px solid #374151; border-radius:6px; padding:5px 8px; outline:none;
+}
+.song-typeahead-input:focus { border-color:#60a5fa; box-shadow:0 0 0 2px rgba(96,165,250,.25); }
+.song-typeahead-list {
+  position:absolute; z-index:50; left:0; right:0; top:calc(100% + 4px);
+  max-height:min(280px,50vh); overflow:auto; background:#0b1220;
+  border:1px solid #374151; border-radius:8px; box-shadow:0 10px 28px rgba(0,0,0,.5);
+}
+.song-typeahead-group { padding:0 0 4px; }
+.song-typeahead-group-label {
+  position:sticky; top:0; z-index:1; padding:6px 10px 4px; font-size:10px; font-weight:700;
+  letter-spacing:.04em; text-transform:uppercase; color:#9ca3af; background:#0b1220;
+  border-bottom:1px solid #1f2937;
+}
+.song-typeahead-option {
+  display:block; width:100%; text-align:left; padding:6px 10px; font:inherit; font-size:12px;
+  color:#e5e7eb; background:transparent; border:0; cursor:pointer; line-height:1.3;
+}
+.song-typeahead-option[aria-selected="true"],
+.song-typeahead-option:hover { background:#1f2937; }
+.song-typeahead-empty { padding:8px 10px; font-size:12px; color:#6b7280; }
 @media (max-width:640px) {
-  .private-entry { font-size:9px; }
-  .song-picker { max-width:70vw; font-size:11px; }
+  .song-typeahead { max-width:75vw; }
+  .song-typeahead-input { font-size:11px; }
 }
 `;
     const style = document.createElement("style");
@@ -3080,76 +3100,221 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         } else if (credit.source) {
           creditRow.appendChild(document.createTextNode(credit.source));
         }
-        // Quiet Access entry — not a CTA; Cloudflare Access gates /private/*
-        creditRow.appendChild(document.createTextNode(" · "));
-        creditRow.appendChild(el("a", {
-          href: "/private/player/",
-          className: "private-entry",
-          "data-private-entry": "1",
-          title: "Private player (sign in)",
-        }, ["Private"]));
+        // Public must not advertise private entry — bookmark / Access URL only.
         shell.appendChild(creditRow);
-      } else if (!privateMode) {
-        // Still offer a quiet private entry when credit metadata is missing
-        const quiet = el("div", { className: "credit-line", "data-credit": "1" });
-        quiet.appendChild(el("a", {
-          href: "/private/player/",
-          className: "private-entry",
-          "data-private-entry": "1",
-          title: "Private player (sign in)",
-        }, ["Private"]));
-        shell.appendChild(quiet);
       }
 
       if (privateMode) {
         const row = el("div", { className: "song-picker-row", "data-song-picker-row": "1" });
         row.appendChild(el("label", { for: "bass-song-picker" }, ["Song"]));
-        const sel = el("select", {
-          id: "bass-song-picker",
-          className: "song-picker",
+        const wrap = el("div", {
+          className: "song-typeahead",
           "data-song-picker": "1",
-          "aria-label": "Select demo or processed song",
+          "data-song-typeahead": "1",
         });
-        const demoGroup = document.createElement("optgroup");
-        demoGroup.label = "Demo";
-        demoGroup.setAttribute("data-group", "demo");
-        for (const s of (songCatalog.demos || [])) {
-          const opt = document.createElement("option");
-          opt.value = s.id;
-          opt.textContent = (s.artist ? s.artist + " — " : "") + (s.title || s.id);
-          if (s.id === activeSongId) opt.selected = true;
-          demoGroup.appendChild(opt);
+        const listId = "bass-song-listbox";
+        const input = el("input", {
+          id: "bass-song-picker",
+          type: "text",
+          className: "song-typeahead-input",
+          role: "combobox",
+          "aria-autocomplete": "list",
+          "aria-expanded": "false",
+          "aria-controls": listId,
+          "aria-label": "Type to find a demo or processed song",
+          autocomplete: "off",
+          spellcheck: "false",
+          "data-song-typeahead-input": "1",
+        });
+        const listbox = el("div", {
+          id: listId,
+          className: "song-typeahead-list",
+          role: "listbox",
+          "data-song-listbox": "1",
+          hidden: "true",
+        });
+        wrap.appendChild(input);
+        wrap.appendChild(listbox);
+        row.appendChild(wrap);
+        shell.appendChild(row);
+
+        function songLabel(s) {
+          if (!s) return "";
+          return (s.artist ? s.artist + " — " : "") + (s.title || s.id);
         }
-        const procGroup = document.createElement("optgroup");
-        procGroup.label = "Processed";
-        procGroup.setAttribute("data-group", "processed");
-        for (const s of (songCatalog.processed || [])) {
-          const opt = document.createElement("option");
-          opt.value = s.id;
-          opt.textContent = (s.artist ? s.artist + " — " : "") + (s.title || s.id);
-          if (s.id === activeSongId) opt.selected = true;
-          procGroup.appendChild(opt);
-        }
-        sel.appendChild(demoGroup);
-        sel.appendChild(procGroup);
-        // If active id is missing from both lists (e.g. job not in catalog yet), add it under Processed
+        // Ensure active id appears under Processed if catalog lags a new job.
         const known = new Set([...(songCatalog.demos || []), ...(songCatalog.processed || [])].map((s) => s.id));
         if (activeSongId && !known.has(activeSongId)) {
-          const opt = document.createElement("option");
-          opt.value = activeSongId;
-          opt.textContent = demo.title || activeSongId;
-          opt.selected = true;
-          procGroup.appendChild(opt);
+          songCatalog.processed = [...(songCatalog.processed || []), {
+            id: activeSongId,
+            title: demo.title || activeSongId,
+            artist: demo.artist || "",
+            group: "processed",
+          }];
         }
-        sel.addEventListener("change", () => {
-          const next = String(sel.value || "").trim();
-          if (!next || next === activeSongId) return;
+        const allSongs = [
+          ...(songCatalog.demos || []).map((s) => Object.assign({}, s, { group: "demo" })),
+          ...(songCatalog.processed || []).map((s) => Object.assign({}, s, { group: "processed" })),
+        ];
+        const activeMeta = allSongs.find((s) => s.id === activeSongId) || { id: activeSongId, title: demo.title || activeSongId };
+        input.value = songLabel(activeMeta);
+
+        let open = false;
+        let highlightIdx = -1;
+        let visible = [];
+        let blurTimer = 0;
+
+        function goToSong(id) {
+          const next = String(id || "").trim();
+          if (!next || next === activeSongId) {
+            closeList(true);
+            return;
+          }
           const u = new URL(location.href);
           u.searchParams.set("song", next);
-          location.assign(u.pathname + "?" + u.searchParams.toString() + u.hash);
+          const target = u.pathname + "?" + u.searchParams.toString() + u.hash;
+          if (typeof window.__BASS_SONG_NAV__ === "function") {
+            window.__BASS_SONG_NAV__(target, next);
+            return;
+          }
+          location.assign(target);
+        }
+
+        function filterSongs(query) {
+          const q = String(query || "").trim().toLowerCase();
+          if (!q) return allSongs.slice();
+          return allSongs.filter((s) => {
+            const hay = [s.id, s.title, s.artist, songLabel(s)].filter(Boolean).join(" ").toLowerCase();
+            return hay.includes(q);
+          });
+        }
+
+        function setExpanded(isOpen) {
+          open = isOpen;
+          input.setAttribute("aria-expanded", isOpen ? "true" : "false");
+          if (isOpen) listbox.removeAttribute("hidden");
+          else listbox.setAttribute("hidden", "true");
+        }
+
+        function closeList(restore) {
+          setExpanded(false);
+          highlightIdx = -1;
+          visible = [];
+          listbox.innerHTML = "";
+          if (restore) input.value = songLabel(activeMeta);
+        }
+
+        function renderList(query) {
+          visible = filterSongs(query);
+          listbox.innerHTML = "";
+          if (!visible.length) {
+            listbox.appendChild(el("div", { className: "song-typeahead-empty", "data-song-empty": "1" }, ["No matches"]));
+            highlightIdx = -1;
+            setExpanded(true);
+            return;
+          }
+          const demos = visible.filter((s) => s.group === "demo");
+          const processed = visible.filter((s) => s.group === "processed");
+          let flatIdx = 0;
+          function addGroup(label, groupKey, items) {
+            if (!items.length) return;
+            const group = el("div", { className: "song-typeahead-group", "data-group": groupKey });
+            group.appendChild(el("div", {
+              className: "song-typeahead-group-label",
+              role: "presentation",
+              "data-group-label": groupKey,
+            }, [label]));
+            for (const s of items) {
+              const idx = flatIdx++;
+              const opt = el("button", {
+                type: "button",
+                className: "song-typeahead-option",
+                role: "option",
+                id: "bass-song-opt-" + idx,
+                "data-song-id": s.id,
+                "data-group": groupKey,
+                "data-option-index": String(idx),
+                "aria-selected": idx === highlightIdx ? "true" : "false",
+              }, [songLabel(s)]);
+              opt.addEventListener("mousedown", (e) => {
+                e.preventDefault(); // keep focus; avoid blur before click
+                goToSong(s.id);
+              });
+              group.appendChild(opt);
+            }
+            listbox.appendChild(group);
+          }
+          addGroup("Demo", "demo", demos);
+          addGroup("Processed", "processed", processed);
+          if (highlightIdx < 0 || highlightIdx >= visible.length) highlightIdx = 0;
+          syncHighlight();
+          setExpanded(true);
+        }
+
+        function syncHighlight() {
+          const opts = [...listbox.querySelectorAll('[role="option"]')];
+          opts.forEach((opt, i) => {
+            const on = i === highlightIdx;
+            opt.setAttribute("aria-selected", on ? "true" : "false");
+            if (on) {
+              input.setAttribute("aria-activedescendant", opt.id);
+              try { opt.scrollIntoView({ block: "nearest" }); } catch (_) { /* jsdom */ }
+            }
+          });
+          if (highlightIdx < 0) input.removeAttribute("aria-activedescendant");
+        }
+
+        function openList(seedQuery) {
+          if (blurTimer) { clearTimeout(blurTimer); blurTimer = 0; }
+          highlightIdx = Math.max(0, visible.length ? highlightIdx : 0);
+          renderList(seedQuery != null ? seedQuery : input.value);
+        }
+
+        input.addEventListener("focus", () => {
+          openList("");
+          try { input.select(); } catch (_) { /* ignore */ }
         });
-        row.appendChild(sel);
-        shell.appendChild(row);
+        input.addEventListener("input", () => {
+          highlightIdx = 0;
+          renderList(input.value);
+        });
+        input.addEventListener("keydown", (e) => {
+          const key = e.key;
+          if (key === "ArrowDown") {
+            e.preventDefault();
+            if (!open) openList(input.value);
+            else if (visible.length) {
+              highlightIdx = (highlightIdx + 1) % visible.length;
+              syncHighlight();
+            }
+            return;
+          }
+          if (key === "ArrowUp") {
+            e.preventDefault();
+            if (!open) openList(input.value);
+            else if (visible.length) {
+              highlightIdx = (highlightIdx - 1 + visible.length) % visible.length;
+              syncHighlight();
+            }
+            return;
+          }
+          if (key === "Enter") {
+            if (!open) return;
+            e.preventDefault();
+            const pick = visible[highlightIdx] || visible[0];
+            if (pick) goToSong(pick.id);
+            return;
+          }
+          if (key === "Escape") {
+            if (!open) return;
+            e.preventDefault();
+            closeList(true);
+            return;
+          }
+        });
+        input.addEventListener("blur", () => {
+          blurTimer = setTimeout(() => closeList(true), 120);
+        });
       }
 
       shell.appendChild(el("div", { className: "timeline" }, [makeTimeline()]));
