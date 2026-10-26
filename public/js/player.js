@@ -488,7 +488,7 @@
     }
   }
 
-  /** Procedural backbeat hits for the drum staff (kick 1+3, snare 2+4, 8th/16th hats). */
+  /** Procedural backbeat hits (legacy LAP invent). Only for demos without song drumHits. */
   function buildDrumHits(nBars, hat16, opts) {
     if (opts && (opts.empty || opts.silent)) return [];
     const hits = [];
@@ -504,6 +504,78 @@
       }
     }
     return hits;
+  }
+
+  const DRUM_MIDI = { kick: 36, snare: 38, hat: 42 };
+
+  /**
+   * Normalize per-song drum transcription from demo-data / resource.
+   * Accepts demo.drumHits | demo.drums.hits | demo.drums — array of
+   * { bar, step, kind, midi? } (bar absolute, step 0–15 within bar).
+   */
+  function normalizeSongDrumHits(demoOrHits) {
+    let raw = null;
+    if (Array.isArray(demoOrHits)) raw = demoOrHits;
+    else if (demoOrHits && typeof demoOrHits === "object") {
+      if (Array.isArray(demoOrHits.drumHits)) raw = demoOrHits.drumHits;
+      else if (demoOrHits.drums && Array.isArray(demoOrHits.drums.hits)) raw = demoOrHits.drums.hits;
+      else if (Array.isArray(demoOrHits.drums)) raw = demoOrHits.drums;
+      else if (Array.isArray(demoOrHits.hits)) raw = demoOrHits.hits;
+    }
+    if (!Array.isArray(raw) || !raw.length) return null;
+    const out = [];
+    for (let i = 0; i < raw.length; i++) {
+      const h = raw[i];
+      if (!h || typeof h !== "object") continue;
+      const bar = Number(h.bar);
+      const step = Number(h.step);
+      const kind = String(h.kind || "").toLowerCase();
+      if (!Number.isFinite(bar) || bar < 0) continue;
+      if (!Number.isFinite(step) || step < 0 || step > 15) continue;
+      if (kind !== "kick" && kind !== "snare" && kind !== "hat") continue;
+      const midi = Number.isFinite(Number(h.midi)) ? Number(h.midi) : DRUM_MIDI[kind];
+      out.push({ bar: Math.floor(bar), step: Math.floor(step), kind, midi });
+    }
+    return out.length ? out : null;
+  }
+
+  /** Map absolute song hits into view-relative {step, kind, midi} for nBars starting at viewLo. */
+  function songDrumHitsForView(songHits, nBars, viewLo) {
+    if (!songHits || !songHits.length) return null;
+    const lo = Number(viewLo) || 0;
+    const n = Number(nBars) || 0;
+    const out = [];
+    for (let i = 0; i < songHits.length; i++) {
+      const h = songHits[i];
+      if (h.bar < lo || h.bar >= lo + n) continue;
+      out.push({
+        step: (h.bar - lo) * 16 + h.step,
+        kind: h.kind,
+        midi: h.midi || DRUM_MIDI[h.kind] || 42,
+      });
+    }
+    return out;
+  }
+
+  /** Staff subtitle from actual hits (avoid claiming "8th hats" when song kit differs). */
+  function drumHatLabel(hits, hat16Fallback) {
+    if (!hits || !hits.length) return hat16Fallback ? "16th hats" : "8th hats";
+    const byBar = new Map();
+    for (let i = 0; i < hits.length; i++) {
+      const h = hits[i];
+      if (h.kind !== "hat") continue;
+      const b = Math.floor(h.step / 16);
+      if (!byBar.has(b)) byBar.set(b, new Set());
+      byBar.get(b).add(h.step % 16);
+    }
+    if (!byBar.size) return "kit";
+    let sum = 0;
+    byBar.forEach((s) => { sum += s.size; });
+    const avg = sum / byBar.size;
+    if (avg >= 14) return "16th hats";
+    if (avg >= 7) return "8th hats";
+    if (avg >= 3.5) return "quarter hats";
+    return "kit";
   }
 
   /** True when the section pattern has no notes (stem-verified silence → rests, not invented grooves). */
@@ -550,16 +622,24 @@
   }
 
   /**
-   * Drum hits for a staff/MIDI view. Supports full drums-out (section/pattern) and
-   * per-bar silence (drumsOutBars) while bass pattern can stay PEDAL.
+   * Drum hits for a staff/MIDI view. Prefers per-song drumHits when present;
+   * otherwise falls back to procedural buildDrumHits (legacy demos).
+   * Supports full drums-out and per-bar silence (drumsOutBars).
    */
   function drumHitsForView(nBars, hat16, viewLo, opts) {
     const o = opts || {};
     if (o.empty || o.silent || o.rhythmOut || o.drumsOut) return [];
-    const hits = buildDrumHits(nBars, hat16);
+    const lo = Number(viewLo) || 0;
+    const song = o.drumHits || o.songHits || null;
+    let hits = null;
+    if (song && song.length) {
+      hits = songDrumHitsForView(song, nBars, lo);
+    }
+    if (!hits) {
+      hits = buildDrumHits(nBars, hat16);
+    }
     const ranges = o.drumsOutBars || [];
     if (!ranges.length) return hits;
-    const lo = Number(viewLo) || 0;
     return hits.filter((h) => !isBarDrumsSilent(lo + Math.floor(h.step / 16), ranges));
   }
 
@@ -1131,6 +1211,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     const CARDS_EFF = (demo.cards && typeof demo.cards === "object") ? demo.cards : CARDS;
     const PATS_EFF = (demo.patterns && typeof demo.patterns === "object") ? demo.patterns : PATS;
     const DRUMS_OUT_BARS = normalizeDrumsOutBars(demo);
+    const SONG_DRUM_HITS = normalizeSongDrumHits(demo);
     const secStart = (s) => (s.first === 0 ? 0 : BARS[s.first].t);
     const secEnd = (s) => (s.end >= NBARS ? DURATION : BARS[s.end].t);
     const barAt = (t) => { for (let i = NBARS - 1; i >= 0; i--) if (t >= BARS[i].t) return i; return 0; };
@@ -1356,7 +1437,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       }
       if (midiDrums) {
         const hits = drumHitsForView(n, hat16, viewLo, {
-          rhythmOut, drumsOut, drumsOutBars: DRUMS_OUT_BARS,
+          rhythmOut, drumsOut, drumsOutBars: DRUMS_OUT_BARS, drumHits: SONG_DRUM_HITS,
         }).filter((h) => h.step < steps);
         for (let i = 0; i < hits.length; i++) {
           const h = hits[i];
@@ -2162,6 +2243,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         rhythmOut,
         drumsOut: dOpts.drumsOut,
         drumsOutBars: dOpts.drumsOutBars,
+        drumHits: dOpts.drumHits || dOpts.songHits || null,
         empty: rhythmOut || dOpts.drumsOut ? true : false,
       }).filter((h) => h.step < steps);
 
@@ -2424,7 +2506,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       const hat16 = !rhythmOut && !drumsOut && (sec.kind === "bridge" || sec.kind === "vamp" || sec.kind === "ah" || sec.kind === "tag");
       const lay = sectionBars(secIdx);
       const viewDrumHits = drumHitsForView(lay.n, hat16, lay.viewLo, {
-        rhythmOut, drumsOut, drumsOutBars: DRUMS_OUT_BARS,
+        rhythmOut, drumsOut, drumsOutBars: DRUMS_OUT_BARS, drumHits: SONG_DRUM_HITS,
       });
       const drumsViewOut = rhythmOut || drumsOut || viewDrumHits.length === 0;
       const playX = playheadX(t, lay.viewLo, lay.n);
@@ -2574,7 +2656,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       layers.appendChild(layer("Bass tab · " + pat.name + " · drag to loop bars", makeTab(lay.viewLo, lay.viewHi, lay.n, playX, pat)));
       layers.appendChild(layer("Chord names · estimate · Roman fn", makeChords(lay.viewLo, lay.viewHi, lay.n, playX, bar, sec.kind), "chords"));
       layers.appendChild(layer("Bass staff", makeBassStaff(lay.viewLo, lay.viewHi, lay.n, playX, pat), null, makeBassChannelStrip()));
-      layers.appendChild(layer("Drum staff · " + (rhythmOut ? "rests (out)" : (drumsViewOut ? "rests (drums out)" : (hat16 ? "16th hats" : "8th hats"))), makeDrumStaff(lay.viewLo, lay.viewHi, lay.n, playX, hat16, rhythmOut, { drumsOut, drumsOutBars: DRUMS_OUT_BARS }), null, makeDrumChannelStrip()));
+      const drumLabel = rhythmOut ? "rests (out)" : (drumsViewOut ? "rests (drums out)" : drumHatLabel(viewDrumHits, hat16));
+      layers.appendChild(layer("Drum staff · " + drumLabel, makeDrumStaff(lay.viewLo, lay.viewHi, lay.n, playX, hat16, rhythmOut, { drumsOut, drumsOutBars: DRUMS_OUT_BARS, drumHits: SONG_DRUM_HITS }), null, makeDrumChannelStrip()));
       grid.appendChild(layers);
 
       const cards = el("div", { className: "cards", "data-cards-panel": "1" });
@@ -2790,6 +2873,9 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     beamGroups,
     buildDrumHits,
     drumHitsForView,
+    normalizeSongDrumHits,
+    songDrumHitsForView,
+    drumHatLabel,
     isRhythmOut,
     isDrumsOut,
     normalizeDrumsOutBars,
