@@ -308,6 +308,121 @@
     return 72 - pos * 5.2;
   }
 
+  /** Parse demo.timeSig like "4/4" → { num, den, label }. */
+  function parseTimeSig(raw) {
+    if (raw == null) return { num: 4, den: 4, label: "4/4" };
+    const s = String(raw).trim();
+    const m = s.match(/^(\d+)\s*\/\s*(\d+)$/);
+    if (!m) return { num: 4, den: 4, label: s || "4/4" };
+    return { num: Number(m[1]), den: Number(m[2]), label: m[1] + "/" + m[2] };
+  }
+
+  // Bass-clef staff positions for key-signature accidentals (pos matches staffYy).
+  const BASS_SHARP_POS = [6, 3, 7, 4, 1, 5, 2]; // F C G D A E B
+  const BASS_FLAT_POS = [2, 5, 8, 4, 7, 3, 6]; // B E A D G C F
+  const MAJOR_SHARP_COUNT = { C: 0, G: 1, D: 2, A: 3, E: 4, B: 5, "F#": 6, "C#": 7 };
+  const MAJOR_FLAT_COUNT = { C: 0, F: 1, Bb: 2, Eb: 3, Ab: 4, Db: 5, Gb: 6, Cb: 7 };
+  const MINOR_SHARP_COUNT = { A: 0, E: 1, B: 2, "F#": 3, "C#": 4, "G#": 5, "D#": 6, "A#": 7 };
+  const MINOR_FLAT_COUNT = { A: 0, D: 1, G: 2, C: 3, F: 4, Bb: 5, Eb: 6, Ab: 7 };
+
+  /**
+   * Key signature from demo.keys / key (e.g. "Em", "Dm/F", "Ab").
+   * Returns { label, kind: "sharp"|"flat"|"none", count, positions: number[] }.
+   * Drums/percussion omit key sig — callers decide.
+   */
+  function keySigFromKeys(raw) {
+    if (raw == null || raw === "") {
+      return { label: "C", kind: "none", count: 0, positions: [] };
+    }
+    const head = String(raw).trim().split(/[\/\s,|]/)[0].trim();
+    const m = head.match(/^([A-Ga-g])([#b♯♭]?)(m|min|minor|maj|major)?$/i);
+    if (!m) {
+      return { label: head || "C", kind: "none", count: 0, positions: [] };
+    }
+    const letter = m[1].toUpperCase();
+    let acc = m[2] || "";
+    if (acc === "♯") acc = "#";
+    if (acc === "♭") acc = "b";
+    const tonic = letter + acc;
+    const qual = (m[3] || "").toLowerCase();
+    const minor = qual === "m" || qual === "min" || qual === "minor";
+    let count = 0;
+    let kind = "none";
+    if (minor) {
+      if (Object.prototype.hasOwnProperty.call(MINOR_SHARP_COUNT, tonic)) {
+        count = MINOR_SHARP_COUNT[tonic];
+        kind = count ? "sharp" : "none";
+      } else if (Object.prototype.hasOwnProperty.call(MINOR_FLAT_COUNT, tonic)) {
+        count = MINOR_FLAT_COUNT[tonic];
+        kind = count ? "flat" : "none";
+      }
+    } else {
+      if (Object.prototype.hasOwnProperty.call(MAJOR_SHARP_COUNT, tonic)) {
+        count = MAJOR_SHARP_COUNT[tonic];
+        kind = count ? "sharp" : "none";
+      } else if (Object.prototype.hasOwnProperty.call(MAJOR_FLAT_COUNT, tonic)) {
+        count = MAJOR_FLAT_COUNT[tonic];
+        kind = count ? "flat" : "none";
+      }
+    }
+    const positions = kind === "sharp"
+      ? BASS_SHARP_POS.slice(0, count)
+      : kind === "flat"
+        ? BASS_FLAT_POS.slice(0, count)
+        : [];
+    return { label: tonic + (minor ? "m" : ""), kind, count, positions };
+  }
+
+  /** Draw stacked time signature (num/den) into an SVG group. Returns next x. */
+  function appendTimeSignature(svg, x, yNum, yDen, timeSig, ink, fontSize) {
+    const ts = typeof timeSig === "object" && timeSig ? timeSig : parseTimeSig(timeSig);
+    const fs = fontSize || 15;
+    const g = svgEl("g", {
+      "data-time-sig": ts.label,
+      "aria-label": "Time signature " + ts.label,
+    });
+    g.appendChild(svgEl("text", {
+      x: x, y: yNum, "font-size": fs, "font-weight": "700",
+      fill: ink, "text-anchor": "middle", "font-family": "Georgia, 'Times New Roman', serif",
+    }, [document.createTextNode(String(ts.num))]));
+    g.appendChild(svgEl("text", {
+      x: x, y: yDen, "font-size": fs, "font-weight": "700",
+      fill: ink, "text-anchor": "middle", "font-family": "Georgia, 'Times New Roman', serif",
+    }, [document.createTextNode(String(ts.den))]));
+    svg.appendChild(g);
+    return x + fs * 0.85;
+  }
+
+  /** Draw bass-clef key signature accidentals. Returns next x after glyphs (or x if none). */
+  function appendKeySignature(svg, x, keySig, yyFn, ink) {
+    const ks = keySig && typeof keySig === "object" ? keySig : keySigFromKeys(keySig);
+    if (!ks || ks.kind === "none" || !ks.count) {
+      return x;
+    }
+    const g = svgEl("g", {
+      "data-key-sig": ks.label,
+      "data-key-kind": ks.kind,
+      "data-key-count": String(ks.count),
+      "aria-label": "Key signature " + ks.label,
+    });
+    const glyph = ks.kind === "sharp" ? "♯" : "♭";
+    const step = ks.kind === "sharp" ? 5.5 : 5.2;
+    const fs = ks.kind === "sharp" ? 14 : 16;
+    ks.positions.forEach((pos, i) => {
+      const cx = x + i * step;
+      const cy = yyFn(pos) + (ks.kind === "sharp" ? 4.5 : 5);
+      g.appendChild(svgEl("text", {
+        x: cx, y: cy, "font-size": fs, fill: ink,
+        "text-anchor": "middle",
+        "font-family": "Georgia, 'Times New Roman', serif",
+        "data-accidental": ks.kind,
+        "data-acc-index": String(i),
+      }, [document.createTextNode(glyph)]));
+    });
+    svg.appendChild(g);
+    return x + ks.count * step + 2;
+  }
+
   function noteDurationSteps(notes, index, barSteps) {
     const bs = barSteps == null ? 16 : barSteps;
     const note = notes[index];
@@ -2320,6 +2435,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       [0, 2, 4, 6, 8].forEach((pos) => svg.appendChild(svgEl("line", { x1: 10, x2: X0 + W, y1: yy(pos), y2: yy(pos), stroke: "#6b7280", "stroke-width": 1 })));
       svg.appendChild(svgEl("circle", { cx: 22, cy: f, r: 3.5, fill: ink }));
       svg.appendChild(svgEl("path", { d: "M22 " + f + " C 22 " + (f - 12) + ", 38 " + (f - 8) + ", 38 " + (f + 6) + " C 38 " + (f + 18) + ", 28 " + (f + 26) + ", 16 " + (f + 34), fill: "none", stroke: ink, "stroke-width": 2 }));
+      // Key + time signatures (engraving after clef). Key on pitched bass only.
+      {
+        let sigX = 40;
+        const ks = keySigFromKeys(demo && (demo.keys || demo.key));
+        sigX = appendKeySignature(svg, sigX, ks, yy, ink);
+        appendTimeSignature(svg, sigX + 6, yy(6) + 4, yy(2) + 4, parseTimeSig(demo && demo.timeSig), ink, 14);
+      }
       for (let i = 0; i <= n; i++) svg.appendChild(svgEl("line", { x1: X0 + 10 + (i / n) * (W - 10), x2: X0 + 10 + (i / n) * (W - 10), y1: yy(8), y2: yy(0), stroke: "#4b5563", "stroke-width": i === 0 || i === n ? 1.5 : 1 }));
 
       const notes = [];
@@ -2512,6 +2634,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       svg.appendChild(svgEl("text", { x: 8, y: 32, "font-size": 10, fill: "#6b7280" }, [document.createTextNode("HH")]));
       svg.appendChild(svgEl("text", { x: 8, y: 56, "font-size": 10, fill: "#6b7280" }, [document.createTextNode("SD")]));
       svg.appendChild(svgEl("text", { x: 8, y: 80, "font-size": 10, fill: "#6b7280" }, [document.createTextNode("BD")]));
+      // Time signature only (percussion: no key signature).
+      appendTimeSignature(svg, 38, 44, 68, parseTimeSig(demo && demo.timeSig), ink, 14);
       for (let i = 0; i <= n; i++) svg.appendChild(svgEl("line", { x1: X0 + (i / n) * W, x2: X0 + (i / n) * W, y1: 28, y2: 76, stroke: "#4b5563", "stroke-width": i === 0 || i === n ? 1.5 : 1 }));
 
       function drumFlagPath(cx, stemEnd, up, beams) {
@@ -3301,6 +3425,10 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     WRITTEN_OCTAVE,
     staffPos,
     staffYy,
+    parseTimeSig,
+    keySigFromKeys,
+    appendTimeSignature,
+    appendKeySignature,
     noteDurationSteps,
     durationStyle,
     notatedStepsOf,

@@ -2269,3 +2269,90 @@ describe("quiet public → private entry + private song picker", () => {
     expect(document.querySelector("[data-private-entry]")).toBeNull();
   });
 });
+
+describe("staff time + key signatures", () => {
+  afterEach(() => teardownPlayer());
+
+  it("parseTimeSig and keySigFromKeys map demo fields", async () => {
+    await bootPlayer();
+    const N = window.__BASS_NOTATION__;
+    expect(N.parseTimeSig("4/4")).toEqual({ num: 4, den: 4, label: "4/4" });
+    expect(N.parseTimeSig("3/4")).toEqual({ num: 3, den: 4, label: "3/4" });
+    expect(N.keySigFromKeys("Em")).toMatchObject({ label: "Em", kind: "sharp", count: 1 });
+    expect(N.keySigFromKeys("Em").positions).toEqual([6]); // F# on bass F line
+    expect(N.keySigFromKeys("Dm/F")).toMatchObject({ label: "Dm", kind: "flat", count: 1 });
+    expect(N.keySigFromKeys("Am")).toMatchObject({ kind: "none", count: 0 });
+    expect(N.keySigFromKeys("Ab")).toMatchObject({ label: "Ab", kind: "flat", count: 4 });
+    expect(N.keySigFromKeys("C")).toMatchObject({ kind: "none", count: 0 });
+  });
+
+  it("renders time signature on both bass and drum staves", async () => {
+    await bootPlayer({
+      mutatePayload: (p) => {
+        p.timeSig = "4/4";
+        p.keys = "C";
+      },
+    });
+    const bass = document.querySelector('svg[aria-label="Bass staff"]');
+    const drums = document.querySelector('svg[aria-label="Drum staff"]');
+    expect(bass).toBeTruthy();
+    expect(drums).toBeTruthy();
+    const bassTs = bass.querySelector("[data-time-sig]");
+    const drumTs = drums.querySelector("[data-time-sig]");
+    expect(bassTs).toBeTruthy();
+    expect(drumTs).toBeTruthy();
+    expect(bassTs.getAttribute("data-time-sig")).toBe("4/4");
+    expect(drumTs.getAttribute("data-time-sig")).toBe("4/4");
+    expect(bassTs.textContent.replace(/\s/g, "")).toMatch(/44/);
+    expect(drumTs.textContent.replace(/\s/g, "")).toMatch(/44/);
+  });
+
+  it("renders key signature on bass (Em → one sharp) and omits key sig on drums", async () => {
+    await bootPlayer({
+      mutatePayload: (p) => {
+        p.timeSig = "4/4";
+        p.keys = "Em";
+      },
+    });
+    const bass = document.querySelector('svg[aria-label="Bass staff"]');
+    const drums = document.querySelector('svg[aria-label="Drum staff"]');
+    const bassKs = bass.querySelector("[data-key-sig]");
+    expect(bassKs).toBeTruthy();
+    expect(bassKs.getAttribute("data-key-sig")).toBe("Em");
+    expect(bassKs.getAttribute("data-key-kind")).toBe("sharp");
+    expect(bassKs.getAttribute("data-key-count")).toBe("1");
+    expect(bassKs.querySelectorAll("[data-accidental='sharp']").length).toBe(1);
+    // Percussion: no key signature
+    expect(drums.querySelector("[data-key-sig]")).toBeNull();
+    // Time still on both
+    expect(bass.querySelector("[data-time-sig]").getAttribute("data-time-sig")).toBe("4/4");
+    expect(drums.querySelector("[data-time-sig]").getAttribute("data-time-sig")).toBe("4/4");
+  });
+
+  it("C major / Am: bass has time sig but no key-sig accidentals", async () => {
+    await bootPlayer({
+      mutatePayload: (p) => {
+        p.timeSig = "4/4";
+        p.keys = "Am";
+      },
+    });
+    const bass = document.querySelector('svg[aria-label="Bass staff"]');
+    expect(bass.querySelector("[data-time-sig]")).toBeTruthy();
+    expect(bass.querySelector("[data-key-sig]")).toBeNull();
+  });
+
+  it("Ab major draws four flats on bass key sig", async () => {
+    await bootPlayer({
+      mutatePayload: (p) => {
+        p.keys = "Ab";
+        p.timeSig = "4/4";
+      },
+    });
+    const bass = document.querySelector('svg[aria-label="Bass staff"]');
+    const ks = bass.querySelector("[data-key-sig]");
+    expect(ks).toBeTruthy();
+    expect(ks.getAttribute("data-key-kind")).toBe("flat");
+    expect(ks.getAttribute("data-key-count")).toBe("4");
+    expect(ks.querySelectorAll("[data-accidental='flat']").length).toBe(4);
+  });
+});
