@@ -1011,7 +1011,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 .cards-head { display:flex; align-items:center; justify-content:space-between; flex:0 0 auto; }
 .cards-title { font-size:14px; font-weight:700; }
 .card-label { font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:#9ca3af; flex:0 0 auto; }
-.card-body { flex:0 1 auto; max-height:4.6em; min-height:0; overflow:hidden; font-size:13px; line-height:1.35; color:#d1d5db; }
+.card-body { flex:0 1 auto; max-height:5.4em; min-height:0; overflow:hidden; font-size:15px; line-height:1.4; color:#d1d5db; }
 .card-insight { flex:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:4px; border:1px solid #1f2937; border-radius:8px; background:#0a0e13; padding:6px 6px 4px; }
 .card-insight-title { font-size:10px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; color:#93c5fd; flex:0 0 auto; }
 .card-insight-svg { flex:1; min-height:0; width:100%; }
@@ -2587,11 +2587,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       const insightPat = resolveInsightPattern(card.insight, PATS_EFF) || pat;
       const insightView = makeCardInsight(card.insight, insightPat);
       if (insightView) cards.appendChild(insightView);
-      const cardActions = el("div", { className: "card-actions" });
-      cardActions.appendChild(el("button", { type: "button", className: "btn", "data-card-prev": "1" }, ["Prev"]));
-      cardActions.appendChild(el("button", { type: "button", className: "btn primary", "data-card-next": "1" }, ["Next card"]));
-      cardActions.appendChild(el("span", { className: "sub" }, ["Arranger notes for this section"]));
-      cards.appendChild(cardActions);
+      // Panel order (desktop + drawer): label → body → insight → mini-grid → Prev/Next.
       const gridCards = el("div", { className: "card-grid" });
       deck.forEach((c, i) => {
         const active = i === cardIdx % deck.length;
@@ -2601,6 +2597,11 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         gridCards.appendChild(b);
       });
       cards.appendChild(gridCards);
+      const cardActions = el("div", { className: "card-actions" });
+      cardActions.appendChild(el("button", { type: "button", className: "btn", "data-card-prev": "1" }, ["Prev"]));
+      cardActions.appendChild(el("button", { type: "button", className: "btn primary", "data-card-next": "1" }, ["Next card"]));
+      cardActions.appendChild(el("span", { className: "sub" }, ["Arranger notes for this section"]));
+      cards.appendChild(cardActions);
 
       const phone = isPhoneLayout();
       document.body.classList.toggle("cards-drawer-open", phone && cardsDrawerOpen);

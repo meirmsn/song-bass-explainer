@@ -9,7 +9,7 @@
 - CDN: https://files.freemusicarchive.org/storage-freemusicarchive-org/music/Music_for_Video/Komiku/Its_time_for_adventure__vol_3/Komiku_-_06_-_A_good_bass_for_gambling.mp3
 
 ## Live
-- Worker version: 2298a0b0-0e2d-4497-96a3-5cec8f02f2b7
+- Worker version: fc903d56-b676-4bf0-b9e7-23ba1251a122 (insight visuals + panel order 2026-10-26)
 - Public player: https://bass.meirmsn.dev/ (also /player/)
 - Catalog: https://bass.meirmsn.dev/api/demo/catalog
 - Demo API: https://bass.meirmsn.dev/api/demo/a-good-bass-for-gambling
@@ -28,7 +28,8 @@
 - No published chord/bass chart found for this track (searched 2026-10-26).
 - Acoustic path: htdemucs 4-stem + librosa chroma on mix + pyin on bass stem.
 - Key: Em (~123 BPM, 4/4, ~156s, 79 bars). Chord qualities preserved when functional (Em/Em7/B7/Am/A7…); Bb-bass “C7” mirages demoted to Em.
-- lean-B insight cards: Pocket / Figure / Harmony / Missable for 8 sections.
+- lean-B insight cards: Pocket / Figure / Harmony / Missable for every section that has cards (12 section keys × 4 = 48).
+- **Ship blocker:** every flashcard MUST include an `insight` schematic (`layer` + claim-window highlights). Prose-only `{label,body}` is not shippable — see `meta.insightRequired` in demo-data.json / study/resource.json.
 - Confidence: medium — stem-verified, not third-party chart.
 
 ## Player extras this ship
@@ -37,11 +38,13 @@
 - Playback rate buttons 100/90/75/50/25% (pitch preserved via BufferSource.playbackRate).
 
 ## Tests
-- npm test: 139/139 green after deploy.
+- npm test: 144/144 green after deploy.
 
 ## Sync tarball
-- /workspace/komiku-pd-demo-main-sync.tgz (no PR; later main sync as meirmsn-agent)
+- /workspace/komiku-insights-main-sync.tgz (no PR; later main sync as meirmsn-agent)
 
-## Git
-- Tracked: player, Worker, tests, attribution, `study/resource.json`, `demo-data.json`, and `analysis/*.json`.
-- Not tracked: stem audio and the FMA source mix. Prior repo pattern ignores `work/` media (`*.m4a`, `*.mp3`, `*.wav`, plus `stems/` and `source/` under this demo). The Worker serves those objects from R2 `bass-demo` (`DEMO_BUCKET`) at the keys listed above.
+## Insight coverage (2026-10-26 America/Los_Angeles)
+- Authored lean-B `insight` on **all 48** Komiku cards (intro/a1/verse/a2/b1/chorus/br/bridge/a3/b2/out/tag × Pocket/Figure/Harmony/Missable).
+- PatternIds resolve to section patterns (`intro_air`, `chrom_eb`, `chrom_eb2`, `e_pedal_lift`, `drop_e`, `bb_hang`, `build_walk`, `outro_eb`) or builtin `empty` for near-silent intro pocket.
+- Flashcard panel order: label → body (15px) → insight → mini-grid → Prev/Next.
+- Checklist for future demos: before upload, assert `every card has insight.layer`; missing insight is a ship blocker.

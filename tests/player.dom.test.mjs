@@ -1345,6 +1345,92 @@ describe("flashcard insight panel", () => {
     expect(names).toEqual(["F", "C", "Bb", "Dm"]);
     expect(node.querySelectorAll(".card-insight-chord.lit").length).toBe(4);
   });
+
+  it("panel order is label → body → insight → mini-grid → Prev/Next", async () => {
+    const api = await bootPlayer();
+    api.pickSection(2); // chorus has insight in fixture/builtins path
+    api.setCard(1); // Figure
+    const panel = document.querySelector("[data-cards-panel]");
+    expect(panel).toBeTruthy();
+    const kids = [...panel.children].map((c) => c.className.split(/\s+/)[0]);
+    expect(kids).toEqual([
+      "cards-head",
+      "card-label",
+      "card-body",
+      "card-insight",
+      "card-grid",
+      "card-actions",
+    ]);
+    const body = document.querySelector(".card-body");
+    expect(body).toBeTruthy();
+    // Larger claim-line body (was 13px).
+    expect(Number.parseFloat(getComputedStyle(body).fontSize)).toBeGreaterThanOrEqual(15);
+  });
+
+  it("makeCardInsight returns null when insight is missing (safe)", async () => {
+    await bootPlayer();
+    const N = window.__BASS_NOTATION__;
+    expect(N.makeCardInsight(null, null)).toBeNull();
+    expect(N.makeCardInsight(undefined, null)).toBeNull();
+  });
+});
+
+const komikuDemo = JSON.parse(
+  readFileSync(join(root, "../work/demo-a-good-bass-for-gambling/demo-data.json"), "utf8"),
+);
+
+describe("Komiku demo insights (public CC0)", () => {
+  afterEach(() => {
+    teardownPlayer();
+  });
+
+  it("all 48 cards include insight schematics (ship blocker)", () => {
+    let n = 0;
+    for (const [sec, cards] of Object.entries(komikuDemo.cards)) {
+      expect(cards).toHaveLength(4);
+      for (const c of cards) {
+        expect(c.insight, `${sec}/${c.label}`).toBeTruthy();
+        expect(c.insight.layer, `${sec}/${c.label}`).toMatch(/^(pocket|figure|harmony|missable)$/);
+        expect(Array.isArray(c.insight.highlights), `${sec}/${c.label}`).toBe(true);
+        n++;
+      }
+    }
+    expect(n).toBe(48);
+    expect(komikuDemo.meta?.insightRequired).toBe(true);
+  });
+
+  it("Groove A' Pocket mounts non-empty .card-insight", async () => {
+    const api = await bootPlayer({
+      privateMode: false,
+      mutatePayload: (p) => {
+        p.title = komikuDemo.title;
+        p.artist = komikuDemo.artist;
+        p.bpm = komikuDemo.bpm;
+        p.secs = komikuDemo.secs;
+        p.cards = komikuDemo.cards;
+        p.patterns = komikuDemo.patterns;
+        p.nbars = komikuDemo.nbars;
+        p.raw = komikuDemo.raw;
+        p.drumsOutBars = komikuDemo.drumsOutBars;
+        p.meta = komikuDemo.meta;
+      },
+    });
+    const a2Idx = komikuDemo.secs.findIndex((s) => s.id === "a2");
+    expect(a2Idx).toBeGreaterThanOrEqual(0);
+    api.pickSection(a2Idx);
+    api.setCard(0); // Pocket
+    const s = api.getState();
+    expect(s.activeCardLabel).toBe("Pocket");
+    expect(s.activeCardInsight).toBeTruthy();
+    expect(s.activeCardInsight.layer).toBe("pocket");
+    expect(s.hasInsightPanel).toBe(true);
+    const panel = document.querySelector(".card-insight");
+    expect(panel).toBeTruthy();
+    expect(panel.getAttribute("data-insight-layer")).toBe("pocket");
+    expect(
+      panel.querySelector(".card-insight-svg, .card-insight-chords, [data-insight-kind]"),
+    ).toBeTruthy();
+  });
 });
 
 describe("v2-empty: silent section shows rests not invented grooves", () => {

@@ -553,217 +553,1720 @@
     "intro": [
       {
         "label": "Pocket",
-        "body": "Kit and bass are barely in \u2014 the first downbeat is almost empty air before the groove clicks."
+        "body": "Kit and bass are barely in \u2014 the first downbeat is almost empty air before the groove clicks.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "empty",
+          "title": "Near-silent open",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": []
+        }
       },
       {
         "label": "Figure",
-        "body": "Treat bar 0 as a count-off: leave the low E unspoken, then land the E\u2013B\u2013E\u2013Bb pickup into Groove A."
+        "body": "Treat bar 0 as a count-off: leave the low E unspoken, then land the E\u2013B\u2013E\u2013Bb pickup into Groove A.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "intro_air",
+          "title": "Count-off air",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 33,
+              "text": "leave low E unspoken"
+            },
+            {
+              "step": 4,
+              "midi": 35,
+              "text": "sparse B"
+            },
+            {
+              "step": 12,
+              "midi": 36,
+              "text": "pickup crumb"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Em center (i). Nothing to outline yet \u2014 the ear waits for the tonic pedal."
+        "body": "Em center (i). Nothing to outline yet \u2014 the ear waits for the tonic pedal.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Em waits",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i \u2014 home"
+            },
+            {
+              "step": 1,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "nothing yet"
+            },
+            {
+              "step": 2,
+              "kind": "chord",
+              "chord": "\u2014",
+              "text": "ear waits"
+            },
+            {
+              "step": 3,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "tonic pedal next"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "Don\u2019t fill the open. The gambling swagger starts when the chromatic Bb answers the E, not before."
+        "body": "Don\u2019t fill the open. The gambling swagger starts when the chromatic Bb answers the E, not before.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "intro_air",
+          "title": "Don't fill the open",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 33,
+              "text": "not yet"
+            },
+            {
+              "step": 8,
+              "midi": 31,
+              "text": "still air"
+            },
+            {
+              "step": 12,
+              "midi": 36,
+              "text": "Bb answers later"
+            }
+          ]
+        }
       }
     ],
     "a1": [
       {
         "label": "Pocket",
-        "body": "~123 BPM 4/4. Drums sit medium-tight; bass speaks on the beat with little push \u2014 pocket is square and confident."
+        "body": "~123 BPM 4/4. Drums sit medium-tight; bass speaks on the beat with little push \u2014 pocket is square and confident.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "chrom_eb",
+          "title": "Square & confident",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick on 1"
+            },
+            {
+              "step": 4,
+              "kind": "snare",
+              "text": "snare 2"
+            },
+            {
+              "step": 8,
+              "kind": "kick",
+              "text": "kick on 3"
+            },
+            {
+              "step": 0,
+              "kind": "bass",
+              "midi": 28,
+              "text": "bass on the beat"
+            }
+          ]
+        }
       },
       {
         "label": "Figure",
-        "body": "Core figure: E on beats 1 & 3, B (or Bb neighbor) answering. Hear E\u2013B\u2013E\u2013Bb as tonic with a chromatic upper-neighbor tease."
+        "body": "Core figure: E on beats 1 & 3, B (or Bb neighbor) answering. Hear E\u2013B\u2013E\u2013Bb as tonic with a chromatic upper-neighbor tease.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "chrom_eb",
+          "title": "E\u2013B\u2013E\u2013Bb core",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "E on 1"
+            },
+            {
+              "step": 4,
+              "midi": 35,
+              "text": "B answers"
+            },
+            {
+              "step": 8,
+              "midi": 28,
+              "text": "E on 3"
+            },
+            {
+              "step": 12,
+              "midi": 34,
+              "text": "Bb chromatic tease"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Em / Em7 home. Occasional A7 or Am color when the bass hangs on A/Bb \u2014 keep chord quality (7 vs triad) when you hear the flat-7."
+        "body": "Em / Em7 home. Occasional A7 or Am color when the bass hangs on A/Bb \u2014 keep chord quality (7 vs triad) when you hear the flat-7.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Em home \u00b7 A color",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Em7",
+              "text": "i7"
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "A7",
+              "text": "V-of-iv color"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "iv flavor"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "The Bb is a chromatic neighbor, not a key change. Don\u2019t re-root the bar on Bb; it ornaments E."
+        "body": "The Bb is a chromatic neighbor, not a key change. Don\u2019t re-root the bar on Bb; it ornaments E.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "chrom_eb",
+          "title": "Bb is neighbor, not root",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 12,
+              "midi": 34,
+              "text": "Bb neighbor"
+            },
+            {
+              "step": 16,
+              "midi": 34,
+              "text": "still ornament"
+            },
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "E is gravity"
+            },
+            {
+              "step": 8,
+              "midi": 28,
+              "text": "back to E"
+            }
+          ]
+        }
       }
     ],
     "verse": [
       {
         "label": "Pocket",
-        "body": "Back to medium drum weight. Bass leans harder on Bb hangs before resolving to E."
+        "body": "Back to medium drum weight. Bass leans harder on Bb hangs before resolving to E.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "chrom_eb",
+          "title": "Medium kit \u00b7 Bb lean",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick on 1"
+            },
+            {
+              "step": 4,
+              "kind": "snare",
+              "text": "snare 2"
+            },
+            {
+              "step": 8,
+              "kind": "kick",
+              "text": "kick on 3"
+            },
+            {
+              "step": 12,
+              "kind": "bass",
+              "midi": 34,
+              "text": "Bb hang vs kick"
+            }
+          ]
+        }
       },
       {
         "label": "Figure",
-        "body": "Bb\u2013Bb\u2013Bb\u2013A into A\u2013E\u2013B\u2013E. Chromatic hang, then a clean Em outline."
+        "body": "Bb\u2013Bb\u2013Bb\u2013A into A\u2013E\u2013B\u2013E. Chromatic hang, then a clean Em outline.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "chrom_eb",
+          "title": "Bb hang into Em",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 12,
+              "midi": 34,
+              "text": "Bb hang"
+            },
+            {
+              "step": 16,
+              "midi": 34,
+              "text": "still Bb"
+            },
+            {
+              "step": 24,
+              "midi": 33,
+              "text": "A walkback"
+            },
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "resolve to E"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Em answered by Am (iv) and A7 colors. Keep Am vs Am7 / A7 quality from the template when the 7th is clear."
+        "body": "Em answered by Am (iv) and A7 colors. Keep Am vs Am7 / A7 quality from the template when the 7th is clear.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Em \u00b7 Am / A7 colors",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "iv"
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "A7",
+              "text": "V-of-iv"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "back to i"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "The long Bb is a delay of tonic, not a new tonal center \u2014 resolve it to E on purpose."
+        "body": "The long Bb is a delay of tonic, not a new tonal center \u2014 resolve it to E on purpose.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "chrom_eb",
+          "title": "Bb delays tonic",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 12,
+              "midi": 34,
+              "text": "delay"
+            },
+            {
+              "step": 16,
+              "midi": 34,
+              "text": "not a new key"
+            },
+            {
+              "step": 24,
+              "midi": 33,
+              "text": "A leans iv"
+            },
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "resolve on purpose"
+            }
+          ]
+        }
       }
     ],
     "a2": [
       {
         "label": "Pocket",
-        "body": "Same pocket as A \u2014 hats/kick keep the gambling pulse; bass stays on the grid."
+        "body": "Same pocket as A \u2014 hats/kick keep the gambling pulse; bass stays on the grid.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "chrom_eb2",
+          "title": "Same gambling pulse",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick on 1"
+            },
+            {
+              "step": 4,
+              "kind": "snare",
+              "text": "snare 2"
+            },
+            {
+              "step": 8,
+              "kind": "kick",
+              "text": "kick on 3"
+            },
+            {
+              "step": 12,
+              "kind": "snare",
+              "text": "snare 4"
+            }
+          ]
+        }
       },
       {
         "label": "Figure",
-        "body": "E pedal with Bb\u2013A walkbacks. Lock the octave: low E, then the neighbor cluster above."
+        "body": "E pedal with Bb\u2013A walkbacks. Lock the octave: low E, then the neighbor cluster above.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "chrom_eb2",
+          "title": "E pedal \u00b7 Bb\u2013A walkback",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "low E pedal"
+            },
+            {
+              "step": 8,
+              "midi": 28,
+              "text": "E on 3"
+            },
+            {
+              "step": 12,
+              "midi": 34,
+              "text": "Bb neighbor"
+            },
+            {
+              "step": 20,
+              "midi": 33,
+              "text": "A walkback"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Still Em-centric. When chroma leans Am/A7, it\u2019s iv / V-of-iv flavor over the same bass story."
+        "body": "Still Em-centric. When chroma leans Am/A7, it\u2019s iv / V-of-iv flavor over the same bass story.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Still Em-centric",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "iv flavor"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "A7",
+              "text": "V-of-iv"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "Mute the bass (S/M) and check: the \u2018C7\u2019 mirage is often just Bb in the bass against Em."
+        "body": "Mute the bass (S/M) and check: the \u2018C7\u2019 mirage is often just Bb in the bass against Em.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "chrom_eb2",
+          "title": "C7 mirage = Bb vs Em",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 12,
+              "midi": 34,
+              "text": "Bb in bass"
+            },
+            {
+              "step": 16,
+              "midi": 34,
+              "text": "not C7 root"
+            },
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "Em still home"
+            },
+            {
+              "step": 8,
+              "midi": 28,
+              "text": "mute-check E"
+            }
+          ]
+        }
       }
     ],
     "b1": [
       {
         "label": "Pocket",
-        "body": "Drum energy lifts (~bars 17\u201325). Ride the denser kit without rushing the E pedals."
+        "body": "Drum energy lifts (~bars 17\u201325). Ride the denser kit without rushing the E pedals.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "e_pedal_lift",
+          "title": "Lift without rush",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick on 1"
+            },
+            {
+              "step": 0,
+              "kind": "bass",
+              "midi": 28,
+              "text": "E pedal locks"
+            },
+            {
+              "step": 8,
+              "kind": "kick",
+              "text": "kick on 3"
+            },
+            {
+              "step": 12,
+              "kind": "snare",
+              "text": "snare densifies"
+            }
+          ]
+        }
       },
       {
         "label": "Figure",
-        "body": "More E repeats per bar (E\u2013E\u2013E\u2013x) \u2014 a lift pedal \u2014 then Gb/F chromatic crumbs as tension."
+        "body": "More E repeats per bar (E\u2013E\u2013E\u2013x) \u2014 a lift pedal \u2014 then Gb/F chromatic crumbs as tension.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "e_pedal_lift",
+          "title": "E\u2013E\u2013E lift pedal",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "E on 1"
+            },
+            {
+              "step": 4,
+              "midi": 40,
+              "text": "octave E"
+            },
+            {
+              "step": 8,
+              "midi": 28,
+              "text": "E on 3"
+            },
+            {
+              "step": 16,
+              "midi": 30,
+              "text": "Gb crumb"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Em / Em7 with brief E major color flashes. Preserve Em7 when the flat-7 is audible."
+        "body": "Em / Em7 with brief E major color flashes. Preserve Em7 when the flat-7 is audible.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Em \u00b7 E major flashes",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Em7",
+              "text": "i7"
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "E",
+              "text": "major color"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "back to i"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "The lift is density, not a new key. Keep E as gravity; Gb is passing, not a modulation."
+        "body": "The lift is density, not a new key. Keep E as gravity; Gb is passing, not a modulation.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "e_pedal_lift",
+          "title": "Density \u2260 new key",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "E = gravity"
+            },
+            {
+              "step": 16,
+              "midi": 30,
+              "text": "Gb passing"
+            },
+            {
+              "step": 24,
+              "midi": 29,
+              "text": "F crumb"
+            },
+            {
+              "step": 4,
+              "midi": 40,
+              "text": "octave lift"
+            }
+          ]
+        }
       }
     ],
     "chorus": [
       {
         "label": "Pocket",
-        "body": "Build densifies again; stay behind the beat slightly so the walk doesn\u2019t get stiff."
+        "body": "Build densifies again; stay behind the beat slightly so the walk doesn\u2019t get stiff.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "e_pedal_lift",
+          "title": "Behind the beat",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick on 1"
+            },
+            {
+              "step": 4,
+              "kind": "bass",
+              "midi": 40,
+              "text": "bass slightly late"
+            },
+            {
+              "step": 8,
+              "kind": "kick",
+              "text": "kick on 3"
+            },
+            {
+              "step": 12,
+              "kind": "snare",
+              "text": "snare 4"
+            }
+          ]
+        }
       },
       {
         "label": "Figure",
-        "body": "Walk fragments (G\u2013Gb\u2013F, F\u2013E\u2026) into E pedals \u2014 approach notes into tonic."
+        "body": "Walk fragments (G\u2013Gb\u2013F, F\u2013E\u2026) into E pedals \u2014 approach notes into tonic.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "e_pedal_lift",
+          "title": "Walk into E pedal",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 30,
+              "text": "Gb approach"
+            },
+            {
+              "step": 20,
+              "midi": 30,
+              "text": "Gb holds"
+            },
+            {
+              "step": 24,
+              "midi": 29,
+              "text": "F into E"
+            },
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "E target"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Em with B7 (V) approaches. Prefer B7 over vague diminished labels when the leading tone resolves to E."
+        "body": "Em with B7 (V) approaches. Prefer B7 over vague diminished labels when the leading tone resolves to E.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Em \u00b7 B7 approaches",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "B7",
+              "text": "V"
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "Em7",
+              "text": "i7"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "Walk tones are approach notes \u2014 name the target chord (Em), not every passing PC."
+        "body": "Walk tones are approach notes \u2014 name the target chord (Em), not every passing PC.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "e_pedal_lift",
+          "title": "Name the target Em",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 30,
+              "text": "approach"
+            },
+            {
+              "step": 24,
+              "midi": 29,
+              "text": "not the chord"
+            },
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "target = Em"
+            },
+            {
+              "step": 8,
+              "midi": 28,
+              "text": "E again"
+            }
+          ]
+        }
       }
     ],
     "br": [
       {
         "label": "Pocket",
-        "body": "Bar 26 drums duck \u2014 a one-bar breath \u2014 then the kit returns. Feel the drop as intentional air."
+        "body": "Bar 26 drums duck \u2014 a one-bar breath \u2014 then the kit returns. Feel the drop as intentional air.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "drop_e",
+          "title": "One-bar breath",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick ducks"
+            },
+            {
+              "step": 4,
+              "kind": "snare",
+              "text": "thin snare"
+            },
+            {
+              "step": 0,
+              "kind": "bass",
+              "midi": 28,
+              "text": "bass keeps going"
+            },
+            {
+              "step": 16,
+              "kind": "kick",
+              "text": "kit returns"
+            }
+          ]
+        }
       },
       {
         "label": "Figure",
-        "body": "E figures continue through the drop; don\u2019t stop the bass just because the kit thins."
+        "body": "E figures continue through the drop; don\u2019t stop the bass just because the kit thins.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "drop_e",
+          "title": "E through the drop",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "E holds"
+            },
+            {
+              "step": 8,
+              "midi": 33,
+              "text": "A color"
+            },
+            {
+              "step": 12,
+              "midi": 35,
+              "text": "B"
+            },
+            {
+              "step": 16,
+              "midi": 28,
+              "text": "E again"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Em pedal through the drop. Use the thin bar to hear bass alone against residual harmony."
+        "body": "Em pedal through the drop. Use the thin bar to hear bass alone against residual harmony.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Em pedal through drop",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i \u2014 thin"
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i \u2014 kit back"
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "still i"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "E",
+              "text": "color flash"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "Phone tip: loop the drop bar and toggle D&B vs full \u2014 the pocket hole is the lesson."
+        "body": "Phone tip: loop the drop bar and toggle D&B vs full \u2014 the pocket hole is the lesson.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "drop_e",
+          "title": "Pocket hole is the lesson",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "bass alone"
+            },
+            {
+              "step": 16,
+              "midi": 28,
+              "text": "kit returns"
+            },
+            {
+              "step": 24,
+              "midi": 34,
+              "text": "Bb after breath"
+            },
+            {
+              "step": 8,
+              "midi": 33,
+              "text": "don't stop"
+            }
+          ]
+        }
       }
     ],
     "bridge": [
       {
         "label": "Pocket",
-        "body": "Bar 26 drums duck \u2014 a one-bar breath \u2014 then the kit returns. Feel the drop as intentional air."
+        "body": "Bar 26 drums duck \u2014 a one-bar breath \u2014 then the kit returns. Feel the drop as intentional air.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "drop_e",
+          "title": "One-bar breath",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick ducks"
+            },
+            {
+              "step": 4,
+              "kind": "snare",
+              "text": "thin snare"
+            },
+            {
+              "step": 0,
+              "kind": "bass",
+              "midi": 28,
+              "text": "bass keeps going"
+            },
+            {
+              "step": 16,
+              "kind": "kick",
+              "text": "kit returns"
+            }
+          ]
+        }
       },
       {
         "label": "Figure",
-        "body": "E figures continue through the drop; don\u2019t stop the bass just because the kit thins."
+        "body": "E figures continue through the drop; don\u2019t stop the bass just because the kit thins.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "drop_e",
+          "title": "E through the drop",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "E holds"
+            },
+            {
+              "step": 8,
+              "midi": 33,
+              "text": "A color"
+            },
+            {
+              "step": 12,
+              "midi": 35,
+              "text": "B"
+            },
+            {
+              "step": 16,
+              "midi": 28,
+              "text": "E again"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Em pedal through the drop. Use the thin bar to hear bass alone against residual harmony."
+        "body": "Em pedal through the drop. Use the thin bar to hear bass alone against residual harmony.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Em pedal through drop",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i \u2014 thin"
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i \u2014 kit back"
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "still i"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "E",
+              "text": "color flash"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "Phone tip: loop the drop bar and toggle D&B vs full \u2014 the pocket hole is the lesson."
+        "body": "Phone tip: loop the drop bar and toggle D&B vs full \u2014 the pocket hole is the lesson.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "drop_e",
+          "title": "Pocket hole is the lesson",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 28,
+              "text": "bass alone"
+            },
+            {
+              "step": 16,
+              "midi": 28,
+              "text": "kit returns"
+            },
+            {
+              "step": 24,
+              "midi": 34,
+              "text": "Bb after breath"
+            },
+            {
+              "step": 8,
+              "midi": 33,
+              "text": "don't stop"
+            }
+          ]
+        }
       }
     ],
     "a3": [
       {
         "label": "Pocket",
-        "body": "Back to medium drum weight. Bass leans harder on Bb hangs before resolving to E."
+        "body": "Back to medium drum weight. Bass leans harder on Bb hangs before resolving to E.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "bb_hang",
+          "title": "Bb hang vs kit",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick on 1"
+            },
+            {
+              "step": 0,
+              "kind": "bass",
+              "midi": 34,
+              "text": "Bb against kick"
+            },
+            {
+              "step": 8,
+              "kind": "kick",
+              "text": "kick on 3"
+            },
+            {
+              "step": 12,
+              "kind": "snare",
+              "text": "snare 4"
+            }
+          ]
+        }
       },
       {
         "label": "Figure",
-        "body": "Bb\u2013Bb\u2013Bb\u2013A into A\u2013E\u2013B\u2013E. Chromatic hang, then a clean Em outline."
+        "body": "Bb\u2013Bb\u2013Bb\u2013A into A\u2013E\u2013B\u2013E. Chromatic hang, then a clean Em outline.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "bb_hang",
+          "title": "Bb\u2013Bb\u2013Bb\u2013A \u2192 Em",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 34,
+              "text": "Bb hang"
+            },
+            {
+              "step": 8,
+              "midi": 34,
+              "text": "still Bb"
+            },
+            {
+              "step": 12,
+              "midi": 33,
+              "text": "A"
+            },
+            {
+              "step": 20,
+              "midi": 28,
+              "text": "resolve E"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Em answered by Am (iv) and A7 colors. Keep Am vs Am7 / A7 quality from the template when the 7th is clear."
+        "body": "Em answered by Am (iv) and A7 colors. Keep Am vs Am7 / A7 quality from the template when the 7th is clear.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Em \u00b7 Am / A7",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "iv lean"
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "A7",
+              "text": "V-of-iv"
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "The long Bb is a delay of tonic, not a new tonal center \u2014 resolve it to E on purpose."
+        "body": "The long Bb is a delay of tonic, not a new tonal center \u2014 resolve it to E on purpose.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "bb_hang",
+          "title": "Resolve Bb to E",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 34,
+              "text": "delay of tonic"
+            },
+            {
+              "step": 8,
+              "midi": 34,
+              "text": "not new center"
+            },
+            {
+              "step": 20,
+              "midi": 28,
+              "text": "land on E"
+            },
+            {
+              "step": 24,
+              "midi": 35,
+              "text": "B outline"
+            }
+          ]
+        }
       }
     ],
     "b2": [
       {
         "label": "Pocket",
-        "body": "Build densifies again; stay behind the beat slightly so the walk doesn\u2019t get stiff."
+        "body": "Build densifies again; stay behind the beat slightly so the walk doesn\u2019t get stiff.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "build_walk",
+          "title": "Walk stays behind",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick on 1"
+            },
+            {
+              "step": 0,
+              "kind": "bass",
+              "midi": 31,
+              "text": "walk vs kick"
+            },
+            {
+              "step": 8,
+              "kind": "kick",
+              "text": "kick on 3"
+            },
+            {
+              "step": 12,
+              "kind": "snare",
+              "text": "snare 4"
+            }
+          ]
+        }
       },
       {
         "label": "Figure",
-        "body": "Walk fragments (G\u2013Gb\u2013F, F\u2013E\u2026) into E pedals \u2014 approach notes into tonic."
+        "body": "Walk fragments (G\u2013Gb\u2013F, F\u2013E\u2026) into E pedals \u2014 approach notes into tonic.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "build_walk",
+          "title": "G\u2013Gb\u2013F into E",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 31,
+              "text": "G"
+            },
+            {
+              "step": 4,
+              "midi": 30,
+              "text": "Gb"
+            },
+            {
+              "step": 12,
+              "midi": 29,
+              "text": "F"
+            },
+            {
+              "step": 20,
+              "midi": 28,
+              "text": "E target"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Em with B7 (V) approaches. Prefer B7 over vague diminished labels when the leading tone resolves to E."
+        "body": "Em with B7 (V) approaches. Prefer B7 over vague diminished labels when the leading tone resolves to E.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Em \u00b7 B7 approaches",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "B7",
+              "text": "V approach"
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "Em7",
+              "text": "i7"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "Walk tones are approach notes \u2014 name the target chord (Em), not every passing PC."
+        "body": "Walk tones are approach notes \u2014 name the target chord (Em), not every passing PC.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "build_walk",
+          "title": "Approach \u2260 chord name",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 31,
+              "text": "walk tone"
+            },
+            {
+              "step": 12,
+              "midi": 29,
+              "text": "still approach"
+            },
+            {
+              "step": 20,
+              "midi": 28,
+              "text": "target Em"
+            },
+            {
+              "step": 24,
+              "midi": 40,
+              "text": "octave E"
+            }
+          ]
+        }
       }
     ],
     "out": [
       {
         "label": "Pocket",
-        "body": "Energy fades; drums and bass thin toward silence. Let notes get shorter as the kit disappears."
+        "body": "Energy fades; drums and bass thin toward silence. Let notes get shorter as the kit disappears.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "outro_eb",
+          "title": "Thin toward silence",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick fades"
+            },
+            {
+              "step": 4,
+              "kind": "snare",
+              "text": "sparse snare"
+            },
+            {
+              "step": 4,
+              "kind": "bass",
+              "midi": 28,
+              "text": "shorter notes"
+            },
+            {
+              "step": 8,
+              "kind": "kick",
+              "text": "kit disappearing"
+            }
+          ]
+        }
       },
       {
         "label": "Figure",
-        "body": "Return of E/Bb neighbor language, then sparse E\u2013B\u2013E into air."
+        "body": "Return of E/Bb neighbor language, then sparse E\u2013B\u2013E into air.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "outro_eb",
+          "title": "E/Bb then air",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 4,
+              "midi": 28,
+              "text": "E"
+            },
+            {
+              "step": 8,
+              "midi": 35,
+              "text": "B"
+            },
+            {
+              "step": 12,
+              "midi": 28,
+              "text": "E"
+            },
+            {
+              "step": 16,
+              "midi": 34,
+              "text": "Bb neighbor"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Em to the end. No late modulations \u2014 chromatic bass over i."
+        "body": "Em to the end. No late modulations \u2014 chromatic bass over i.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Em to the end",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "no late mod"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "Last bars are vocabulary of leaving: play less, not a final fill. Empty kit is the cadence."
+        "body": "Last bars are vocabulary of leaving: play less, not a final fill. Empty kit is the cadence.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "outro_eb",
+          "title": "Play less \u00b7 empty cadence",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 34,
+              "text": "vocabulary of leaving"
+            },
+            {
+              "step": 24,
+              "midi": 34,
+              "text": "not a final fill"
+            },
+            {
+              "step": 28,
+              "midi": 33,
+              "text": "A thins"
+            },
+            {
+              "step": 4,
+              "midi": 28,
+              "text": "less, not more"
+            }
+          ]
+        }
       }
     ],
     "tag": [
       {
         "label": "Pocket",
-        "body": "Energy fades; drums and bass thin toward silence. Let notes get shorter as the kit disappears."
+        "body": "Energy fades; drums and bass thin toward silence. Let notes get shorter as the kit disappears.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "outro_eb",
+          "title": "Thin toward silence",
+          "barRange": [
+            0,
+            0
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "kick",
+              "text": "kick fades"
+            },
+            {
+              "step": 4,
+              "kind": "snare",
+              "text": "sparse snare"
+            },
+            {
+              "step": 4,
+              "kind": "bass",
+              "midi": 28,
+              "text": "shorter notes"
+            },
+            {
+              "step": 8,
+              "kind": "kick",
+              "text": "kit disappearing"
+            }
+          ]
+        }
       },
       {
         "label": "Figure",
-        "body": "Return of E/Bb neighbor language, then sparse E\u2013B\u2013E into air."
+        "body": "Return of E/Bb neighbor language, then sparse E\u2013B\u2013E into air.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "outro_eb",
+          "title": "E/Bb then air",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 4,
+              "midi": 28,
+              "text": "E"
+            },
+            {
+              "step": 8,
+              "midi": 35,
+              "text": "B"
+            },
+            {
+              "step": 12,
+              "midi": 28,
+              "text": "E"
+            },
+            {
+              "step": 16,
+              "midi": 34,
+              "text": "Bb neighbor"
+            }
+          ]
+        }
       },
       {
         "label": "Harmony",
-        "body": "Em to the end. No late modulations \u2014 chromatic bass over i."
+        "body": "Em to the end. No late modulations \u2014 chromatic bass over i.",
+        "insight": {
+          "layer": "harmony",
+          "title": "Em to the end",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "i"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "Em",
+              "text": "no late mod"
+            }
+          ]
+        }
       },
       {
         "label": "Missable",
-        "body": "Last bars are vocabulary of leaving: play less, not a final fill. Empty kit is the cadence."
+        "body": "Last bars are vocabulary of leaving: play less, not a final fill. Empty kit is the cadence.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "outro_eb",
+          "title": "Play less \u00b7 empty cadence",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 34,
+              "text": "vocabulary of leaving"
+            },
+            {
+              "step": 24,
+              "midi": 34,
+              "text": "not a final fill"
+            },
+            {
+              "step": 28,
+              "midi": 33,
+              "text": "A thins"
+            },
+            {
+              "step": 4,
+              "midi": 28,
+              "text": "less, not more"
+            }
+          ]
+        }
       }
     ]
   },
@@ -1261,7 +2764,9 @@
     "source": "Free Music Archive",
     "sourceUrl": "https://freemusicarchive.org/music/Komiku/Its_time_for_adventure__vol_3/Komiku_-_Its_time_for_adventure_vol_3_-_06_A_good_bass_for_gambling/",
     "album": "It's time for adventure ! vol 3",
-    "analysis": "acoustic (librosa chroma + pyin on htdemucs bass stem); no published chord/bass chart found 2026-10-26"
+    "analysis": "acoustic (librosa chroma + pyin on htdemucs bass stem); no published chord/bass chart found 2026-10-26",
+    "insightRequired": true,
+    "insightCount": 48
   },
   "credit": {
     "title": "A good bass for gambling",
