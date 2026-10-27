@@ -1,4 +1,4 @@
-# Bass Study
+# Song Bass Explainer
 
 A practice player for learning a song and its bass line, and understanding the music theory behind it: what makes this song unique and what makes its bass line work.
 
