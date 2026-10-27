@@ -3001,10 +3001,22 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(play.getAttribute("data-transport")).toBe("insight-midi-play");
     const bassBtn = document.querySelector('button[data-insight-voice="bass"]');
     const drumsBtn = document.querySelector('button[data-insight-voice="drums"]');
-    expect(bassBtn.textContent).toBe("Bass");
-    expect(drumsBtn.textContent).toBe("Drums");
-    expect(bassBtn.querySelector('svg[data-icon="bass"] ellipse')).toBeTruthy();
-    expect(drumsBtn.querySelectorAll('svg[data-icon="drums"] ellipse').length).toBeGreaterThan(0);
+    expect(bassBtn.textContent.trim()).toBe("");
+    expect(drumsBtn.textContent.trim()).toBe("");
+    expect(bassBtn.querySelector(".card-insight-midi-label")).toBeNull();
+    expect(drumsBtn.querySelector(".card-insight-midi-label")).toBeNull();
+    expect(bassBtn.getAttribute("aria-label")).toBe("Bass");
+    expect(drumsBtn.getAttribute("aria-label")).toBe("Drums");
+    expect(bassBtn.getAttribute("title")).toMatch(/^Bass/);
+    expect(drumsBtn.getAttribute("title")).toMatch(/^Drums/);
+    const bassIcon = bassBtn.querySelector('svg[data-icon="electric-guitar"]');
+    const drumsIcon = drumsBtn.querySelector('svg[data-icon="drums"]');
+    expect(bassIcon?.getAttribute("data-lucide")).toBe("guitar-electric");
+    expect(drumsIcon?.getAttribute("data-lucide")).toBe("drum");
+    expect(bassIcon?.querySelectorAll("path").length).toBe(4);
+    expect(bassIcon?.querySelector("ellipse")).toBeNull();
+    expect(drumsIcon?.querySelector("ellipse")?.getAttribute("cx")).toBe("12");
+    expect(drumsIcon?.querySelectorAll("path").length).toBe(6);
     // Bass/Drums toggles ON by default (not a Bass/Drums/Both radio).
     expect(document.querySelector('button[data-insight-voice="bass"].on')).toBeTruthy();
     expect(document.querySelector('button[data-insight-voice="drums"].on')).toBeTruthy();
@@ -3012,6 +3024,18 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(api.getState().insightMidiBassOn).toBe(true);
     expect(api.getState().insightMidiDrumsOn).toBe(true);
     expect(api.getState().insightMidiChordsOn).toBe(true);
+
+    drumsBtn.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    expect(api.getState().insightMidiDrumsOn).toBe(false);
+    expect(api.getState().insightMidiBassOn).toBe(true);
+    const drumsOff = document.querySelector('button[data-insight-voice="drums"]');
+    const bassStill = document.querySelector('button[data-insight-voice="bass"]');
+    expect(drumsOff.classList.contains("on")).toBe(false);
+    expect(bassStill.classList.contains("on")).toBe(true);
+    expect(drumsOff.getAttribute("aria-label")).toBe("Drums");
+    expect(drumsOff.textContent.trim()).toBe("");
+    expect(drumsOff.querySelector('svg[data-lucide="drum"]')).toBeTruthy();
+    expect(bassStill.querySelector('svg[data-lucide="guitar-electric"]')).toBeTruthy();
 
     api.setCard(2); // Harmony — Play + Chords, chords toggle ON
     const harmBtns = [...document.querySelectorAll("[data-insight-midi-strip] button")];
