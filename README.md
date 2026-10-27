@@ -1,7 +1,6 @@
 # Bass Study
 
-> **Status: Shipped · in daily use** · last touched 2026-10
-> Built by directing coding agents. Human in the loop: @meirmsn. Robot hands: @meirmsn-agent.
+Human in the loop: @meirmsn. Robot hands: @meirmsn-agent.
 
 ![Analysis view](docs/analysis-view.png)
 
