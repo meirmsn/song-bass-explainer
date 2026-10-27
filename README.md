@@ -20,33 +20,29 @@ This was built by talking to Grok Bot, to learn how agent-driven work feels: voi
 ## How it works
 
 ```text
-source audio
-     |
-     v
-Demucs + study prep
+Demucs + study JSON
 offline: scripts/, work/
-(not on the Worker)
-     |
-     v
+(Worker does not run this)
+        |
+        v
 R2
  bass-demo     public demos
  bass-private  Access-gated
-     |
-     | stems + study JSON
-     v
+        |
+        | stems + study JSON
+        v
 Worker bass-study
 serves public/
-     |
-     v
-browser player
+        |
+        v
+browser
 bass.meirmsn.dev
-     |
-     +-- WSOLA tempo (pitch kept)
+WSOLA tempo (pitch kept)
 ```
 
 `npm test` runs vitest. `npm run deploy` runs those tests, then Wrangler from a working tree. Rebuilding a track still needs the models, a machine, and the R2 buckets.
 
-Built with coding agents. There is no CI. A long-lived Cloudflare deploy token let this personal tool ship quickly. For anything shared: CI on pull requests, short-lived credentials (OIDC, or a deploy a person starts), and secrets scanning in CI.
+There is no CI. Deploy uses a long-lived Cloudflare API token. For anything shared: CI on pull requests, short-lived credentials (OIDC, or a deploy a person starts), and a secrets scan in CI.
 
 ## Build log
 - 2026-10-25 — first version: player shell and Cloudflare Worker imported; bass MIDI is a soft sine plus a quiet octave layer.
