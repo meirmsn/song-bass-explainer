@@ -2,9 +2,7 @@
 
 A practice player for learning a song and its bass line, and understanding the music theory behind it: what makes this song unique and what makes its bass line work.
 
-The song timeline and sections allow you to see the song at a high level, and tapping a section quickly jumps to it. The main view shows the song chords and their harmonic function, the bass tab and staff, and the drums staff so you can see how the rhythm and harmony are tied together by the bass line. The drawer shows highlights of this to make it easier to discover and better understand the song inner workings. Standard looping and pitch-neutral tempo control make it easier to learn a difficult line.
-
-![Analysis view](docs/analysis-view.png)
+The song timeline and sections allow you to see the song at a high level, and selecting a section quickly jumps to it. The main view shows the song chords and their harmonic function, the bass tab and staff, and the drum staff so you can see how the rhythm and harmony are tied together by the bass line. Insight cards highlight parts of that view to make it easier to discover and better understand the song's inner workings. Looping and pitch-preserving tempo control make it easier to learn a difficult line.
 
 ## Approach
 
