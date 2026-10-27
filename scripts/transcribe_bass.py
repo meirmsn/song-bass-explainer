@@ -49,7 +49,7 @@ def bar_times(beat: dict, nbars: int) -> list[tuple[float, float]]:
     return [(phase + i * period, phase + (i + 1) * period) for i in range(nbars)]
 
 
-def pyin_notes(y: np.ndarray, sr: int, *, fmin_midi=28, fmax_midi=55) -> list[dict]:
+def pyin_notes(y: np.ndarray, sr: int, *, fmin_midi=28, fmax_midi=60) -> list[dict]:
     """Frame-wise pyin → notes with anti-wobble hysteresis.
 
     Tiny MIDI-round flips (vibrato crossing .5) no longer split notes. Require a
@@ -151,6 +151,156 @@ def merge_note_gaps(notes: list[dict], *, max_gap_s: float = 0.08) -> list[dict]
             out.append(dict(n))
     return out
 
+
+
+
+def detect_octave_pops(y: np.ndarray, sr: int) -> list[dict]:
+    """Onset-gated high-register fundamentals via highpass + short-window yin.
+
+    Funk octave leaps are short and quieter than the low sustain, so raw pyin
+    locks to the low fundamental. Highpass (~180 Hz) + yin around strong onsets
+    recovers MIDI ~43–55 pops that are ~+12 from the simultaneous low pitch.
+    Rejects 3rd/4th-harmonic false positives of the low fund.
+    """
+    try:
+        from scipy import signal as sp_signal
+    except Exception:
+        return []
+    hop = 256
+    sos = sp_signal.butter(4, 180.0, btype="high", fs=sr, output="sos")
+    y_hp = sp_signal.sosfilt(sos, y)
+    onset_env = librosa.onset.onset_strength(y=y, sr=sr, hop_length=hop)
+    if len(onset_env) == 0:
+        return []
+    onset_frames = librosa.onset.onset_detect(
+        onset_envelope=onset_env, sr=sr, hop_length=hop, units="frames"
+    )
+    th = float(np.percentile(onset_env, 55))
+    pops: list[dict] = []
+    for fr in onset_frames:
+        if fr >= len(onset_env) or float(onset_env[fr]) < th:
+            continue
+        t0 = float(librosa.frames_to_time(fr, sr=sr, hop_length=hop))
+        i0 = int(t0 * sr)
+        i1 = min(len(y), i0 + int(0.09 * sr))
+        if i1 - i0 < 512:
+            continue
+        seg_hp = y_hp[i0:i1]
+        seg_lo = y[i0:i1]
+        try:
+            f0_hi = librosa.yin(
+                seg_hp,
+                fmin=librosa.midi_to_hz(40),
+                fmax=librosa.midi_to_hz(58),
+                sr=sr,
+                frame_length=1024,
+                hop_length=128,
+            )
+            f0_lo = librosa.yin(
+                seg_lo,
+                fmin=librosa.midi_to_hz(28),
+                fmax=librosa.midi_to_hz(48),
+                sr=sr,
+                frame_length=1024,
+                hop_length=256,
+            )
+        except Exception:
+            continue
+        f0_hi = f0_hi[np.isfinite(f0_hi)]
+        f0_lo = f0_lo[np.isfinite(f0_lo)]
+        if len(f0_hi) == 0:
+            continue
+        midi_hi = int(round(float(np.median(librosa.hz_to_midi(f0_hi)))))
+        midi_lo = int(round(float(np.median(librosa.hz_to_midi(f0_lo))))) if len(f0_lo) else None
+        if midi_hi < 43 or midi_hi > 55:
+            continue
+        # Prefer real octave leaps (+12±1.2); allow independent mid-high attacks
+        keep = False
+        if midi_lo is None:
+            keep = True
+        else:
+            delta = midi_hi - midi_lo
+            if abs(delta - 12) <= 1.2:
+                keep = True
+            elif 7 <= delta <= 14:
+                # Reject 3rd/4th harmonic of low fund (≈ +19 / +24)
+                harm_false = False
+                for r in (3, 4, 5):
+                    expected = midi_lo + 12.0 * math.log2(r)
+                    if abs(midi_hi - expected) < 0.9:
+                        harm_false = True
+                        break
+                keep = not harm_false and midi_hi <= 52
+            elif delta <= 2 and 43 <= midi_hi <= 52:
+                # Already in upper register at onset
+                keep = True
+        if not keep:
+            continue
+        strength = float(onset_env[fr])
+        pops.append(
+            {
+                "t": t0,
+                "dur": 0.12,
+                "midi": midi_hi,
+                "name": midi_name(midi_hi),
+                "prob": min(0.99, 0.75 + 0.05 * min(5.0, strength)),
+                "lo": midi_lo,
+                "kind": "octave_pop",
+            }
+        )
+    # Dedup pops within 40ms — keep higher midi / stronger
+    pops.sort(key=lambda p: p["t"])
+    dedup: list[dict] = []
+    for p in pops:
+        if dedup and abs(p["t"] - dedup[-1]["t"]) < 0.04:
+            if p["prob"] >= dedup[-1]["prob"]:
+                dedup[-1] = p
+            continue
+        dedup.append(p)
+    return dedup
+
+
+def merge_octave_pops(notes: list[dict], pops: list[dict]) -> list[dict]:
+    """Lift or inject high-octave groove notes into the timed note list.
+
+    When a pop lands near an existing low note onset, raise that note by an
+    octave (or to the detected high MIDI). Otherwise inject a short high note
+    so quantize_to_hits can place it on the 16th grid.
+    """
+    if not pops:
+        return notes
+    out = [dict(n) for n in notes]
+    used_pop = [False] * len(pops)
+    for n in out:
+        for i, p in enumerate(pops):
+            if used_pop[i]:
+                continue
+            if abs(float(n["t"]) - float(p["t"])) > 0.06:
+                continue
+            # Same pitch class or ~octave below the pop → lift
+            if n["midi"] == p["midi"] or abs(n["midi"] - (p["midi"] - 12)) <= 1 or abs((n["midi"] % 12) - (p["midi"] % 12)) == 0 and p["midi"] - n["midi"] >= 10:
+                n["midi"] = int(p["midi"])
+                n["name"] = midi_name(n["midi"])
+                n["prob"] = max(float(n.get("prob") or 0), float(p["prob"]))
+                used_pop[i] = True
+                break
+    for i, p in enumerate(pops):
+        if used_pop[i]:
+            continue
+        # Avoid stacking on an already-high note at same time
+        if any(abs(float(n["t"]) - float(p["t"])) < 0.05 and n["midi"] >= 43 for n in out):
+            continue
+        out.append(
+            {
+                "t": float(p["t"]),
+                "dur": float(p["dur"]),
+                "midi": int(p["midi"]),
+                "name": p["name"],
+                "prob": float(p["prob"]),
+            }
+        )
+    out.sort(key=lambda n: n["t"])
+    return out
 
 def try_basic_pitch(wav: Path) -> list[dict] | None:
     try:
@@ -410,7 +560,9 @@ def transcribe(
     onset_count = int(len(onsets))
 
     pyin = pyin_notes(y, sr)
-    methods = {"pyin": pyin}
+    pops = detect_octave_pops(y, sr)
+    pyin_dual = merge_octave_pops(pyin, pops)
+    methods = {"pyin": pyin_dual}
     if try_bp:
         bp = try_basic_pitch(bass_wav)
         if bp is not None:
@@ -420,7 +572,14 @@ def transcribe(
     for name, notes in methods.items():
         notes2, oct_label = choose_octave(notes, prefer_oct2=prefer_oct2)
         sc = score_method(notes2, onset_count)
+        # Dual-band octave pops are intentional high-register adds — small bonus
+        if name == "pyin" and pops:
+            sc += 0.15
         scored.append((sc, name, notes2, oct_label, notes))
+    # Evidence-only: low-only pyin (no octave pops) for before/after comparison
+    low2, low_ol = choose_octave(pyin, prefer_oct2=prefer_oct2)
+    scored_evidence = list(scored)
+    scored_evidence.append((score_method(low2, onset_count), "pyin-low-only", low2, low_ol, pyin))
 
     scored.sort(key=lambda x: -x[0])
     best_score, method, notes, oct_label, raw_notes = scored[0]
@@ -433,7 +592,7 @@ def transcribe(
     patterns = patterns_from_hits(hits, secs)
 
     comparison = {}
-    for sc, name, notes2, ol, raw in scored:
+    for sc, name, notes2, ol, raw in scored_evidence:
         comparison[name] = {
             "score": round(sc, 3),
             "note_count_raw": len(raw),
@@ -454,10 +613,11 @@ def transcribe(
         "notes": notes,  # timed
         "bassHits": hits,
         "patterns": patterns,
+        "octavePopCount": len(pops),
         "analysis": (
             f"AMT on stems/bass.wav via {method} "
-            f"(librosa.pyin" + (" + basic-pitch compare" if "basic-pitch" in methods else "") + "); "
-            f"octave {oct_label}; quantized to beat.json 16ths; absolute bassHits"
+            f"(librosa.pyin + dual-band octave-pop" + (" + basic-pitch compare" if "basic-pitch" in methods else "") + "); "
+            f"octave {oct_label}; {len(pops)} octave pops; quantized to beat.json 16ths; absolute bassHits"
         ),
         "bpm": float(grid.get("bpm") or beat.get("bpm") or beat.get("bpm_hint") or 0),
         "nbars": nbars,
