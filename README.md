@@ -18,11 +18,36 @@ This was built by talking to Grok Bot, to learn how agent-driven work feels: voi
 - Public demos with no Access gate: Komiku — A good bass for gambling (CC0), HoliznaCC0 — Make Funk (CC0), and Maple Leaf Rag (Public Domain Mark). Private Access holds processed personal tracks.
 
 ## How it works
-- A Cloudflare Worker (`bass-study`) serves the browser player from `public/` and reads stems and study JSON from R2 (`bass-demo` for public demos, `bass-private` for Access-gated studies). The custom domain is [bass.meirmsn.dev](https://bass.meirmsn.dev).
-- Tempo uses a WSOLA time-stretch in the client, so a slower rate keeps the original pitch. Drum notation comes only from processed `drumHits`; an empty list leaves rests.
-- Demucs stem splits and study JSON are prepared offline. `scripts/` and `work/` hold pieces of that pipeline. Rebuilding a track still needs the models, a machine that can run them, and the R2 buckets. The Worker does not run Demucs.
-- `npm test` runs the vitest suite. `npm run deploy` runs those tests and then Wrangler from a working tree.
-- The app was built in conversation with coding agents. There is no CI. The agent kept a long-lived Cloudflare deploy token so this personal tool could ship quickly. For anything shared, add CI on pull requests, replace that long-lived key with short-lived credentials (OIDC, or a deploy a person starts), and run secrets scanning in CI.
+
+```text
+source audio
+     |
+     v
+Demucs + study prep
+offline: scripts/, work/
+(not on the Worker)
+     |
+     v
+R2
+ bass-demo     public demos
+ bass-private  Access-gated
+     |
+     | stems + study JSON
+     v
+Worker bass-study
+serves public/
+     |
+     v
+browser player
+bass.meirmsn.dev
+     |
+     +-- WSOLA tempo (pitch kept)
+     +-- drumHits only (empty = rests)
+```
+
+`npm test` runs vitest. `npm run deploy` runs those tests, then Wrangler from a working tree. Rebuilding a track still needs the models, a machine, and the R2 buckets.
+
+Built with coding agents. There is no CI. A long-lived Cloudflare deploy token let this personal tool ship quickly. For anything shared: CI on pull requests, short-lived credentials (OIDC, or a deploy a person starts), and secrets scanning in CI.
 
 ## Build log
 - 2026-10-25 — first version: player shell and Cloudflare Worker imported; bass MIDI is a soft sine plus a quiet octave layer.
