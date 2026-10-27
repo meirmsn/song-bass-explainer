@@ -6,7 +6,7 @@ Human in the loop: @meirmsn. Robot hands: @meirmsn-agent.
 
 A practice player for learning a bass line with the recording, the staves, the chords, and a short explanation kept in time on one screen.
 
-It exists so a bass part can be studied against the actual track. Keeping stems, notation, and soft MIDI on the same clock, and slowing the audio while the pitch stays put, took the longest to get right. The drum staff only draws hits that were measured, so silence stays silence. It is in daily use at [bass.meirmsn.dev](https://bass.meirmsn.dev): three public demos on `/`, and processed personal tracks behind private Access.
+It exists so a bass part can be studied against the actual track. Keeping stems, notation, and soft MIDI on the same clock, and slowing the audio while the pitch stays put, took the longest to get right. The drum staff only draws hits that were measured, so silence stays silence. It is live at [bass.meirmsn.dev](https://bass.meirmsn.dev), with three public demos on `/`, and processed personal tracks behind private Access.
 
 ## Approach
 
