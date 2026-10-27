@@ -43,7 +43,7 @@ Runtime
 No CI. A Cloudflare deploy token ships this personal tool. To harden a personal deploy, add pull-request CI, short-lived deploy credentials, and a secrets scan — advice, not a feature of this site.
 
 ## Build log
-- 2026-10-24 — first version: R2, Worker, and domain from 2026-10-23, and the player shell live at bass.meirmsn.dev (in agent workspace, not yet in repo).
+- 2026-10-24 — first version: R2, Worker, domain, and the player shell live at bass.meirmsn.dev (in agent workspace, not yet in repo).
 - 2026-10-25 — player and Worker copied into this repo (imported to GitHub for backup in case the agent workspace got nuked or I lost access in the future).
 - 2026-10-26 — insight cards (Pocket, Figure, Harmony, Missable), phone flashcards in a bottom drawer, and Komiku “A good bass for gambling” (CC0) on `/` with tempo steps.
 - 2026-10-26 — slowing playback was shifting the pitch → WSOLA time-stretch. The drum staff was showing made-up lines when the drums were quiet in a section.
