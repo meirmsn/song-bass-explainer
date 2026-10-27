@@ -12,7 +12,7 @@ This was built by talking to Grok Bot, to learn how agent-driven work felt for m
 
 ## What it does
 - Bass and drum staves and a song chord row, all synced in time.
-- Stem mute and solo so bass, drums, or both can be heard against the rest of the mix, plus soft MIDI for the bass and chords.
+- Stem mute and solo so bass, drums, or both can be heard against the rest of the mix, plus soft MIDI for the bass and drums.
 - Pitch-preserving tempo at 100%, 90%, 75%, 50%, and 25%, and a section timeline that auto-advances.
 - Transport: drag to select a subsection to loop, and L to loop the current bar window.
 - Insight flashcards (Pocket, Figure, Harmony, Missable) with a two-staff schematic of the claim window. Card Play loops that window; Bass, Drums, and Chords toggles choose what you hear.
