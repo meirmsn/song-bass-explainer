@@ -30,7 +30,6 @@ This was built by talking to Grok Bot, to learn how agent-driven work feels: voi
 - 2026-10-26 — chords and cards were hard to hear and see → playable chord MIDI pads, bass key and time signatures (drums keep time only), two-staff claim-window schematics, and card Play with Bass, Drums, and Chords icons.
 
 ## Known limitations
-- Stem audio is not in git. The Worker serves it from R2.
 - There is no public YouTube paste-to-process path.
 - The drum staff only shows hits detected for that song. If there are none, it stays empty; we do not invent a default backbeat.
 - No CI (by design, see Approach above).
