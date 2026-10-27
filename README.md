@@ -51,7 +51,7 @@ No CI. A Cloudflare deploy token ships this personal tool. To harden a personal 
 - 2026-10-26 — chords and cards were hard to hear and see → bass key and time signatures (drums keep time only), two-staff claim-window schematics, and card Play with Bass, Drums, and Chords icons.
 
 ## Known limitations
-- There is no public YouTube paste-to-process path.
+- There is no current way for a non-host to upload and process a custom track.
 - No CI (by design, see Approach above).
 
 ## Run it
