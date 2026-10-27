@@ -12,7 +12,7 @@ This was built by talking to Grok Bot, to learn how agent-driven work felt for m
 
 ## What it does
 - Bass and drum staves and a song chord row, all synced in time.
-- Stem mute and solo, so bass, drums, or both can be heard against the rest of the mix.
+- Stem mute and solo so bass, drums, or both can be heard against the rest of the mix, plus soft MIDI for the bass and chords.
 - Pitch-preserving tempo at 100%, 90%, 75%, 50%, and 25%, a section timeline that auto-advances, and L to loop the current bar window.
 - Insight flashcards (Pocket, Figure, Harmony, Missable) with a two-staff schematic of the claim window. Card Play loops that window; Bass, Drums, and Chords toggles choose what you hear.
 - Public demos with no Access gate: Komiku — A good bass for gambling (CC0), HoliznaCC0 — Make Funk (CC0), and Maple Leaf Rag (Public Domain Mark). Private Access holds processed personal tracks.
