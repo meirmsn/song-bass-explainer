@@ -25,7 +25,9 @@ Offline (once per song)
        |
        v
   Demucs stems + study JSON
-  (scripts/, work/ — not on the Worker)
+  insights, from transcription + LLM
+  scripts/, work/
+  does not run when a visitor loads the site
        |
        v
   R2:  bass-demo  |  bass-private
@@ -34,6 +36,7 @@ Runtime
   browser  <-->  Worker (bass-study)  <-->  R2
                    |
                    serves ./public
+                   and what is already in R2
                    @ bass.meirmsn.dev
 
   Tempo: WSOLA in the browser (pitch kept)
@@ -41,7 +44,7 @@ Runtime
 
 `npm test` runs vitest. `npm run deploy` runs the tests, then Wrangler. Rebuilding a track still needs the models, a machine that can run them, and the R2 buckets.
 
-No CI. A long-lived Cloudflare deploy token ships this personal tool; for anything shared, use CI on pull requests, short-lived credentials, and secrets scanning in CI.
+No CI. A long-lived Cloudflare deploy token ships this personal tool. To harden a personal deploy, add pull-request CI, short-lived deploy credentials, and a secrets scan — advice, not a feature of this site.
 
 ## Build log
 - 2026-10-25 — first version: player shell and Cloudflare Worker imported; bass MIDI is a soft sine plus a quiet octave layer.
