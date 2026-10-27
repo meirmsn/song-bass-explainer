@@ -23,11 +23,11 @@ This was built by talking to Grok Bot, to learn how agent-driven work feels: voi
 - The app was built in conversation with coding agents. There is no CI. The agent kept a long-lived Cloudflare deploy token so this personal tool could ship quickly. For anything shared, add CI on pull requests, replace that long-lived key with short-lived credentials (OIDC, or a deploy a person starts), and run secrets scanning in CI.
 
 ## Build log
-- 2026-10 — first version: player shell and Cloudflare Worker imported; bass MIDI is a soft sine plus a quiet octave layer.
-- 2026-10 — the public page needed a track that could be shared → Komiku “A good bass for gambling” (CC0) on `/`, with tempo steps.
-- 2026-10 — slowing playback was shifting the pitch, and empty drum stems were growing a fake kit → WSOLA time-stretch, and the drum staff draws song hits only.
-- 2026-10 — one demo was a narrow practice set → Make Funk and Maple Leaf Rag joined the public catalog; the private song list became a typeahead, and the public page dropped its Private link.
-- 2026-10 — chords and cards were hard to hear and see → playable chord MIDI pads, bass key and time signatures (drums keep time only), two-staff claim-window schematics, and card Play with Bass, Drums, and Chords icons.
+- 2026-10-25 — first version: player shell and Cloudflare Worker imported; bass MIDI is a soft sine plus a quiet octave layer.
+- 2026-10-26 — the public page needed a track that could be shared → Komiku “A good bass for gambling” (CC0) on `/`, with tempo steps.
+- 2026-10-26 — slowing playback was shifting the pitch, and empty drum stems were growing a fake kit → WSOLA time-stretch, and the drum staff draws song hits only.
+- 2026-10-26 — one demo was a narrow practice set → Make Funk and Maple Leaf Rag joined the public catalog; the private song list became a typeahead, and the public page dropped its Private link.
+- 2026-10-26 — chords and cards were hard to hear and see → playable chord MIDI pads, bass key and time signatures (drums keep time only), two-staff claim-window schematics, and card Play with Bass, Drums, and Chords icons.
 
 ## Known limitations
 - Stem audio is not in git. The Worker serves it from R2.
