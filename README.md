@@ -14,7 +14,7 @@ This was built by talking to Grok Bot, to learn how agent-driven work felt for m
 - Bass and drum staves and a song chord row, all synced in time.
 - Stem mute and solo so bass, drums, or both can be heard against the rest of the mix, plus soft MIDI for the bass and drums.
 - Pitch-preserving tempo at 100%, 90%, 75%, 50%, and 25%, and a section timeline that auto-advances.
-- Transport: drag to select a subsection to loop, and L to loop the current bar window.
+- Transport control and looping with keyboard shortcuts, and drag to select a subsection to loop.
 - Insight flashcards (Pocket, Figure, Harmony, Missable) with a bass-drum schematic to see core bass against drums patterns. Playable on loop; Bass and Drums toggles choose what you hear.
 - Public demos: Komiku — A good bass for gambling (CC0), HoliznaCC0 — Make Funk (CC0), and Maple Leaf Rag (Public Domain Mark). Private Access holds processed personal tracks.
 
