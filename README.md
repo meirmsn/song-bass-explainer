@@ -11,7 +11,7 @@ The song timeline and sections allow you to see the song at a high level, and se
 This was built by talking to Grok Bot, to learn how agent-driven work felt for me: voice chat, raw screenshot feedback, and rapid-fire instructions. It is not the detailed method used in the [devshop](https://github.com/meirmsn/abra-kadabra). There is no CI and no PR-gated workflow by design; this pull request is an exception so the public page can be reviewed. The loop was barebones: ask, the agent ships, feedback, the next ask. I requested the agent to set up a simple request queue after rapid-fire instructions piled up.
 
 ## What it does
-- Synced bass and drum staves with key and time signatures, and a song chord row.
+- Bass and drum staves and a song chord row, all synced in time.
 - Stem mute and solo, so bass, drums, or both can be heard against the rest of the mix.
 - Pitch-preserving tempo at 100%, 90%, 75%, 50%, and 25%, a section timeline that auto-advances, and L to loop the current bar window.
 - Insight flashcards (Pocket, Figure, Harmony, Missable) with a two-staff schematic of the claim window. Card Play loops that window; Bass, Drums, and Chords toggles choose what you hear.
