@@ -52,7 +52,7 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
   if (withStems) {
     const base = privateMode
       ? "/private/api/demo/fixture/stems"
-      : "/api/demo/a-good-bass-for-gambling/stems";
+      : "/api/demo/make-funk/stems";
     payload.stems = {
       available: true,
       access: privateMode ? "private" : "public",
@@ -69,11 +69,11 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
     };
     if (!privateMode) {
       payload.credit = {
-        title: "A good bass for gambling",
-        artist: "Komiku",
+        title: "Make Funk",
+        artist: "HoliznaCC0",
         license: "CC0 1.0 Universal",
         source: "Free Music Archive",
-        url: "https://freemusicarchive.org/music/Komiku/",
+        url: "https://freemusicarchive.org/music/holiznacc0/bassic/make-funk/",
       };
     }
   }
@@ -95,7 +95,6 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
     if (u.includes("/api/demo/catalog")) {
       return new Response(JSON.stringify({
         songs: [
-          { id: "a-good-bass-for-gambling", title: "A good bass for gambling", artist: "Komiku", license: "CC0 1.0 Universal" },
           { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", license: "CC0 1.0 Universal" },
           { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", license: "Public Domain Mark 1.0" },
           { id: "like-a-prayer", title: "Like a Prayer", artist: "Madonna / study", license: "private" },
@@ -2682,7 +2681,7 @@ describe("playback rate + public CC0 stems", () => {
     expect(api.getState().muteBassSupported).toBe(true);
     expect(document.querySelector(".ch-strip")).toBeTruthy();
     expect(document.querySelector("[data-credit]")).toBeTruthy();
-    expect(document.querySelector("[data-credit]").textContent).toMatch(/Komiku/i);
+    expect(document.querySelector("[data-credit]").textContent).toMatch(/HoliznaCC0|Make Funk/i);
     expect(document.querySelector("[data-credit]").textContent).toMatch(/CC0/i);
     expect(document.body.textContent).not.toMatch(/Like a Prayer/i);
   });
@@ -2800,7 +2799,7 @@ describe("playback rate + public CC0 stems", () => {
 describe("public has no Private link + private song typeahead", () => {
   afterEach(() => teardownPlayer());
 
-  it("public player does not expose a Private link and lists the 3 demos under Demo", async () => {
+  it("public player does not expose a Private link and lists DEMO demos without Komiku", async () => {
     await bootPlayer({ privateMode: false, withStems: true });
     expect(document.querySelector("[data-private-entry]")).toBeNull();
     expect(document.querySelector('a[href="/private/player/"]')).toBeNull();
@@ -2838,7 +2837,6 @@ describe("public has no Private link + private song typeahead", () => {
 
     const demoIds = [...demoGroup.querySelectorAll("[data-song-id]")].map((o) => o.getAttribute("data-song-id"));
     expect(demoIds).toEqual([
-      "a-good-bass-for-gambling",
       "make-funk",
       "maple-leaf-rag",
     ]);
@@ -2869,23 +2867,30 @@ describe("public has no Private link + private song typeahead", () => {
     input.dispatchEvent(new Event("focus", { bubbles: true }));
     const demoIds = [...document.querySelectorAll('[data-group="demo"] [data-song-id]')].map((o) => o.getAttribute("data-song-id"));
     expect(demoIds).toEqual([
-      "a-good-bass-for-gambling",
       "make-funk",
       "maple-leaf-rag",
     ]);
   });
 
-  it("explicit ?song= still loads that demo, still whole-song and non-loop", async () => {
-    window.history.replaceState({}, "", "/?song=a-good-bass-for-gambling");
+  it("explicit ?song=maple-leaf-rag loads that demo; unknown/Komiku falls back to Make Funk", async () => {
+    window.history.replaceState({}, "", "/?song=maple-leaf-rag");
     const api = await bootPlayer({ privateMode: false, withStems: true });
     const urls = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
     const songFetches = urls.filter((u) => /\/api\/demo\/(make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
-    expect(songFetches[0]).toContain("/api/demo/a-good-bass-for-gambling");
+    expect(songFetches[0]).toContain("/api/demo/maple-leaf-rag");
     expect(api.getState().loopOn).toBe(false);
     expect(api.getState().secIdx).toBe(0);
     expect(api.getState().lo).toBe(0);
     expect(api.getState().hi).toBe(demo.nbars - 1);
-    expect(document.querySelector("[data-song-typeahead-input]").value).toMatch(/gambling/i);
+    expect(document.querySelector("[data-song-typeahead-input]").value).toMatch(/Maple Leaf/i);
+
+    // Komiku dropped from public allowlist → default Make Funk
+    window.history.replaceState({}, "", "/?song=a-good-bass-for-gambling");
+    await bootPlayer({ privateMode: false, withStems: true });
+    const urls2 = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
+    const songFetches2 = urls2.filter((u) => /\/api\/demo\/(make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
+    expect(songFetches2[0]).toContain("/api/demo/make-funk");
+    expect(songFetches2.some((u) => u.includes("a-good-bass-for-gambling") && !u.includes("catalog"))).toBe(false);
   });
 
   it("song typeahead stays stable while playback re-renders", async () => {

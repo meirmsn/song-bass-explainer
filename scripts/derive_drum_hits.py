@@ -114,39 +114,76 @@ def derive(drums_wav: Path, beat_path: Path, nbars: int | None = None) -> dict:
             return a / m
 
         kick_n, snare_n, hat_n = norm(kick_e), norm(snare_e), norm(hat_e)
-        # Adaptive thresholds
-        k_th = max(0.35, float(np.percentile(kick_n, 70)) * 0.85)
-        s_th = max(0.35, float(np.percentile(snare_n, 70)) * 0.85)
+        # Adaptive thresholds (slightly softer floor so backbeat prior can win)
+        k_th = max(0.32, float(np.percentile(kick_n, 70)) * 0.85)
+        s_th = max(0.32, float(np.percentile(snare_n, 70)) * 0.85)
         h_th = max(0.28, float(np.percentile(hat_n, 55)) * 0.75)
 
+        # Backbeat prior: boost snare on beats 2/4 (steps 4, 12); peak-pick ±1
+        BACKBEAT = (4, 12)
+        snare_boost = snare_n.copy()
+        for bb in BACKBEAT:
+            # Favor the true backbeat step and allow ±1 snap of a nearby peak
+            window = range(max(0, bb - 1), min(16, bb + 2))
+            local = [(st, float(snare_n[st])) for st in window]
+            peak_st, peak_v = max(local, key=lambda x: x[1])
+            if peak_v >= s_th * 0.55:
+                snare_boost[peak_st] = max(snare_boost[peak_st], peak_v * 1.35)
+                # Ensure the canonical backbeat step is competitive when energy is close
+                if abs(peak_st - bb) <= 1 and snare_n[bb] >= peak_v * 0.7:
+                    snare_boost[bb] = max(snare_boost[bb], peak_v * 1.25)
+
+        kick_on_steps = []
+        snare_on_steps = []
+        hat_on_steps = []
         for step in range(16):
-            k, s, h = kick_n[step], snare_n[step], hat_n[step]
-            # Exclusive kick/snare: stronger band wins if both above thresh
+            k, s, h = kick_n[step], snare_boost[step], hat_n[step]
             kick_on = k >= k_th
             snare_on = s >= s_th
+            # Force snare on backbeat when local peak clears a lower bar
+            if step in BACKBEAT and snare_n[step] >= s_th * 0.55:
+                snare_on = True
             if kick_on and snare_on:
-                if k >= s * 1.15:
+                if k >= s * 1.15 and step not in BACKBEAT:
                     snare_on = False
-                elif s >= k * 1.15:
+                elif s >= k * 1.15 or step in BACKBEAT:
                     kick_on = False
-                # else allow both (backbeat with kick common)
             hat_on = h >= h_th
-            # Prefer hats on even 8ths when energy is middling
             if not hat_on and step % 2 == 0 and h >= h_th * 0.7:
                 hat_on = True
             if kick_on:
-                hits.append({"bar": bar, "step": step, "kind": "kick", "midi": MIDI["kick"]})
+                kick_on_steps.append(step)
             if snare_on:
-                hits.append({"bar": bar, "step": step, "kind": "snare", "midi": MIDI["snare"]})
+                snare_on_steps.append(step)
             if hat_on:
-                hits.append({"bar": bar, "step": step, "kind": "hat", "midi": MIDI["hat"]})
+                hat_on_steps.append(step)
+
+        # Kick NMS: collapse adjacent micro-kicks — keep local max in a ±1 window
+        if kick_on_steps:
+            kept = []
+            energies = {st: float(kick_n[st]) for st in kick_on_steps}
+            for st in sorted(kick_on_steps):
+                if kept and st - kept[-1] <= 1:
+                    # adjacent: keep the louder one
+                    if energies[st] > energies[kept[-1]]:
+                        kept[-1] = st
+                    continue
+                kept.append(st)
+            kick_on_steps = kept
+
+        for step in kick_on_steps:
+            hits.append({"bar": bar, "step": step, "kind": "kick", "midi": MIDI["kick"]})
+        for step in snare_on_steps:
+            hits.append({"bar": bar, "step": step, "kind": "snare", "midi": MIDI["snare"]})
+        for step in hat_on_steps:
+            hits.append({"bar": bar, "step": step, "kind": "hat", "midi": MIDI["hat"]})
 
     if silent_run is not None:
         drums_out.append(silent_run)
 
     return {
         "schema": "bass.drums.v1",
-        "source": "librosa grid on stems/drums.wav; exclusive kick/snare + hat layers; beat.json downbeats",
+        "source": "librosa grid on stems/drums.wav; backbeat snare prior + kick NMS; exclusive kick/snare + hat; beat.json downbeats",
         "bpm": bpm,
         "nbars": nbars,
         "midi": MIDI,

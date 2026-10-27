@@ -59,10 +59,11 @@ describe("public demo APIs — CC0 open, LAP gated", () => {
     expect(data.songs.length).toBeGreaterThanOrEqual(1);
     expect(data.songs.every((s) => /CC0|public domain|PD/i.test(s.license || ""))).toBe(true);
     expect(JSON.stringify(data)).not.toMatch(/like.?a.?prayer/i);
-    expect(data.songs.some((s) => s.id === "a-good-bass-for-gambling")).toBe(true);
+    expect(data.songs.some((s) => s.id === "a-good-bass-for-gambling")).toBe(false);
     expect(data.songs.some((s) => s.id === "make-funk")).toBe(true);
     expect(data.songs.some((s) => s.id === "maple-leaf-rag")).toBe(true);
-    expect(data.songs.length).toBeGreaterThanOrEqual(3);
+    expect(data.songs.length).toBe(2);
+    expect(data.songs.every((s) => s.id !== "a-good-bass-for-gambling")).toBe(true);
   });
 
   it("GET /api/demo/a-good-bass-for-gambling → study JSON", async () => {

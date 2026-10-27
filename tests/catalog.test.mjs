@@ -5,7 +5,8 @@ import {
   PRIVATE_PROCESSED_DEMOS,
 } from "../src/catalog.mjs";
 
-const PUBLIC_DEMOS = {
+/** Private DEMO group = public demos + private-only regression (Komiku). */
+const PRIVATE_CATALOG_DEMOS = {
   "a-good-bass-for-gambling": {
     id: "a-good-bass-for-gambling",
     title: "A good bass for gambling",
@@ -29,10 +30,16 @@ const PUBLIC_DEMOS = {
   },
 };
 
+/** Public catalog scope — Komiku dropped from public DEMO picker. */
+const PUBLIC_DEMOS = {
+  "make-funk": PRIVATE_CATALOG_DEMOS["make-funk"],
+  "maple-leaf-rag": PRIVATE_CATALOG_DEMOS["maple-leaf-rag"],
+};
+
 describe("buildPrivateCatalog grouping", () => {
   it("keeps demos and processed visually/structurally separate", () => {
     const catalog = buildPrivateCatalog({
-      publicDemos: PUBLIC_DEMOS,
+      publicDemos: PRIVATE_CATALOG_DEMOS,
       privateDemos: PRIVATE_PROCESSED_DEMOS,
       jobs: [
         {
@@ -59,7 +66,7 @@ describe("buildPrivateCatalog grouping", () => {
 
   it("skips queued jobs without a ready study", () => {
     const catalog = buildPrivateCatalog({
-      publicDemos: PUBLIC_DEMOS,
+      publicDemos: PRIVATE_CATALOG_DEMOS,
       jobs: [{ id: "job_queued", title: "WIP", status: "queued" }],
     });
     expect(catalog.processed.some((s) => s.id === "job_queued")).toBe(false);
@@ -67,9 +74,17 @@ describe("buildPrivateCatalog grouping", () => {
   });
 
   it("private player URLs point at /private/player/?song=", () => {
-    const catalog = buildPrivateCatalog({ publicDemos: PUBLIC_DEMOS });
+    const catalog = buildPrivateCatalog({ publicDemos: PRIVATE_CATALOG_DEMOS });
     for (const s of [...catalog.demos, ...catalog.processed]) {
       expect(s.player).toMatch(/^\/private\/player\/\?song=/);
     }
+  });
+});
+
+describe("public catalog scope", () => {
+  it("public DEMO list excludes Komiku but keeps Make Funk + Maple Leaf", () => {
+    expect(Object.keys(PUBLIC_DEMOS).sort()).toEqual(["make-funk", "maple-leaf-rag"]);
+    expect(PUBLIC_DEMOS["a-good-bass-for-gambling"]).toBeUndefined();
+    expect(PRIVATE_CATALOG_DEMOS["a-good-bass-for-gambling"]).toBeTruthy();
   });
 });

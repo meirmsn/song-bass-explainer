@@ -23,8 +23,6 @@ describe("public has no Private link + private song typeahead (source)", () => {
     expect(playerSrc).toMatch(/addGroup\("Demo",\s*"demo"/);
     expect(playerSrc).toMatch(/addGroup\("Processed",\s*"processed"/);
     expect(playerSrc).toMatch(/\/private\/api\/catalog/);
-    expect(playerSrc).toMatch(/\/api\/demo\/catalog/);
-    expect(playerSrc).not.toMatch(/addGroup\("Public"/);
     // No select/optgroup song picker
     expect(playerSrc).not.toMatch(/demoGroup\.label\s*=\s*"Demo"/);
     expect(playerSrc).not.toMatch(/createElement\("optgroup"\)/);
@@ -33,5 +31,23 @@ describe("public has no Private link + private song typeahead (source)", () => {
   it("Worker exposes Access-gated /private/api/catalog", () => {
     expect(workerSrc).toMatch(/\/private\/api\/catalog/);
     expect(workerSrc).toMatch(/buildPrivateCatalog/);
+  });
+});
+
+describe("public DEMO catalog drops Komiku", () => {
+  it("Komiku absent from public DEMO picker; Make Funk remains default", () => {
+    expect(playerSrc).toContain("PUBLIC_SONG_RE = /^(make-funk|maple-leaf-rag)$/");
+    expect(playerSrc).toMatch(/PUBLIC_DEFAULT_SONG = "make-funk"/);
+    // Public fallback list must not include Komiku; private fallback may.
+    const pubFallback = playerSrc.match(/const PUBLIC_DEMO_FALLBACK = \[([\s\S]*?)\];/);
+    expect(pubFallback).toBeTruthy();
+    expect(pubFallback[1]).not.toMatch(/a-good-bass-for-gambling/);
+    expect(pubFallback[1]).toMatch(/make-funk/);
+    expect(workerSrc).toMatch(/PRIVATE_ONLY_DEMOS/);
+    expect(workerSrc).toMatch(/DEMO_ASSET_SLUGS/);
+    // PUBLIC_DEMOS object itself must not list Komiku (PRIVATE_ONLY may).
+    const pubDemos = workerSrc.match(/const PUBLIC_DEMOS = \{([\s\S]*?)\n\};/);
+    expect(pubDemos).toBeTruthy();
+    expect(pubDemos[1]).not.toMatch(/a-good-bass-for-gambling/);
   });
 });

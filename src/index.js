@@ -7,20 +7,8 @@ import { buildPrivateCatalog, PRIVATE_PROCESSED_DEMOS } from "./catalog.mjs";
 
 const ACCOUNT = "91a68408014ad4deb94e432d231f4af8";
 
-/** Public CC0/PDM demos only — never add like-a-prayer or commercial slugs. */
+/** Public CC0/PDM demos listed on / and /api/demo/catalog. Never add like-a-prayer. */
 const PUBLIC_DEMOS = {
-  "a-good-bass-for-gambling": {
-    id: "a-good-bass-for-gambling",
-    title: "A good bass for gambling",
-    artist: "Komiku",
-    license: "CC0 1.0 Universal",
-    album: "It's time for adventure ! vol 3",
-    source: "Free Music Archive",
-    sourceUrl:
-      "https://freemusicarchive.org/music/Komiku/Its_time_for_adventure__vol_3/Komiku_-_Its_time_for_adventure_vol_3_-_06_A_good_bass_for_gambling/",
-    api: "/api/demo/a-good-bass-for-gambling",
-    player: "/?song=a-good-bass-for-gambling",
-  },
   "make-funk": {
     id: "make-funk",
     title: "Make Funk",
@@ -45,6 +33,25 @@ const PUBLIC_DEMOS = {
     player: "/?song=maple-leaf-rag",
   },
 };
+
+/** Private/regression DEMO tracks — kept off the public catalog/picker. */
+const PRIVATE_ONLY_DEMOS = {
+  "a-good-bass-for-gambling": {
+    id: "a-good-bass-for-gambling",
+    title: "A good bass for gambling",
+    artist: "Komiku",
+    license: "CC0 1.0 Universal",
+    album: "It's time for adventure ! vol 3",
+    source: "Free Music Archive",
+    sourceUrl:
+      "https://freemusicarchive.org/music/Komiku/Its_time_for_adventure__vol_3/Komiku_-_Its_time_for_adventure_vol_3_-_06_A_good_bass_for_gambling/",
+    api: "/api/demo/a-good-bass-for-gambling",
+    player: "/private/player/?song=a-good-bass-for-gambling",
+  },
+};
+
+/** Slugs whose study+stems still live in DEMO_BUCKET (public + private-only). */
+const DEMO_ASSET_SLUGS = { ...PUBLIC_DEMOS, ...PRIVATE_ONLY_DEMOS };
 
 
 function json(data, status = 200, headers = {}) {
@@ -232,7 +239,7 @@ export default {
         /* handled above */
       } else if (/like-a-prayer/i.test(slug)) {
         return json({ error: "This demo is private. Sign in at /private/player/" }, 401);
-      } else if (!PUBLIC_DEMOS[slug]) {
+      } else if (!DEMO_ASSET_SLUGS[slug]) {
         return json({ error: "Unknown or private demo" }, 404);
       } else {
         if (!env.DEMO_BUCKET) return bad("DEMO_BUCKET binding missing", 500);
@@ -277,8 +284,8 @@ export default {
           401,
         );
       }
-      if (!PUBLIC_DEMOS[slug]) {
-        return json({ error: "Unknown or private demo stems" }, 401);
+      if (!DEMO_ASSET_SLUGS[slug]) {
+        return json({ error: "Unknown or private demo stems" }, 404);
       }
       if (!env.DEMO_BUCKET) return bad("DEMO_BUCKET binding missing", 500);
       const stem = pubDemoStem[2];
@@ -318,7 +325,7 @@ export default {
         }
       }
       const catalog = buildPrivateCatalog({
-        publicDemos: PUBLIC_DEMOS,
+        publicDemos: { ...PUBLIC_DEMOS, ...PRIVATE_ONLY_DEMOS },
         privateDemos: PRIVATE_PROCESSED_DEMOS,
         jobs: ready,
       });

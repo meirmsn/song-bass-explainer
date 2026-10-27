@@ -1899,11 +1899,17 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     const privateMode = Boolean(window.__BASS_PRIVATE__) || location.pathname.startsWith("/private/");
     let demo;
     // Multi-song: ?song= / ?id=. Public allowlist only. Private: demos + processed (LAP/jobs). (Tempo/WSOLA path untouched.)
-    const PUBLIC_SONG_RE = /^(a-good-bass-for-gambling|make-funk|maple-leaf-rag)$/;
+    const PUBLIC_SONG_RE = /^(make-funk|maple-leaf-rag)$/;
+    // Private/regression demos still load via /api/demo/:slug (not listed on public picker).
+    const PRIVATE_DEMO_SONG_RE = /^(a-good-bass-for-gambling|make-funk|maple-leaf-rag)$/;
     const PUBLIC_DEFAULT_SONG = "make-funk";
     // Share/tab title. Song name stays in the player header, never in document.title.
     const PUBLIC_PAGE_TITLE = "Song Bass Explainer - Understand Bass Lines in Songs";
     const PUBLIC_DEMO_FALLBACK = [
+      { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", group: "demo" },
+      { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", group: "demo" },
+    ];
+    const PRIVATE_DEMO_FALLBACK = [
       { id: "a-good-bass-for-gambling", title: "A good bass for gambling", artist: "Komiku", group: "demo" },
       { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", group: "demo" },
       { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", group: "demo" },
@@ -1936,7 +1942,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         if (cres.ok) songCatalog = await cres.json();
       } catch (_) { /* Access / offline — picker falls back to known entries */ }
       if (!songCatalog.demos?.length) {
-        songCatalog.demos = PUBLIC_DEMO_FALLBACK.map((s) => Object.assign({}, s));
+        songCatalog.demos = PRIVATE_DEMO_FALLBACK.map((s) => Object.assign({}, s));
       }
       if (!songCatalog.processed?.length) {
         songCatalog.processed = [
@@ -1957,8 +1963,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       }
     }
     function resolvePrivateEndpoints(id) {
-      if (PUBLIC_SONG_RE.test(id)) {
-        return [`/api/demo/${id}`, `/api/demo/a-good-bass-for-gambling`, "/js/demo-data.json"];
+      if (PRIVATE_DEMO_SONG_RE.test(id)) {
+        return [`/api/demo/${id}`, `/api/demo/make-funk`, "/js/demo-data.json"];
       }
       if (/^job_[a-zA-Z0-9_]+$/.test(id)) {
         return [`/private/api/jobs/${id}/study/resource.json`, "/private/api/demo/like-a-prayer", "/js/demo-data.json"];
@@ -1969,7 +1975,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     }
     const endpoints = privateMode
       ? resolvePrivateEndpoints(activeSongId)
-      : [`/api/demo/${publicSlug}`, "/api/demo/a-good-bass-for-gambling", "/js/demo-data.json"];
+      : [`/api/demo/${publicSlug}`, "/api/demo/make-funk", "/js/demo-data.json"];
     let lastErr = null;
     for (const ep of endpoints) {
       try {
@@ -1984,7 +1990,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     // Public pages: allow CC0/public stems only. Never enable licensed/private stems on the public player.
     if (!privateMode) {
       const access = String(demo.stems.access || "");
-      const publicOk = access === "public" || (demo.stems.available && /\/api\/demo\/(a-good-bass-for-gambling|make-funk|maple-leaf-rag)\//.test(String(demo.stems.bass || "")));
+      const publicOk = access === "public" || (demo.stems.available && /\/api\/demo\/(make-funk|maple-leaf-rag)\//.test(String(demo.stems.bass || "")));
       if (!publicOk) {
         demo.stems = { available: false, muteBassSupported: false, access: "blocked" };
       }

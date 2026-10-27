@@ -50,10 +50,17 @@ def bar_times(beat: dict, nbars: int) -> list[tuple[float, float]]:
 
 
 def pyin_notes(y: np.ndarray, sr: int, *, fmin_midi=28, fmax_midi=55) -> list[dict]:
-    """Frame-wise pyin → notes. Split on rounded-MIDI change, unvoiced gaps, or reattack onsets."""
+    """Frame-wise pyin → notes with anti-wobble hysteresis.
+
+    Tiny MIDI-round flips (vibrato crossing .5) no longer split notes. Require a
+    sustained ≥HYST_SEMI change for HYST_FRAMES before a pitch split. Same-pitch
+    reattacks need a strong onset. Short unvoiced gaps are bridged later.
+    """
     fmin = librosa.midi_to_hz(fmin_midi)
     fmax = librosa.midi_to_hz(fmax_midi)
     hop = 256
+    HYST_SEMI = 0.85  # require ~≥0.85 semitone sustained drift to split
+    HYST_FRAMES = 3
     f0, voiced_flag, voiced_prob = librosa.pyin(
         y, fmin=fmin, fmax=fmax, sr=sr, frame_length=2048, hop_length=hop
     )
@@ -63,9 +70,12 @@ def pyin_notes(y: np.ndarray, sr: int, *, fmin_midi=28, fmax_midi=55) -> list[di
     for i, (hz, v) in enumerate(zip(f0, voiced_flag)):
         if v and np.isfinite(hz):
             midi_f[i] = librosa.hz_to_midi(hz)
-    # onset frames for same-pitch reattacks
     onset_env = librosa.onset.onset_strength(y=y, sr=sr, hop_length=hop)
-    onset_frames = set(librosa.onset.onset_detect(onset_envelope=onset_env, sr=sr, hop_length=hop, units="frames"))
+    onset_frames = set(
+        librosa.onset.onset_detect(onset_envelope=onset_env, sr=sr, hop_length=hop, units="frames")
+    )
+    onset_med = float(np.median(onset_env)) if len(onset_env) else 0.0
+    onset_strong = float(np.percentile(onset_env, 75)) if len(onset_env) else 0.0
     notes: list[dict] = []
     i = 0
     n = len(f0)
@@ -73,29 +83,73 @@ def pyin_notes(y: np.ndarray, sr: int, *, fmin_midi=28, fmax_midi=55) -> list[di
         if not np.isfinite(midi_f[i]):
             i += 1
             continue
-        cur = int(round(float(midi_f[i])))
+        cur_f = float(midi_f[i])
+        cur = int(round(cur_f))
         j = i + 1
-        vals = [float(midi_f[i])]
+        vals = [cur_f]
+        pending_pitch = None
+        pending_count = 0
         while j < n and np.isfinite(midi_f[j]):
-            m_round = int(round(float(midi_f[j])))
-            # new pitch class/octave
-            if m_round != cur:
-                break
-            # same pitch reattack: onset after at least ~2 frames into the note
-            if j in onset_frames and (j - i) >= 2:
-                break
-            vals.append(float(midi_f[j]))
+            mf = float(midi_f[j])
+            # Hysteresis: ignore tiny round-boundary wobble until sustained drift
+            if abs(mf - cur_f) < HYST_SEMI and int(round(mf)) != cur:
+                # round flip without real pitch move — stay on current note
+                vals.append(mf)
+                pending_pitch = None
+                pending_count = 0
+                j += 1
+                continue
+            if abs(mf - cur_f) >= HYST_SEMI and int(round(mf)) != cur:
+                if pending_pitch is None or int(round(mf)) != pending_pitch:
+                    pending_pitch = int(round(mf))
+                    pending_count = 1
+                else:
+                    pending_count += 1
+                if pending_count >= HYST_FRAMES:
+                    break
+                vals.append(mf)
+                j += 1
+                continue
+            pending_pitch = None
+            pending_count = 0
+            # same-pitch reattack only on strong onsets after a real note body
+            if j in onset_frames and (j - i) >= 4:
+                strength = float(onset_env[j]) if j < len(onset_env) else 0.0
+                if strength >= max(onset_strong, onset_med * 2.0):
+                    break
+            vals.append(mf)
+            # track running center so slow slides can follow without split noise
+            cur_f = float(np.median(vals[-min(5, len(vals)) :]))
+            cur = int(round(cur_f))
             j += 1
         t0 = float(times[i])
         t1 = float(times[min(j - 1, n - 1)]) + hop_s
         dur = max(hop_s, t1 - t0)
         midi = int(round(float(np.median(vals))))
         med_prob = float(np.nanmedian(voiced_prob[i:j])) if j > i else 0.0
-        # keep brief chromatic approaches (≥1 frame) — funk 16ths
-        if dur >= hop_s * 0.9:
+        # min duration ~80ms (or one hop) — drop micro-blips
+        if dur >= max(0.08, hop_s * 0.9):
             notes.append({"t": t0, "dur": dur, "midi": midi, "name": midi_name(midi), "prob": med_prob})
         i = max(j, i + 1)
-    return notes
+    return merge_note_gaps(notes, max_gap_s=0.08)
+
+
+def merge_note_gaps(notes: list[dict], *, max_gap_s: float = 0.08) -> list[dict]:
+    """Merge same-MIDI notes separated by a short unvoiced/gap (anti-wobble)."""
+    if not notes:
+        return notes
+    notes = sorted(notes, key=lambda n: n["t"])
+    out = [dict(notes[0])]
+    for n in notes[1:]:
+        prev = out[-1]
+        gap = float(n["t"]) - (float(prev["t"]) + float(prev["dur"]))
+        if n["midi"] == prev["midi"] and gap <= max_gap_s:
+            end = max(float(prev["t"]) + float(prev["dur"]), float(n["t"]) + float(n["dur"]))
+            prev["dur"] = end - float(prev["t"])
+            prev["prob"] = max(float(prev.get("prob") or 0), float(n.get("prob") or 0))
+        else:
+            out.append(dict(n))
+    return out
 
 
 def try_basic_pitch(wav: Path) -> list[dict] | None:
@@ -323,15 +377,17 @@ def score_method(notes: list[dict], onset_count: int) -> float:
     if not notes:
         return -1e9
     st = ioi_stats(notes)
-    # Prefer methods that aren't locked to quarters and aren't absurdly dense noise
-    frac16 = st.get("frac_ioi_le_16th") or 0
     n = len(notes)
-    # closeness of note count to onset count
+    # Prefer onset-count agreement; stop rewarding hectic 16th density / raw note count
     onset_agree = 1.0 - min(1.0, abs(n - max(onset_count, 1)) / max(onset_count, 1))
-    # penalize pure quarter lock
     med = st.get("median_ioi_ms") or 999
+    frac16 = st.get("frac_ioi_le_16th") or 0
     quarter_lock_pen = 1.0 if 450 <= med <= 550 and frac16 < 0.05 else 0.0
-    return n * 0.01 + frac16 * 2.0 + onset_agree * 1.5 - quarter_lock_pen * 3.0
+    # Mild density penalty when notes ≫ onsets (wobble micro-splits)
+    over_dense = max(0.0, (n - max(onset_count, 1)) / max(onset_count, 1))
+    # Small bonus for having some syncopation without requiring dense 16ths
+    sync_bonus = 0.35 if 0.1 <= frac16 <= 0.7 else 0.0
+    return onset_agree * 3.0 + sync_bonus - quarter_lock_pen * 3.0 - over_dense * 1.5
 
 
 def transcribe(
