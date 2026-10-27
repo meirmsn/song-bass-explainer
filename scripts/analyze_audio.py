@@ -2,10 +2,13 @@
 """
 Generic procedural analysis for bass-study jobs (non-LAP path).
 
-Uses librosa: beat/BPM, bar grid, crude chroma chords + bass-per-beat,
-simple sectioning, and a generic semantic card writer from measured features.
+Uses librosa: beat/BPM, bar grid, crude chroma chords + bass-per-beat (pitch-class
+labels only — NOT note-level AMT), simple sectioning, and a generic semantic card writer.
+When stems/bass.wav exists, main() also runs scripts/transcribe_bass.py (librosa.pyin,
+optional basic-pitch) and merges absolute bassHits into study/resource.json.
 When faster-whisper is available (see whisper_transcribe.py), non-LAP jobs also
 get lyric segments and gap-based section refinement stored in analysis/transcription.json.
+Never claim pyin/AMT in meta unless bass_amt/bass_hits artifacts were actually produced.
 """
 from __future__ import annotations
 
@@ -358,8 +361,8 @@ def analyze_wav(
         "nbars": nbars,
         "raw": raw,
         "secs": secs,
-        "source": "scripts/analyze_audio.py (librosa)",
-        "confidence": "low-medium — chroma chord/bass estimates; auto sections",
+        "source": "scripts/analyze_audio.py (librosa chroma on mix; beat grid) — NOT note-level AMT",
+        "confidence": "low-medium — chroma chord/bass pitch-class estimates only; use scripts/transcribe_bass.py on stems/bass.wav for real notes",
         "jobId": job_id,
     }
 
@@ -538,6 +541,39 @@ def merge_study(out_dir: Path, job_id: str | None = None) -> Path:
             }
         except Exception:
             transcription_summary = None
+    # Prefer real AMT bassHits when transcribe_bass.py has been run on stems/bass.wav
+    bass_hits = None
+    bass_meta = {}
+    for cand in ("bass_hits.json", "bass_amt.json"):
+        bp = out_dir / "analysis" / cand
+        if bp.exists():
+            try:
+                ba = json.loads(bp.read_text())
+                hits = ba.get("hits") or ba.get("bassHits")
+                if isinstance(hits, list) and hits:
+                    bass_hits = hits
+                    bass_meta = {
+                        "analysis": ba.get("analysis")
+                        or "AMT on stems/bass.wav (see analysis/bass_amt.json)",
+                        "bassAmtMethod": ba.get("method"),
+                        "bassHitCount": len(hits),
+                        "bassSchema": ba.get("schema") or "bass.amt.v1",
+                        "octaveFix": ba.get("octaveFix"),
+                    }
+                    if isinstance(ba.get("patterns"), dict) and ba["patterns"]:
+                        # AMT patterns win over generic pedal templates
+                        sem = dict(sem)
+                        sem["patterns"] = ba["patterns"]
+                    break
+            except Exception:
+                pass
+
+    meta = {
+        "analysis": bass_meta.get("analysis")
+        or "librosa chroma on mix + beat grid; no note-level AMT (run scripts/transcribe_bass.py on stems/bass.wav)",
+    }
+    meta.update({k: v for k, v in bass_meta.items() if k != "analysis" and v is not None})
+
     resource = {
         "schema": "bass.study.v1",
         "title": proc.get("title"),
@@ -552,6 +588,8 @@ def merge_study(out_dir: Path, job_id: str | None = None) -> Path:
         "cards": sem.get("cards"),
         "patterns": sem.get("patterns"),
         "stems": stems,
+        "bassHits": bass_hits,
+        "meta": meta,
         "semantic": {"schema": sem.get("schema"), "source": sem.get("source"), "confidence": sem.get("confidence")},
         "transcription": transcription_summary,
         "merge": {
@@ -596,5 +634,35 @@ if __name__ == "__main__":
         vocals_path=vocals,
     )
     write_analysis(out, res)
+    # Real note-level AMT on bass stem when present (does not claim pyin unless it runs).
+    bass_stem = out / "stems" / "bass.wav"
+    beat_path = out / "analysis" / "beat.json"
+    if bass_stem.exists() and beat_path.exists():
+        try:
+            from transcribe_bass import transcribe as amt_transcribe
+
+            amt = amt_transcribe(
+                bass_stem,
+                beat_path,
+                secs=(res.get("procedural") or {}).get("secs"),
+                nbars=(res.get("procedural") or {}).get("nbars"),
+            )
+            (out / "analysis" / "bass_amt.json").write_text(json.dumps(amt, indent=2))
+            (out / "analysis" / "bass_hits.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "bass.amt.v1",
+                        "method": amt.get("method"),
+                        "analysis": amt.get("analysis"),
+                        "octaveFix": amt.get("octaveFix"),
+                        "hits": amt.get("bassHits"),
+                        "methodEvidence": amt.get("methodEvidence"),
+                        "patterns": amt.get("patterns"),
+                    },
+                    indent=2,
+                )
+            )
+        except Exception as e:
+            (out / "analysis" / "bass_amt_error.txt").write_text(str(e))
     merge_study(out, args.job_id)
     print(json.dumps({"bpm": res["procedural"]["bpm"], "nbars": res["procedural"]["nbars"], "keys": res["procedural"]["keys"], "secs": len(res["procedural"]["secs"])}, indent=2))

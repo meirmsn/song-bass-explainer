@@ -48,3 +48,9 @@
 - PatternIds resolve to section patterns (`intro_air`, `chrom_eb`, `chrom_eb2`, `e_pedal_lift`, `drop_e`, `bb_hang`, `build_walk`, `outro_eb`) or builtin `empty` for near-silent intro pocket.
 - Flashcard panel order: label → body (15px) → insight → mini-grid → Prev/Next.
 - Checklist for future demos: before upload, assert `every card has insight.layer`; missing insight is a ship blocker.
+
+## Bass AMT fix (2026-10-27 America/Los_Angeles)
+- Real librosa.pyin AMT on `stems/bass.wav` → absolute `bassHits` (player prefers these over 2-bar tiled patterns).
+- `meta.analysis` now reflects actual method (no false chroma-as-pyin claim).
+- Pipeline: `scripts/transcribe_bass.py`; `analyze_audio.py` merges AMT when stem present.
+- Regression: `tests/bass-amt-regression.test.mjs`, `tests/bass-hits-player.test.mjs`.

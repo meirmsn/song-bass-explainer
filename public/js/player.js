@@ -772,6 +772,62 @@
     return out;
   }
 
+  /**
+   * Normalize per-song absolute bass transcription (bass.amt.v1).
+   * Accepts demo.bassHits | demo.bass.hits — { bar, step, midi, dur? }.
+   */
+  function normalizeSongBassHits(demoOrHits) {
+    let raw = null;
+    if (Array.isArray(demoOrHits)) raw = demoOrHits;
+    else if (demoOrHits && typeof demoOrHits === "object") {
+      if (Array.isArray(demoOrHits.bassHits)) raw = demoOrHits.bassHits;
+      else if (demoOrHits.bass && Array.isArray(demoOrHits.bass.hits)) raw = demoOrHits.bass.hits;
+      else if (Array.isArray(demoOrHits.hits) && demoOrHits.schema === "bass.amt.v1") raw = demoOrHits.hits;
+    }
+    if (!Array.isArray(raw) || !raw.length) return null;
+    const out = [];
+    for (let i = 0; i < raw.length; i++) {
+      const h = raw[i];
+      if (!h || typeof h !== "object") continue;
+      const bar = Number(h.bar);
+      const step = Number(h.step);
+      const midi = Number(h.midi);
+      if (!Number.isFinite(bar) || bar < 0) continue;
+      if (!Number.isFinite(step) || step < 0 || step > 15) continue;
+      if (!Number.isFinite(midi) || midi < 12 || midi > 84) continue;
+      const row = { bar: Math.floor(bar), step: Math.floor(step), midi: Math.round(midi) };
+      if (Number.isFinite(Number(h.dur)) && Number(h.dur) > 0) row.dur = Math.max(1, Math.round(Number(h.dur)));
+      out.push(row);
+    }
+    return out.length ? out : null;
+  }
+
+  /** Map absolute bassHits into view-relative {step, midi, dur?} for nBars at viewLo. */
+  function songBassHitsForView(songHits, nBars, viewLo) {
+    if (!songHits || !songHits.length) return null;
+    const lo = Number(viewLo) || 0;
+    const n = Number(nBars) || 0;
+    const out = [];
+    for (let i = 0; i < songHits.length; i++) {
+      const h = songHits[i];
+      if (h.bar < lo || h.bar >= lo + n) continue;
+      const row = { step: (h.bar - lo) * 16 + h.step, midi: h.midi };
+      if (h.dur) row.dur = h.dur;
+      out.push(row);
+    }
+    return out;
+  }
+
+  /**
+   * Bass notes for a staff/MIDI view. Prefer absolute bassHits (real AMT) when present;
+   * otherwise tile ≤2-bar patterns (legacy).
+   */
+  function bassNotesForView(nBars, viewLo, pat, songBassHits) {
+    const fromHits = songBassHitsForView(songBassHits, nBars, viewLo);
+    if (fromHits && fromHits.length) return fromHits;
+    return expandPatternNotes(pat, nBars);
+  }
+
   /** Staff subtitle from actual hits (avoid claiming "8th hats" when song kit differs). */
   function drumHatLabel(hits, hat16Fallback) {
     if (!hits || !hits.length) return hat16Fallback ? "16th hats" : "8th hats";
@@ -798,6 +854,13 @@
     if (!pat) return false;
     if (pat.id === "empty" || pat.id === "rest" || pat.id === "silent") return true;
     return !Array.isArray(pat.notes) || pat.notes.length === 0;
+  }
+
+  /** Bass is present if absolute bassHits cover the view, or the pattern has notes. */
+  function viewHasBass(pat, nBars, viewLo, songBassHits) {
+    const hits = songBassHitsForView(songBassHits, nBars, viewLo);
+    if (hits && hits.length) return true;
+    return !isRhythmOut(pat);
   }
 
   /** Drums-out independent of bass: section/pattern flag (bass may still be PEDAL). */
@@ -1936,6 +1999,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     const PATS_EFF = (demo.patterns && typeof demo.patterns === "object") ? demo.patterns : PATS;
     const DRUMS_OUT_BARS = normalizeDrumsOutBars(demo);
     const SONG_DRUM_HITS = normalizeSongDrumHits(demo);
+    const SONG_BASS_HITS = normalizeSongBassHits(demo);
     const secStart = (s) => (s.first === 0 ? 0 : BARS[s.first].t);
     const secEnd = (s) => (s.end >= NBARS ? DURATION : BARS[s.end].t);
     const barAt = (t) => { for (let i = NBARS - 1; i >= 0; i--) if (t >= BARS[i].t) return i; return 0; };
@@ -2169,9 +2233,9 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       const song0 = atSongTime;
       const rate = playbackRate > 0 ? playbackRate : 1;
       const barTimeAt = (i) => (i >= NBARS ? DURATION : BARS[Math.max(0, Math.min(NBARS - 1, i))].t);
-      // Full rhythm-out: skip bass/drums MIDI (no invent). Chord MIDI still allowed (harmony line).
-      if (!rhythmOut && midiBass) {
-        const notes = expandPatternNotes(pat, n).filter((note) => note.step < steps);
+      // Skip bass MIDI only when neither pattern nor absolute bassHits have notes (no invent).
+      if (midiBass && viewHasBass(pat, n, viewLo, SONG_BASS_HITS)) {
+        const notes = bassNotesForView(n, viewLo, pat, SONG_BASS_HITS).filter((note) => note.step < steps);
         notes.sort((a, b) => a.step - b.step);
         for (let i = 0; i < notes.length; i++) {
           const note = notes[i];
@@ -3123,7 +3187,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     function soundingBassNoteSteps(songTime, viewLo, n, pat) {
       const steps = n * 16;
       const barTimeAt = (i) => (i >= NBARS ? DURATION : BARS[Math.max(0, Math.min(NBARS - 1, i))].t);
-      const notes = expandPatternNotes(pat, n).filter((note) => note.step < steps);
+      const notes = bassNotesForView(n, viewLo, pat, SONG_BASS_HITS).filter((note) => note.step < steps);
       notes.sort((a, b) => a.step - b.step);
       const out = new Set();
       for (let i = 0; i < notes.length; i++) {
@@ -3195,11 +3259,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         svg.appendChild(svgEl("line", { x1: X0, x2: X0 + W, y1: sy(i), y2: sy(i), stroke: "#4b5563", "stroke-width": 1 }));
       });
       for (let i = 0; i <= n; i++) svg.appendChild(svgEl("line", { x1: X0 + (i / n) * W, x2: X0 + (i / n) * W, y1: sy(0), y2: sy(3), stroke: "#4b5563", "stroke-width": i === 0 || i === n ? 1.5 : 1 }));
-      const notes = [];
-      for (let b = 0; b < n; b += 2) {
-        const off = b * 16;
-        pat.notes.forEach((note) => { if (note.step < 32) notes.push({ step: note.step + off, midi: note.midi }); });
-      }
+      const notes = bassNotesForView(n, viewLo, pat, SONG_BASS_HITS);
       const soundingSteps = (midiBass && playing) ? soundingBassNoteSteps(t, viewLo, n, pat) : new Set();
       notes.filter((note) => note.step < steps).forEach((note) => {
         const pos = tabPos(note.midi);
@@ -3240,11 +3300,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       }
       for (let i = 0; i <= n; i++) svg.appendChild(svgEl("line", { x1: X0 + 10 + (i / n) * (W - 10), x2: X0 + 10 + (i / n) * (W - 10), y1: yy(8), y2: yy(0), stroke: "#4b5563", "stroke-width": i === 0 || i === n ? 1.5 : 1 }));
 
-      const notes = [];
-      for (let b = 0; b < n; b += 2) {
-        const off = b * 16;
-        pat.notes.forEach((note) => { if (note.step < 32) notes.push({ step: note.step + off, midi: note.midi }); });
-      }
+      const notes = bassNotesForView(n, viewLo, pat, SONG_BASS_HITS);
       const inView = notes.filter((note) => note.step < steps);
       const bassSoundingSteps = (midiBass && playing) ? soundingBassNoteSteps(t, viewLo, n, pat) : new Set();
       const events = buildRhythmVoice(inView, steps);
@@ -4548,9 +4604,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     drumVoiceYs,
     drumHitsForView,
     normalizeSongDrumHits,
+    bassNotesForView,
+    songBassHitsForView,
+    normalizeSongBassHits,
     songDrumHitsForView,
     drumHatLabel,
     isRhythmOut,
+    viewHasBass,
     isDrumsOut,
     normalizeDrumsOutBars,
     isBarDrumsSilent,

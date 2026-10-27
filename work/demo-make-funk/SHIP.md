@@ -38,3 +38,9 @@
 
 ## Tests / deploy
 - See parent ship report after `npm test` + `scripts/deploy.sh`.
+
+## Bass AMT fix (2026-10-27 America/Los_Angeles)
+- Real librosa.pyin AMT on `stems/bass.wav` → absolute `bassHits` (player prefers these over 2-bar tiled patterns).
+- `meta.analysis` now reflects actual method (no false chroma-as-pyin claim).
+- Pipeline: `scripts/transcribe_bass.py`; `analyze_audio.py` merges AMT when stem present.
+- Regression: `tests/bass-amt-regression.test.mjs`, `tests/bass-hits-player.test.mjs`.
