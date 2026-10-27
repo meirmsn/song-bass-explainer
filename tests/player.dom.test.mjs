@@ -1101,6 +1101,54 @@ describe("drum staff real rhythm", () => {
     expect(staff.querySelectorAll("g[data-drum='kick']").length).toBeGreaterThan(0);
   });
 
+  it("kick is always below snare on the drum staff (HH above SD above BD)", async () => {
+    const api = await bootPlayer({
+      mutatePayload: (payload) => {
+        const hits = [];
+        for (let bar = 0; bar < 8; bar++) {
+          hits.push(
+            { bar, step: 0, kind: "kick", midi: 36 },
+            { bar, step: 8, kind: "kick", midi: 36 },
+            { bar, step: 4, kind: "snare", midi: 38 },
+            { bar, step: 12, kind: "snare", midi: 38 },
+          );
+          for (const step of [0, 4, 8, 12]) hits.push({ bar, step, kind: "hat", midi: 42 });
+        }
+        payload.drumHits = hits;
+      },
+    });
+    api.pickSection(0);
+    await api.waitTick(20);
+    const staff = document.querySelector('svg[aria-label="Drum staff"]');
+    expect(staff).toBeTruthy();
+    const cyOf = (kind) => {
+      const heads = [...staff.querySelectorAll(`g[data-drum="${kind}"] ellipse`)];
+      expect(heads.length).toBeGreaterThan(0);
+      return heads.map((n) => Number(n.getAttribute("cy")));
+    };
+    const kick = cyOf("kick");
+    const snare = cyOf("snare");
+    expect(Math.min(...kick)).toBeGreaterThan(Math.max(...snare));
+    const hatLineYs = [...staff.querySelectorAll('g[data-drum="hat"] line')].map((n) => Number(n.getAttribute("y1")));
+    expect(hatLineYs.length).toBeGreaterThan(0);
+    expect(Math.max(...hatLineYs)).toBeLessThan(Math.min(...snare));
+    const labelY = (kind) => Number(staff.querySelector(`[data-drum-label="${kind}"]`).getAttribute("y"));
+    expect(staff.querySelector('[data-drum-label="hat"]').textContent).toBe("HH");
+    expect(staff.querySelector('[data-drum-label="snare"]').textContent).toBe("SD");
+    expect(staff.querySelector('[data-drum-label="kick"]').textContent).toBe("BD");
+    expect(labelY("kick")).toBeGreaterThan(labelY("snare"));
+    expect(labelY("snare")).toBeGreaterThan(labelY("hat"));
+
+    const N = window.__BASS_NOTATION__;
+    expect(N.DRUM_VOICE_TOP_TO_BOTTOM).toEqual(["hat", "snare", "kick"]);
+    // Shuffled lane numbers still come back hat < snare < kick.
+    const ys = N.drumVoiceYs([76, 28, 52]);
+    expect(ys.hat).toBe(28);
+    expect(ys.snare).toBe(52);
+    expect(ys.kick).toBe(76);
+    expect(ys.kick).toBeGreaterThan(ys.snare);
+  });
+
   it("demo without drumHits renders empty drum staff (rests, no invent)", async () => {
     const api = await bootPlayer();
     api.pickSection(0);
@@ -1360,6 +1408,46 @@ describe("flashcard insight panel", () => {
     expect(labels.join(" ")).toMatch(/bass note against that drum hit/i);
     expect(document.querySelector('circle[data-insight-kind="bass"]')).toBeTruthy();
     expect(document.querySelector('circle[data-insight-kind="kick"]')).toBeTruthy();
+  });
+
+  it("insight-card drum schematic keeps K below S", async () => {
+    const api = await bootPlayer();
+    api.pickSection(2); // chorus pocket: kick highlight, dim snare still drawn
+    api.setCard(0);
+    await api.waitTick(20);
+    const svg = document.querySelector(".card-insight-svg");
+    expect(svg).toBeTruthy();
+    const cy = (kind) => {
+      const nodes = [...svg.querySelectorAll(`circle[data-insight-kind="${kind}"]`)];
+      expect(nodes.length).toBeGreaterThan(0);
+      return nodes.map((n) => Number(n.getAttribute("cy")));
+    };
+    expect(Math.min(...cy("kick"))).toBeGreaterThan(Math.max(...cy("snare")));
+    const k = svg.querySelector('[data-drum-label="kick"]');
+    const s = svg.querySelector('[data-drum-label="snare"]');
+    expect(k.textContent).toBe("K");
+    expect(s.textContent).toBe("S");
+    expect(Number(k.getAttribute("y"))).toBeGreaterThan(Number(s.getAttribute("y")));
+
+    // Direct schematic (same renderer) with both voices highlighted.
+    const N = window.__BASS_NOTATION__;
+    const node = N.makeCardInsight({
+      layer: "pocket",
+      patternId: "pedal",
+      title: "Kick under snare",
+      barRange: [0, 0],
+      highlights: [
+        { step: 0, kind: "kick", text: "kick 1" },
+        { step: 4, kind: "snare", text: "snare 2" },
+      ],
+    }, N.PEDAL);
+    document.body.appendChild(node);
+    const card = node.querySelector(".card-insight-svg");
+    const kickCy = Number(card.querySelector('circle[data-insight-kind="kick"]').getAttribute("cy"));
+    const snareCy = Number(card.querySelector('circle[data-insight-kind="snare"]').getAttribute("cy"));
+    expect(kickCy).toBeGreaterThan(snareCy);
+    expect(Number(card.querySelector('[data-drum-label="kick"]').getAttribute("y")))
+      .toBeGreaterThan(Number(card.querySelector('[data-drum-label="snare"]').getAttribute("y")));
   });
 
   it("cards without insight leave the panel out (intro)", async () => {

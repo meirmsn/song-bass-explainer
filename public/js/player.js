@@ -701,6 +701,29 @@
   const DRUM_MIDI = { kick: 36, snare: 38, hat: 42 };
 
   /**
+   * Kit voices from the top of the staff to the bottom.
+   * SVG y grows downward, so kick's y is always greater than snare's.
+   * Standard drum notation: hi-hat above snare, kick (bass drum) below snare.
+   * Both the main drum staff (HH / SD / BD) and the insight-card schematic (K / S)
+   * take their lanes from drumVoiceYs(), which re-sorts so this order wins.
+   */
+  const DRUM_VOICE_TOP_TO_BOTTOM = ["hat", "snare", "kick"];
+
+  /**
+   * Assign SVG y positions in DRUM_VOICE_TOP_TO_BOTTOM order.
+   * Input numbers are treated as a bag of lane positions and sorted ascending,
+   * so a reversed list cannot put kick above snare.
+   */
+  function drumVoiceYs(topToBottomYs) {
+    const raw = Array.isArray(topToBottomYs) ? topToBottomYs.filter((y) => Number.isFinite(y)) : [];
+    const sorted = raw.slice().sort((a, b) => a - b);
+    const ys = {};
+    const n = Math.min(sorted.length, DRUM_VOICE_TOP_TO_BOTTOM.length);
+    for (let i = 0; i < n; i++) ys[DRUM_VOICE_TOP_TO_BOTTOM[i]] = sorted[i];
+    return ys;
+  }
+
+  /**
    * Normalize per-song drum transcription from demo-data / resource.
    * Accepts demo.drumHits | demo.drums.hits | demo.drums — array of
    * { bar, step, kind, midi? } (bar absolute, step 0–15 within bar).
@@ -1392,7 +1415,8 @@
     }
 
     // --- Drums staff (bottom) ---
-    const lane = { kick: drumY - 10, snare: drumY + 6, hat: drumY - 18 };
+    // Same top→bottom order as the main staff: hat, snare, kick. K is always below S.
+    const lane = drumVoiceYs([drumY - 18, drumY - 10, drumY + 6]);
     if (patternEmpty) {
       for (let bar = 0; bar < nBars; bar++) {
         const cx = gx0 + ((bar + 0.5) / nBars) * gw;
@@ -1404,8 +1428,8 @@
         }, [document.createTextNode("rest")]));
       }
     } else {
-      svg.appendChild(svgEl("text", { x: 4, y: lane.kick + 3, "font-size": 7, fill: "#6b7280" }, [document.createTextNode("K")]));
-      svg.appendChild(svgEl("text", { x: 4, y: lane.snare + 3, "font-size": 7, fill: "#6b7280" }, [document.createTextNode("S")]));
+      svg.appendChild(svgEl("text", { x: 4, y: lane.kick + 3, "font-size": 7, fill: "#6b7280", "data-drum-label": "kick" }, [document.createTextNode("K")]));
+      svg.appendChild(svgEl("text", { x: 4, y: lane.snare + 3, "font-size": 7, fill: "#6b7280", "data-drum-label": "snare" }, [document.createTextNode("S")]));
       for (let bar = 0; bar < nBars; bar++) {
         const base = step0 + bar * 16;
         [0, 8].forEach((off) => {
@@ -3373,13 +3397,20 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       const svg = svgEl("svg", { viewBox: "0 0 " + VBW + " 100", width: "100%", height: "100%", preserveAspectRatio: "none", role: "img", "aria-label": "Drum staff", style: { cursor: "crosshair", userSelect: "none", touchAction: "none" } });
       const steps = 16 * n;
       const sx = (s) => X0 + ((s + 0.5) / steps) * W;
-      const yHat = 28, ySnare = 52, yKick = 76;
+      // Staff lines top→bottom. Voices sit on the top, middle, and bottom lines
+      // in DRUM_VOICE_TOP_TO_BOTTOM order, so BD/kick stays below SD/snare.
+      const drumYs = drumVoiceYs([28, 52, 76]);
+      const yHat = drumYs.hat, ySnare = drumYs.snare, yKick = drumYs.kick;
       const ink = "#e5e7eb";
       svg.appendChild(selectionOverlay(viewLo, viewHi, 18, 70));
       [28, 40, 52, 64, 76].forEach((y) => svg.appendChild(svgEl("line", { x1: X0, x2: X0 + W, y1: y, y2: y, stroke: "#6b7280", "stroke-width": 1 })));
-      svg.appendChild(svgEl("text", { x: 8, y: 32, "font-size": 10, fill: "#6b7280" }, [document.createTextNode("HH")]));
-      svg.appendChild(svgEl("text", { x: 8, y: 56, "font-size": 10, fill: "#6b7280" }, [document.createTextNode("SD")]));
-      svg.appendChild(svgEl("text", { x: 8, y: 80, "font-size": 10, fill: "#6b7280" }, [document.createTextNode("BD")]));
+      const drumStaffLabel = { hat: "HH", snare: "SD", kick: "BD" };
+      DRUM_VOICE_TOP_TO_BOTTOM.forEach((kind) => {
+        svg.appendChild(svgEl("text", {
+          x: 8, y: drumYs[kind] + 4, "font-size": 10, fill: "#6b7280",
+          "data-drum-label": kind,
+        }, [document.createTextNode(drumStaffLabel[kind])]));
+      });
       // Time signature only (percussion: no key signature).
       appendTimeSignature(svg, 38, 44, 68, parseTimeSig(demo && demo.timeSig), ink, 14);
       for (let i = 0; i <= n; i++) svg.appendChild(svgEl("line", { x1: X0 + (i / n) * W, x2: X0 + (i / n) * W, y1: 28, y2: 76, stroke: "#4b5563", "stroke-width": i === 0 || i === n ? 1.5 : 1 }));
@@ -4412,6 +4443,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     buildRhythmVoice,
     beamGroups,
     buildDrumHits,
+    DRUM_VOICE_TOP_TO_BOTTOM,
+    drumVoiceYs,
     drumHitsForView,
     normalizeSongDrumHits,
     songDrumHitsForView,
