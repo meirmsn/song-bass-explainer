@@ -15,7 +15,7 @@ This was built by talking to Grok Bot, to learn how agent-driven work felt for m
 - Stem mute and solo so bass, drums, or both can be heard against the rest of the mix, plus soft MIDI for the bass and drums.
 - Pitch-preserving tempo at 100%, 90%, 75%, 50%, and 25%, and a section timeline that auto-advances.
 - Transport: drag to select a subsection to loop, and L to loop the current bar window.
-- Insight flashcards (Pocket, Figure, Harmony, Missable) with a two-staff schematic of the claim window. Card Play loops that window; Bass, Drums, and Chords toggles choose what you hear.
+- Insight flashcards (Pocket, Figure, Harmony, Missable) with a bass-drum schematic of the claim window. Card Play loops that window; Bass, Drums, and Chords toggles choose what you hear.
 - Public demos with no Access gate: Komiku — A good bass for gambling (CC0), HoliznaCC0 — Make Funk (CC0), and Maple Leaf Rag (Public Domain Mark). Private Access holds processed personal tracks.
 
 ## How it works
@@ -49,7 +49,7 @@ No CI. A Cloudflare deploy token ships this personal tool. To harden a personal 
 - 2026-10-26 — insight cards (Pocket, Figure, Harmony, Missable), phone flashcards in a bottom drawer, and Komiku “A good bass for gambling” (CC0) on `/` with tempo steps.
 - 2026-10-26 — slowing playback was shifting the pitch → WSOLA time-stretch. The drum staff was showing made-up lines when the drums were quiet in a section.
 - 2026-10-26 — one demo was a narrow practice set → Make Funk and Maple Leaf Rag joined the catalog.
-- 2026-10-26 — chords and cards were hard to hear and see → bass key and time signatures (drums keep time only), two-staff claim-window schematics, and card Play with Bass, Drums, and Chords icons.
+- 2026-10-26 — chords and cards were hard to hear and see → bass key and time signatures (drums keep time only), bass-drum claim-window schematics, and card Play with Bass, Drums, and Chords icons.
 
 ## Known limitations
 - There is no current way for a non-host to upload and process a custom track.
