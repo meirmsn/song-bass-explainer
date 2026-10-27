@@ -21,12 +21,14 @@ function allCards(demo) {
   return out;
 }
 
-describe("Make Funk public demo artifacts", () => {
-  const demo = load("make-funk");
-  it("has meta + credit CC0", () => {
-    expect(demo.title).toMatch(/Make Funk/i);
+describe("Pocket Funk public demo artifacts (MIDI-authored hero)", () => {
+  const demo = load("pocket-funk");
+  it("has meta + credit CC0 + MIDI authoritative", () => {
+    expect(demo.title).toMatch(/Pocket Funk/i);
     expect(demo.meta.license).toMatch(/CC0/);
     expect(demo.meta.insightRequired).toBe(true);
+    expect(demo.meta.midiAuthoritative).toBe(true);
+    expect(demo.bassHits.length).toBeGreaterThan(50);
   });
   it("every section card has lean-B insight", () => {
     const cards = allCards(demo);
@@ -38,7 +40,7 @@ describe("Make Funk public demo artifacts", () => {
     expect(layers.has("harmony")).toBe(true);
     expect(layers.has("missable")).toBe(true);
   });
-  it("drumHits derived from stems (not empty invent)", () => {
+  it("drumHits from MIDI kit (not empty invent)", () => {
     expect(demo.drumHits.length).toBeGreaterThan(100);
     expect(demo.meta.drumHitCount).toBe(demo.drumHits.length);
   });
@@ -48,12 +50,14 @@ describe("Make Funk public demo artifacts", () => {
   });
 });
 
-describe("Maple Leaf Rag public demo artifacts", () => {
+describe("Maple Leaf Rag public demo artifacts (Mutopia MIDI)", () => {
   const demo = load("maple-leaf-rag");
-  it("has PDM license + realization credit", () => {
+  it("has Public Domain license + Mutopia/MIDI realization credit", () => {
     expect(demo.title).toMatch(/Maple Leaf/i);
     expect(demo.meta.license).toMatch(/Public Domain/i);
     expect(demo.credit.realization || demo.meta.realization).toBeTruthy();
+    expect(demo.meta.midiAuthoritative).toBe(true);
+    expect(demo.bassHits?.length).toBeGreaterThan(100);
   });
   it("every section card has lean-B insight", () => {
     const cards = allCards(demo);

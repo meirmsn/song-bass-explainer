@@ -26,10 +26,12 @@ work/*
 !work/demo-a-good-bass-for-gambling/
 !work/demo-make-funk/
 !work/demo-maple-leaf-rag/
+!work/demo-pocket-funk/
 work/demo-a-good-bass-for-gambling/stems/
 work/demo-a-good-bass-for-gambling/source/
 work/demo-make-funk/stems/
 work/demo-maple-leaf-rag/stems/
+work/demo-pocket-funk/stems/
 logs/
 .env*
 

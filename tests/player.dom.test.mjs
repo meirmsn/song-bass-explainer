@@ -52,7 +52,7 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
   if (withStems) {
     const base = privateMode
       ? "/private/api/demo/fixture/stems"
-      : "/api/demo/make-funk/stems";
+      : "/api/demo/pocket-funk/stems";
     payload.stems = {
       available: true,
       access: privateMode ? "private" : "public",
@@ -68,13 +68,21 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
       drums_wav: base + "/drums.wav",
     };
     if (!privateMode) {
+      payload.title = "Pocket Funk";
+      payload.artist = "Song Bass Explainer";
       payload.credit = {
-        title: "Make Funk",
-        artist: "HoliznaCC0",
+        title: "Pocket Funk",
+        artist: "Song Bass Explainer",
         license: "CC0 1.0 Universal",
-        source: "Free Music Archive",
-        url: "https://freemusicarchive.org/music/holiznacc0/bassic/make-funk/",
+        source: "MIDI-authored demo",
+        url: "https://bass.meirmsn.dev/?song=pocket-funk",
       };
+      payload.meta = Object.assign({}, payload.meta || {}, {
+        license: "CC0 1.0 Universal",
+        source: "MIDI-authored demo",
+        sourceUrl: "https://bass.meirmsn.dev/?song=pocket-funk",
+        midiAuthoritative: true,
+      });
     }
   }
 
@@ -85,6 +93,7 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
         demos: [
           { id: "a-good-bass-for-gambling", title: "A good bass for gambling", artist: "Komiku", group: "demo" },
           { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", group: "demo" },
+          { id: "pocket-funk", title: "Pocket Funk", artist: "Song Bass Explainer", group: "demo" },
           { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", group: "demo" },
         ],
         processed: [
@@ -95,8 +104,8 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
     if (u.includes("/api/demo/catalog")) {
       return new Response(JSON.stringify({
         songs: [
-          { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", license: "CC0 1.0 Universal" },
-          { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", license: "Public Domain Mark 1.0" },
+          { id: "pocket-funk", title: "Pocket Funk", artist: "Song Bass Explainer", license: "CC0 1.0 Universal" },
+          { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", license: "Public Domain" },
           { id: "like-a-prayer", title: "Like a Prayer", artist: "Madonna / study", license: "private" },
         ],
       }), { status: 200, headers: { "content-type": "application/json" } });
@@ -2681,7 +2690,7 @@ describe("playback rate + public CC0 stems", () => {
     expect(api.getState().muteBassSupported).toBe(true);
     expect(document.querySelector(".ch-strip")).toBeTruthy();
     expect(document.querySelector("[data-credit]")).toBeTruthy();
-    expect(document.querySelector("[data-credit]").textContent).toMatch(/HoliznaCC0|Make Funk/i);
+    expect(document.querySelector("[data-credit]").textContent).toMatch(/Pocket Funk|Song Bass Explainer/i);
     expect(document.querySelector("[data-credit]").textContent).toMatch(/CC0/i);
     expect(document.body.textContent).not.toMatch(/Like a Prayer/i);
   });
@@ -2837,7 +2846,7 @@ describe("public has no Private link + private song typeahead", () => {
 
     const demoIds = [...demoGroup.querySelectorAll("[data-song-id]")].map((o) => o.getAttribute("data-song-id"));
     expect(demoIds).toEqual([
-      "make-funk",
+      "pocket-funk",
       "maple-leaf-rag",
     ]);
     expect(list.querySelector('[data-song-id="like-a-prayer"]')).toBeNull();
@@ -2847,12 +2856,12 @@ describe("public has no Private link + private song typeahead", () => {
     expect(document.title).toBe(PAGE_TITLE);
   });
 
-  it("public load with no ?song= fetches Make Funk and starts the whole song", async () => {
+  it("public load with no ?song= fetches Pocket Funk and starts the whole song", async () => {
     window.history.replaceState({}, "", "/");
     const api = await bootPlayer({ privateMode: false, withStems: true });
     const urls = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
-    const songFetches = urls.filter((u) => /\/api\/demo\/(make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
-    expect(songFetches[0]).toContain("/api/demo/make-funk");
+    const songFetches = urls.filter((u) => /\/api\/demo\/(pocket-funk|make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
+    expect(songFetches[0]).toContain("/api/demo/pocket-funk");
     expect(songFetches.some((u) => u.includes("a-good-bass-for-gambling"))).toBe(false);
     expect(songFetches.some((u) => u.includes("maple-leaf-rag"))).toBe(false);
     const s = api.getState();
@@ -2862,21 +2871,21 @@ describe("public has no Private link + private song typeahead", () => {
     expect(s.hi).toBe(demo.nbars - 1);
     expect(s.t).toBeCloseTo(demo.raw[0][1], 5);
     const input = document.querySelector("[data-song-typeahead-input]");
-    expect(input.value).toMatch(/Make Funk/);
+    expect(input.value).toMatch(/Pocket Funk/);
     input.focus();
     input.dispatchEvent(new Event("focus", { bubbles: true }));
     const demoIds = [...document.querySelectorAll('[data-group="demo"] [data-song-id]')].map((o) => o.getAttribute("data-song-id"));
     expect(demoIds).toEqual([
-      "make-funk",
+      "pocket-funk",
       "maple-leaf-rag",
     ]);
   });
 
-  it("explicit ?song=maple-leaf-rag loads that demo; unknown/Komiku falls back to Make Funk", async () => {
+  it("explicit ?song=maple-leaf-rag loads that demo; unknown/Komiku falls back to Pocket Funk", async () => {
     window.history.replaceState({}, "", "/?song=maple-leaf-rag");
     const api = await bootPlayer({ privateMode: false, withStems: true });
     const urls = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
-    const songFetches = urls.filter((u) => /\/api\/demo\/(make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
+    const songFetches = urls.filter((u) => /\/api\/demo\/(pocket-funk|make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
     expect(songFetches[0]).toContain("/api/demo/maple-leaf-rag");
     expect(api.getState().loopOn).toBe(false);
     expect(api.getState().secIdx).toBe(0);
@@ -2884,12 +2893,12 @@ describe("public has no Private link + private song typeahead", () => {
     expect(api.getState().hi).toBe(demo.nbars - 1);
     expect(document.querySelector("[data-song-typeahead-input]").value).toMatch(/Maple Leaf/i);
 
-    // Komiku dropped from public allowlist → default Make Funk
+    // Komiku dropped from public allowlist → default Pocket Funk
     window.history.replaceState({}, "", "/?song=a-good-bass-for-gambling");
     await bootPlayer({ privateMode: false, withStems: true });
     const urls2 = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
-    const songFetches2 = urls2.filter((u) => /\/api\/demo\/(make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
-    expect(songFetches2[0]).toContain("/api/demo/make-funk");
+    const songFetches2 = urls2.filter((u) => /\/api\/demo\/(pocket-funk|make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
+    expect(songFetches2[0]).toContain("/api/demo/pocket-funk");
     expect(songFetches2.some((u) => u.includes("a-good-bass-for-gambling") && !u.includes("catalog"))).toBe(false);
   });
 
@@ -2917,7 +2926,7 @@ describe("public has no Private link + private song typeahead", () => {
     expect(input.value).toBe("funk");
     expect(list.hasAttribute("hidden")).toBe(false);
     const ids = [...list.querySelectorAll("[data-song-id]")].map((o) => o.getAttribute("data-song-id"));
-    expect(ids).toEqual(["make-funk"]);
+    expect(ids).toEqual(["make-funk", "pocket-funk"]);
     const assigns = [];
     window.__BASS_SONG_NAV__ = (url, id) => assigns.push({ url: String(url), id: String(id) });
     input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));

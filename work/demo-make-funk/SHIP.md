@@ -13,3 +13,7 @@
 
 ## Prior
 Real bass AMT (librosa.pyin) absolute bassHits; Maple Leaf skipped (piano bleed).
+
+## 2026-10-27 MIDI-first ship
+- Demoted from public hero to private/regression (AMT hits unchanged; not hand-fixed).
+- Public hero is now Pocket Funk (MIDI-authored).

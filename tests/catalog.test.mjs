@@ -21,18 +21,25 @@ const PRIVATE_CATALOG_DEMOS = {
     license: "CC0 1.0 Universal",
     api: "/api/demo/make-funk",
   },
+  "pocket-funk": {
+    id: "pocket-funk",
+    title: "Pocket Funk",
+    artist: "Song Bass Explainer",
+    license: "CC0 1.0 Universal",
+    api: "/api/demo/pocket-funk",
+  },
   "maple-leaf-rag": {
     id: "maple-leaf-rag",
     title: "Maple Leaf Rag",
     artist: "Scott Joplin",
-    license: "Public Domain Mark 1.0",
+    license: "Public Domain",
     api: "/api/demo/maple-leaf-rag",
   },
 };
 
-/** Public catalog scope — Komiku dropped from public DEMO picker. */
+/** Public catalog scope — MIDI-first hero Pocket Funk + Maple Leaf; Make Funk private/regression. */
 const PUBLIC_DEMOS = {
-  "make-funk": PRIVATE_CATALOG_DEMOS["make-funk"],
+  "pocket-funk": PRIVATE_CATALOG_DEMOS["pocket-funk"],
   "maple-leaf-rag": PRIVATE_CATALOG_DEMOS["maple-leaf-rag"],
 };
 
@@ -55,6 +62,7 @@ describe("buildPrivateCatalog grouping", () => {
     expect(catalog.demos.map((s) => s.id)).toEqual([
       "a-good-bass-for-gambling",
       "make-funk",
+      "pocket-funk",
       "maple-leaf-rag",
     ]);
     expect(catalog.demos.every((s) => s.group === "demo")).toBe(true);
@@ -82,9 +90,11 @@ describe("buildPrivateCatalog grouping", () => {
 });
 
 describe("public catalog scope", () => {
-  it("public DEMO list excludes Komiku but keeps Make Funk + Maple Leaf", () => {
-    expect(Object.keys(PUBLIC_DEMOS).sort()).toEqual(["make-funk", "maple-leaf-rag"]);
+  it("public DEMO list is Pocket Funk + Maple Leaf (Make Funk private)", () => {
+    expect(Object.keys(PUBLIC_DEMOS).sort()).toEqual(["maple-leaf-rag", "pocket-funk"]);
     expect(PUBLIC_DEMOS["a-good-bass-for-gambling"]).toBeUndefined();
+    expect(PUBLIC_DEMOS["make-funk"]).toBeUndefined();
     expect(PRIVATE_CATALOG_DEMOS["a-good-bass-for-gambling"]).toBeTruthy();
+    expect(PRIVATE_CATALOG_DEMOS["make-funk"]).toBeTruthy();
   });
 });

@@ -9,26 +9,25 @@ const ACCOUNT = "91a68408014ad4deb94e432d231f4af8";
 
 /** Public CC0/PDM demos listed on / and /api/demo/catalog. Never add like-a-prayer. */
 const PUBLIC_DEMOS = {
-  "make-funk": {
-    id: "make-funk",
-    title: "Make Funk",
-    artist: "HoliznaCC0",
+  "pocket-funk": {
+    id: "pocket-funk",
+    title: "Pocket Funk",
+    artist: "Song Bass Explainer",
     license: "CC0 1.0 Universal",
-    album: "BASSIC",
-    source: "Free Music Archive",
-    sourceUrl: "https://freemusicarchive.org/music/holiznacc0/bassic/make-funk/",
-    api: "/api/demo/make-funk",
-    player: "/?song=make-funk",
+    album: "MIDI demos",
+    source: "MIDI-authored (FluidSynth)",
+    sourceUrl: "https://bass.meirmsn.dev/?song=pocket-funk",
+    api: "/api/demo/pocket-funk",
+    player: "/?song=pocket-funk",
   },
   "maple-leaf-rag": {
     id: "maple-leaf-rag",
     title: "Maple Leaf Rag",
     artist: "Scott Joplin",
-    license: "Public Domain Mark 1.0",
-    album: "Frog Legs: Ragtime Era Favorites",
-    source: "Free Music Archive",
-    sourceUrl:
-      "https://freemusicarchive.org/music/Scott_Joplin/Frog_Legs_Ragtime_Era_Favorites/03_-_scott_joplin_-_maple_leaf_rag",
+    license: "Public Domain",
+    album: "MIDI demos",
+    source: "Mutopia Project MIDI + FluidSynth render",
+    sourceUrl: "https://www.mutopiaproject.org/ftp/JoplinS/maple/maple.mid",
     api: "/api/demo/maple-leaf-rag",
     player: "/?song=maple-leaf-rag",
   },
@@ -47,6 +46,17 @@ const PRIVATE_ONLY_DEMOS = {
       "https://freemusicarchive.org/music/Komiku/Its_time_for_adventure__vol_3/Komiku_-_Its_time_for_adventure_vol_3_-_06_A_good_bass_for_gambling/",
     api: "/api/demo/a-good-bass-for-gambling",
     player: "/private/player/?song=a-good-bass-for-gambling",
+  },
+  "make-funk": {
+    id: "make-funk",
+    title: "Make Funk",
+    artist: "HoliznaCC0",
+    license: "CC0 1.0 Universal",
+    album: "BASSIC",
+    source: "Free Music Archive",
+    sourceUrl: "https://freemusicarchive.org/music/holiznacc0/bassic/make-funk/",
+    api: "/api/demo/make-funk",
+    player: "/private/player/?song=make-funk",
   },
 };
 
@@ -158,6 +168,7 @@ export default {
         if (env.DEMO_BUCKET) {
           publicDemoStemsPresent = Boolean(
             (await env.DEMO_BUCKET.head("demo/a-good-bass-for-gambling/stems/bass.m4a")) ||
+            (await env.DEMO_BUCKET.head("demo/pocket-funk/stems/bass.m4a")) ||
             (await env.DEMO_BUCKET.head("demo/make-funk/stems/bass.m4a")) ||
             (await env.DEMO_BUCKET.head("demo/maple-leaf-rag/stems/other.m4a"))
           );

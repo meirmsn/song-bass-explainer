@@ -60,7 +60,8 @@ describe("public demo APIs — CC0 open, LAP gated", () => {
     expect(data.songs.every((s) => /CC0|public domain|PD/i.test(s.license || ""))).toBe(true);
     expect(JSON.stringify(data)).not.toMatch(/like.?a.?prayer/i);
     expect(data.songs.some((s) => s.id === "a-good-bass-for-gambling")).toBe(false);
-    expect(data.songs.some((s) => s.id === "make-funk")).toBe(true);
+    expect(data.songs.some((s) => s.id === "make-funk")).toBe(false);
+    expect(data.songs.some((s) => s.id === "pocket-funk")).toBe(true);
     expect(data.songs.some((s) => s.id === "maple-leaf-rag")).toBe(true);
     expect(data.songs.length).toBe(2);
     expect(data.songs.every((s) => s.id !== "a-good-bass-for-gambling")).toBe(true);
@@ -92,6 +93,24 @@ describe("public demo APIs — CC0 open, LAP gated", () => {
   it("public LAP stem path blocked", async () => {
     const { status } = await fetchRaw("/api/demo/like-a-prayer/stems/bass.wav");
     expect([401, 403]).toContain(status);
+  });
+
+
+  it("GET /api/demo/pocket-funk → study JSON", async () => {
+    const { status, text } = await fetchRaw("/api/demo/pocket-funk");
+    expect(status).toBe(200);
+    const data = JSON.parse(text);
+    expect(data.title).toMatch(/Pocket Funk/i);
+    expect(data.meta?.midiAuthoritative).toBe(true);
+    expect(Array.isArray(data.bassHits)).toBe(true);
+    expect(data.bassHits.length).toBeGreaterThan(50);
+    expect(data.stems?.bass).toMatch(/\/api\/demo\/pocket-funk\/stems\/bass\.(m4a|wav)/);
+  });
+
+  it("public Pocket Funk stem path serves audio", async () => {
+    const { status, res } = await fetchRaw("/api/demo/pocket-funk/stems/bass.m4a");
+    expect(status).toBe(200);
+    expect(res.headers.get("content-type")).toMatch(/audio|octet/);
   });
 
   it("GET /api/demo/make-funk → study JSON", async () => {
