@@ -1356,6 +1356,45 @@ describe("keyboard shortcuts", () => {
     expect(api.getState().secIdx).toBe(0);
   });
 
+  it("Right Arrow while playing seeks audio+playhead to next section start (not song 0)", async () => {
+    // Regression: section UI advanced but stems kept playing from t=0 / song start.
+    // Prior keyboard test only asserted secIdx, so the desync slipped through.
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    api.pickSection(0);
+    api.play();
+    await api.waitTick(80);
+    expect(api.getState().playing).toBe(true);
+    api.seek(demo.raw[2][1]); // into first section
+    await api.waitTick(40);
+    const nextFirst = demo.secs[1].first;
+    const nextStart = demo.raw[nextFirst][1];
+    expect(nextStart).toBeGreaterThan(0);
+
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }));
+    await api.waitTick(80);
+    let s = api.getState();
+    expect(s.playing).toBe(true);
+    expect(s.secIdx).toBe(1);
+    expect(s.loopOn).toBe(true);
+    expect(s.lo).toBe(nextFirst);
+    expect(s.t).toBeCloseTo(nextStart, 5);
+    expect(s.t).toBeGreaterThan(0.05); // must not jump to song start
+
+    // Stick across ticks — audio clock must not yank playhead back to 0
+    await api.waitTick(120);
+    s = api.getState();
+    expect(s.secIdx).toBe(1);
+    expect(s.t).toBeGreaterThanOrEqual(nextStart - 0.01);
+    expect(s.t).toBeLessThan(demo.raw[demo.secs[1].end - 1][1] + 2);
+
+    // Left near section start → previous section (also not song-start unless sec 0)
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true, cancelable: true }));
+    await api.waitTick(60);
+    s = api.getState();
+    expect(s.secIdx).toBe(0);
+    expect(s.t).toBeCloseTo(demo.raw[demo.secs[0].first][1], 5);
+  });
+
   it("Escape clears subsection bar selection back to full section", async () => {
     const api = await bootPlayer();
     api.pickSection(2);

@@ -2969,14 +2969,17 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       if (i < 0 || i >= SECS.length) return;
       cancelInsightMidi();
       applySection(i, true);
-      // Timeline tap: always loop the whole section and dim others (locked UX).
+      // Timeline tap / ←→ section nav: always loop the whole section and dim others (locked UX).
       loopOn = true;
       lo = SECS[i].first;
       hi = SECS[i].end - 1;
+      // Seek audio+MIDI to THIS section start — never leave stems at song 0 while UI advances.
+      const seekT = BARS[SECS[i].first].t;
+      t = seekT;
       // While playing with stems, restart audio at the new section time (visual t alone is overwritten by audio clock).
       // MIDI-only (no stems / audio not ready): still cancel+reschedule so the new section is audible.
-      if (playing && audioReady) startStemNodes(t);
-      else if (playing) rescheduleMidiForTransport(t);
+      if (playing && audioReady) startStemNodes(seekT);
+      else if (playing) rescheduleMidiForTransport(seekT);
       render();
     }
     function clearSubsection() {

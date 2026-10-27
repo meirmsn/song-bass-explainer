@@ -129,6 +129,8 @@ export function createTransport(opts) {
     loopOn = true;
     lo = secs[i].first;
     hi = secs[i].end - 1;
+    // Explicit section-start seek (defensive): UI section and audio clock must agree.
+    t = barTimes[secs[i].first];
     maybeResync();
     return getState();
   }

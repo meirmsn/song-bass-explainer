@@ -221,6 +221,24 @@ describe("keyboard navigation helpers on transport", () => {
     expect(tr.getState().secIdx).toBe(2);
   });
 
+  it("nextSection while playing seeks t to next section start (not 0) and resyncs", () => {
+    const resync = vi.fn();
+    const tr = make(resync);
+    tr.pickSection(0);
+    tr.play();
+    tr.seek(barTimes[2]);
+    resync.mockClear();
+    const nextStart = barTimes[demo.secs[1].first];
+    expect(nextStart).toBeGreaterThan(0);
+    tr.nextSection();
+    const s = tr.getState();
+    expect(s.secIdx).toBe(1);
+    expect(s.playing).toBe(true);
+    expect(s.t).toBe(nextStart);
+    expect(s.t).not.toBe(0);
+    expect(resync).toHaveBeenCalledWith(nextStart);
+  });
+
   it("leftArrow seeks to loop start, then previous section within threshold", () => {
     const tr = make();
     tr.pickSection(1);

@@ -10047,8 +10047,8 @@
           "patternId": "a3_lh",
           "title": "Strain A\u2032 pocket",
           "barRange": [
-            32,
-            33
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10072,8 +10072,8 @@
           "patternId": "a3_lh",
           "title": "D#\u2013E\u2013G# line",
           "barRange": [
-            32,
-            33
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10102,8 +10102,8 @@
           "patternId": "a3_lh",
           "title": "Ab center",
           "barRange": [
-            32,
-            33
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10127,8 +10127,8 @@
           "patternId": "a3_lh",
           "title": "Pocket discipline",
           "barRange": [
-            32,
-            33
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10154,8 +10154,8 @@
           "patternId": "a2_lh",
           "title": "Strain A repeat pocket",
           "barRange": [
-            8,
-            9
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10179,8 +10179,8 @@
           "patternId": "a2_lh",
           "title": "D#\u2013E\u2013G# line",
           "barRange": [
-            8,
-            9
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10209,8 +10209,8 @@
           "patternId": "a2_lh",
           "title": "Ab center",
           "barRange": [
-            8,
-            9
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10234,8 +10234,8 @@
           "patternId": "a2_lh",
           "title": "Pocket discipline",
           "barRange": [
-            8,
-            9
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10261,8 +10261,8 @@
           "patternId": "b1_lh",
           "title": "Strain B pocket",
           "barRange": [
-            16,
-            17
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10286,8 +10286,8 @@
           "patternId": "b1_lh",
           "title": "D#\u2013G\u2013A# line",
           "barRange": [
-            16,
-            17
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10316,8 +10316,8 @@
           "patternId": "b1_lh",
           "title": "Ab center",
           "barRange": [
-            16,
-            17
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10341,8 +10341,8 @@
           "patternId": "b1_lh",
           "title": "Pocket discipline",
           "barRange": [
-            16,
-            17
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10368,8 +10368,8 @@
           "patternId": "d1_lh",
           "title": "Strain D pocket",
           "barRange": [
-            56,
-            57
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10393,8 +10393,8 @@
           "patternId": "d1_lh",
           "title": "D#\u2013C#\u2013A# line",
           "barRange": [
-            56,
-            57
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10423,8 +10423,8 @@
           "patternId": "d1_lh",
           "title": "Ab center",
           "barRange": [
-            56,
-            57
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10448,8 +10448,8 @@
           "patternId": "d1_lh",
           "title": "Pocket discipline",
           "barRange": [
-            56,
-            57
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10475,8 +10475,8 @@
           "patternId": "b2_lh",
           "title": "Strain B repeat pocket",
           "barRange": [
-            24,
-            25
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10500,8 +10500,8 @@
           "patternId": "b2_lh",
           "title": "D#\u2013G\u2013A# line",
           "barRange": [
-            24,
-            25
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10530,8 +10530,8 @@
           "patternId": "b2_lh",
           "title": "Ab center",
           "barRange": [
-            24,
-            25
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10555,8 +10555,8 @@
           "patternId": "b2_lh",
           "title": "Pocket discipline",
           "barRange": [
-            24,
-            25
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10582,8 +10582,8 @@
           "patternId": "a3_lh",
           "title": "Strain A\u2032 pocket",
           "barRange": [
-            32,
-            33
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10607,8 +10607,8 @@
           "patternId": "a3_lh",
           "title": "D#\u2013E\u2013G# line",
           "barRange": [
-            32,
-            33
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10637,8 +10637,8 @@
           "patternId": "a3_lh",
           "title": "Ab center",
           "barRange": [
-            32,
-            33
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10662,8 +10662,8 @@
           "patternId": "a3_lh",
           "title": "Pocket discipline",
           "barRange": [
-            32,
-            33
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10689,8 +10689,8 @@
           "patternId": "c1_lh",
           "title": "Trio C pocket",
           "barRange": [
-            40,
-            41
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10714,8 +10714,8 @@
           "patternId": "c1_lh",
           "title": "D#\u2013F\u2013C# line",
           "barRange": [
-            40,
-            41
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10744,8 +10744,8 @@
           "patternId": "c1_lh",
           "title": "Ab center",
           "barRange": [
-            40,
-            41
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10769,8 +10769,8 @@
           "patternId": "c1_lh",
           "title": "Pocket discipline",
           "barRange": [
-            40,
-            41
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10796,8 +10796,8 @@
           "patternId": "c2_lh",
           "title": "Trio C\u2032 pocket",
           "barRange": [
-            48,
-            49
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10821,8 +10821,8 @@
           "patternId": "c2_lh",
           "title": "D#\u2013C#\u2013F line",
           "barRange": [
-            48,
-            49
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10851,8 +10851,8 @@
           "patternId": "c2_lh",
           "title": "Ab center",
           "barRange": [
-            48,
-            49
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10876,8 +10876,8 @@
           "patternId": "c2_lh",
           "title": "Pocket discipline",
           "barRange": [
-            48,
-            49
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10903,8 +10903,8 @@
           "patternId": "c2_lh",
           "title": "Trio C\u2032 pocket",
           "barRange": [
-            48,
-            49
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10928,8 +10928,8 @@
           "patternId": "c2_lh",
           "title": "D#\u2013C#\u2013F line",
           "barRange": [
-            48,
-            49
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10958,8 +10958,8 @@
           "patternId": "c2_lh",
           "title": "Ab center",
           "barRange": [
-            48,
-            49
+            0,
+            1
           ],
           "highlights": [
             {
@@ -10983,8 +10983,8 @@
           "patternId": "c2_lh",
           "title": "Pocket discipline",
           "barRange": [
-            48,
-            49
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11010,8 +11010,8 @@
           "patternId": "d1_lh",
           "title": "Strain D pocket",
           "barRange": [
-            56,
-            57
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11035,8 +11035,8 @@
           "patternId": "d1_lh",
           "title": "D#\u2013C#\u2013A# line",
           "barRange": [
-            56,
-            57
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11065,8 +11065,8 @@
           "patternId": "d1_lh",
           "title": "Ab center",
           "barRange": [
-            56,
-            57
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11090,8 +11090,8 @@
           "patternId": "d1_lh",
           "title": "Pocket discipline",
           "barRange": [
-            56,
-            57
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11117,8 +11117,8 @@
           "patternId": "out_lh",
           "title": "Coda pocket",
           "barRange": [
-            64,
-            65
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11142,8 +11142,8 @@
           "patternId": "out_lh",
           "title": "D#\u2013C#\u2013G line",
           "barRange": [
-            64,
-            65
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11172,8 +11172,8 @@
           "patternId": "out_lh",
           "title": "Ab center",
           "barRange": [
-            64,
-            65
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11197,8 +11197,8 @@
           "patternId": "out_lh",
           "title": "Pocket discipline",
           "barRange": [
-            64,
-            65
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11224,8 +11224,8 @@
           "patternId": "out_lh",
           "title": "Coda pocket",
           "barRange": [
-            64,
-            65
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11249,8 +11249,8 @@
           "patternId": "out_lh",
           "title": "D#\u2013C#\u2013G line",
           "barRange": [
-            64,
-            65
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11279,8 +11279,8 @@
           "patternId": "out_lh",
           "title": "Ab center",
           "barRange": [
-            64,
-            65
+            0,
+            1
           ],
           "highlights": [
             {
@@ -11304,8 +11304,8 @@
           "patternId": "out_lh",
           "title": "Pocket discipline",
           "barRange": [
-            64,
-            65
+            0,
+            1
           ],
           "highlights": [
             {
