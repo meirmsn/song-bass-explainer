@@ -24,10 +24,7 @@ Offline (once per song)
   source audio
        |
        v
-  Demucs stems + study JSON
-  insights, from transcription + LLM
-  scripts/, work/
-  does not run when a visitor loads the site
+  Demucs stems + study JSON (insights, from transcription + LLM)
        |
        v
   R2:  bass-demo  |  bass-private
@@ -36,7 +33,6 @@ Runtime
   browser  <-->  Worker (bass-study)  <-->  R2
                    |
                    serves ./public
-                   and what is already in R2
                    @ bass.meirmsn.dev
 
   Tempo: WSOLA in the browser (pitch kept)
