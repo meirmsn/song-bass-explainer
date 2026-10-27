@@ -1,13 +1,17 @@
 # Bass Study
 
 > **Status: Shipped · in daily use** · last touched 2026-10
-> Built by directing coding agents; the method is in [devshop](https://github.com/meirmsn/abra-kadabra). Human in the loop: @meirmsn. Robot hands: @meirmsn-agent.
+> Built by directing coding agents. Human in the loop: @meirmsn. Robot hands: @meirmsn-agent.
 
 ![Analysis view](docs/analysis-view.png)
 
 A practice player for learning a bass line with the recording, the staves, the chords, and a short explanation kept in time on one screen.
 
 It exists so a bass part can be studied against the actual track. Keeping stems, notation, and soft MIDI on the same clock, and slowing the audio while the pitch stays put, took the longest to get right. The drum staff only draws hits that were measured, so silence stays silence. It is in daily use at [bass.meirmsn.dev](https://bass.meirmsn.dev): three public demos on `/`, and processed personal tracks behind private Access.
+
+## Approach
+
+This was built by talking to Grok Bot, to learn how agent-driven work feels: voice chat, raw screenshot feedback, and rapid-fire instructions. It is not the structured method in [devshop](https://github.com/meirmsn/abra-kadabra). There is no CI and no PR-gated workflow by design; this packaging pull request is an exception so the public page can be reviewed. The loop was barebones: ask, the agent ships, feedback, the next ask. A request queue showed up after rapid-fire instructions piled up. Testing was not assumed at the start; breaks prompted the question of whether tests existed, and the suite grew from there.
 
 ## What it does
 - Synced bass and drum staves with key and time signatures, and a chord row of playable soft MIDI pads.
