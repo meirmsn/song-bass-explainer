@@ -26,9 +26,9 @@ This was built by talking to Grok Bot, to learn how agent-driven work feels: voi
 
 ## Build log
 - 2026-10-25 — first version: player shell and Cloudflare Worker imported; bass MIDI is a soft sine plus a quiet octave layer.
-- 2026-10-26 — added public demo tracks: Komiku “A good bass for gambling” (CC0) on `/`, with tempo steps.
+- 2026-10-26 — added demo tracks: Komiku “A good bass for gambling” (CC0) on `/`, with tempo steps.
 - 2026-10-26 — slowing playback was shifting the pitch, and empty drum stems were growing a fake kit → WSOLA time-stretch, and the drum staff shows only that song’s detected hits (no invented kit).
-- 2026-10-26 — one demo was a narrow practice set → Make Funk and Maple Leaf Rag joined the public catalog.
+- 2026-10-26 — one demo was a narrow practice set → Make Funk and Maple Leaf Rag joined the catalog.
 - 2026-10-26 — chords and cards were hard to hear and see → playable chord MIDI pads, bass key and time signatures (drums keep time only), two-staff claim-window schematics, and card Play with Bass, Drums, and Chords icons.
 
 ## Known limitations
