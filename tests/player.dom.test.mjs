@@ -1734,6 +1734,113 @@ describe("bass-midi-tone: plain clear bass voice (not harsh synth grit)", () => 
     expect(N.BASS_MIDI_VOICE.octaveSemitones).toBe(12);
     api.pause();
   });
+
+  it("BASS_MIDI_VOICE keeps the fundamental and adds a highpassed 2nd/3rd presence layer", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    const N = window.__BASS_NOTATION__;
+    const v = N.BASS_MIDI_VOICE;
+    expect(v.presenceHpFreq).toBeGreaterThanOrEqual(100);
+    expect(v.presenceHpFreq).toBeLessThanOrEqual(250);
+    expect(v.peakGain).toBeLessThanOrEqual(0.16);
+    expect(v.octaveSemitones).toBe(12);
+    expect(v.octaveGain).toBeGreaterThan(0);
+    expect(v.oscType).toBe("sine");
+    const partials = N.bassMidiPartials(v);
+    const body = partials.filter((p) => p.bus === "body");
+    const presence = partials.filter((p) => p.bus === "presence");
+    expect(body.map((p) => p.mult)).toEqual([1, 2]);
+    expect(body[0].peak).toBe(v.peakGain);
+    expect(presence.map((p) => p.mult)).toEqual(expect.arrayContaining([2, 3]));
+    expect(presence.every((p) => p.mult > 1)).toBe(true);
+    expect(presence.every((p) => p.peak > 0 && p.peak < v.peakGain)).toBe(true);
+    expect(presence.find((p) => p.mult === 3).peak).toBeGreaterThan(presence.find((p) => p.mult === 2).peak);
+    // Soft upper tail so the lowest notes still have a series in the laptop band.
+    expect(presence.some((p) => p.mult >= 4)).toBe(true);
+    expect(N.CHORD_MIDI_VOICE.presenceHarmonics).toBeUndefined();
+    expect(N.CHORD_MIDI_VOICE.filterType).toBe("lowpass");
+    api.pause();
+  });
+
+  function bassPresenceHighpasses(ctx) {
+    return ctx._filters.filter((f) => f.type === "highpass" && f.frequency.value >= 100 && f.frequency.value <= 250);
+  }
+
+  it("main bass MIDI schedules fundamental + octave + 3rd through a presence highpass", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    const N = window.__BASS_NOTATION__;
+    api.pickSection(2);
+    api.setMidiBass(true);
+    api.setMidiDrums(false);
+    api.setMidiChords(false);
+    await api.ensureAudio();
+    api.play();
+    await api.waitTick(80);
+    const ctx = window.__LAST_AUDIO_CTX__;
+    const f29 = N.midiToFreq(29);
+    const f41 = N.midiToFreq(41);
+    const freqs = ctx._oscillators.map((o) => o.frequency.value);
+    const near = (target) => freqs.some((f) => Math.abs(f - target) < 0.05);
+    expect(near(f29)).toBe(true);
+    expect(near(f29 * 2)).toBe(true);
+    expect(near(f29 * 3)).toBe(true);
+    expect(near(f41)).toBe(true);
+    expect(near(f41 * 3)).toBe(true);
+    expect(ctx._oscillators.every((o) => o.type === "sine")).toBe(true);
+    expect(ctx._filters.some((f) => f.type === "lowpass")).toBe(true);
+    const hp = bassPresenceHighpasses(ctx);
+    expect(hp.length).toBeGreaterThan(0);
+    expect(hp.every((f) => f.frequency.value === N.BASS_MIDI_VOICE.presenceHpFreq)).toBe(true);
+    expect(ctx._filters.some((f) => f.frequency.value >= 40 && f.frequency.value <= 60)).toBe(false);
+    api.pause();
+  });
+
+  it("insight-card bass MIDI uses the same presence layer; drums and chords do not", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: false });
+    const N = window.__BASS_NOTATION__;
+    api.pickSection(2);
+    api.setCard(1);
+    await api.ensureAudio();
+    const bassR = api.playInsightMidi("bass");
+    expect(bassR.insightMidiResult.ok).toBe(true);
+    expect(bassR.insightMidiResult.bass).toBeGreaterThan(0);
+    const ctx = window.__LAST_AUDIO_CTX__;
+    const f29 = N.midiToFreq(29);
+    const freqs = ctx._oscillators.map((o) => o.frequency.value);
+    expect(freqs.some((f) => Math.abs(f - f29) < 0.05)).toBe(true);
+    expect(freqs.some((f) => Math.abs(f - f29 * 3) < 0.05)).toBe(true);
+    const hpBass = bassPresenceHighpasses(ctx).length;
+    expect(hpBass).toBeGreaterThan(0);
+    expect(ctx._oscillators.every((o) => o.type === "sine")).toBe(true);
+    api.cancelInsightMidi();
+
+    const drumsR = api.playInsightMidi("drums");
+    expect(drumsR.insightMidiResult.bass).toBe(0);
+    expect(drumsR.insightMidiResult.drums).toBeGreaterThan(0);
+    expect(bassPresenceHighpasses(ctx).length).toBe(hpBass);
+    api.cancelInsightMidi();
+
+    api.setCard(2);
+    const hpBeforeChords = bassPresenceHighpasses(ctx).length;
+    const chordR = api.playInsightMidi("chords");
+    expect(chordR.insightMidiResult.chords).toBeGreaterThan(0);
+    expect(bassPresenceHighpasses(ctx).length).toBe(hpBeforeChords);
+    expect(ctx._filters.filter((f) => f.type === "lowpass").length).toBeGreaterThan(0);
+    api.cancelInsightMidi();
+  });
+
+  it("drums MIDI does not use the bass presence highpass", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    api.pickSection(2);
+    api.setMidiBass(false);
+    api.setMidiDrums(true);
+    api.setMidiChords(false);
+    await api.ensureAudio();
+    api.play();
+    await api.waitTick(80);
+    const ctx = window.__LAST_AUDIO_CTX__;
+    expect(bassPresenceHighpasses(ctx).length).toBe(0);
+    api.pause();
+  });
 });
 
 describe("midi-section-advance: auto section change while playing", () => {

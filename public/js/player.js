@@ -834,8 +834,12 @@
     return hits.filter((h) => !isBarDrumsSilent(lo + Math.floor(h.step / 16), ranges));
   }
 
-  /** Plain clear electric/acoustic-like bass MIDI voice (not harsh saw/square grit).
-   *  Fundamental sine + quieter +12st layer so the line reads clearly without grit. */
+  /** Plain clear bass MIDI voice (not harsh saw/square grit).
+   *  Body bus: fundamental sine + quieter +12st, gentle lowpass — the low octave stays.
+   *  Presence bus: missing-fundamental 2nd/3rd (plus a soft 4th/5th tail) through a
+   *  highpass in the ~100–250 Hz laptop band. MacBook Air speakers hear the pitch
+   *  from those partials; this path does not boost 40–60 Hz and is not an octave-up
+   *  replacement for the fundamental. */
   const BASS_MIDI_VOICE = {
     oscType: "sine",
     filterType: "lowpass",
@@ -844,6 +848,14 @@
     peakGain: 0.16,
     octaveSemitones: 12,
     octaveGain: 0.07,
+    presenceHpFreq: 180,
+    presenceHpQ: 0.707,
+    presenceHarmonics: [
+      { mult: 2, gain: 0.05 },
+      { mult: 3, gain: 0.09 },
+      { mult: 4, gain: 0.045 },
+      { mult: 5, gain: 0.03 },
+    ],
     attack: 0.018,
     release: 0.06,
     minDur: 0.08,
@@ -864,6 +876,70 @@
 
   function midiToFreq(midi) {
     return 440 * Math.pow(2, (Number(midi) - 69) / 12);
+  }
+
+  /** Body partials (fundamental + quiet octave) and highpassed presence partials. */
+  function bassMidiPartials(voice) {
+    const v = voice || BASS_MIDI_VOICE;
+    const partials = [];
+    if (v.peakGain > 0) partials.push({ mult: 1, peak: v.peakGain, bus: "body" });
+    const octMult = Math.pow(2, (Number(v.octaveSemitones) || 0) / 12);
+    if (v.octaveGain > 0) partials.push({ mult: octMult, peak: v.octaveGain, bus: "body" });
+    const harmonics = Array.isArray(v.presenceHarmonics) ? v.presenceHarmonics : [];
+    for (let i = 0; i < harmonics.length; i++) {
+      const h = harmonics[i];
+      const mult = Number(h && h.mult);
+      const peak = Number(h && h.gain);
+      // mult must stay above the fundamental so presence never adds 1× sub energy.
+      if (!(mult > 1) || !(peak > 0)) continue;
+      partials.push({ mult: mult, peak: peak, bus: "presence" });
+    }
+    return partials;
+  }
+
+  /** One bass note: body lowpass (fundamental + quiet octave) and presence highpass. */
+  function scheduleBassMidiNote(ctx, dest, nodeList, when, dur, midi) {
+    const v = BASS_MIDI_VOICE;
+    const body = ctx.createBiquadFilter();
+    body.type = v.filterType;
+    body.frequency.value = v.filterFreq;
+    if (body.Q) body.Q.value = v.filterQ;
+    body.connect(dest);
+
+    const presence = ctx.createBiquadFilter();
+    presence.type = "highpass";
+    presence.frequency.value = v.presenceHpFreq;
+    if (presence.Q) presence.Q.value = v.presenceHpQ;
+    presence.connect(dest);
+
+    const len = Math.max(v.minDur, dur || 0.2);
+    const attack = Math.min(v.attack, len * 0.35);
+    const release = Math.min(v.release, len * 0.45);
+    const peakAt = when + attack;
+    const releaseAt = Math.max(peakAt, when + len - release);
+    const f0 = midiToFreq(Number(midi));
+    const partials = bassMidiPartials(v);
+    for (let i = 0; i < partials.length; i++) {
+      const layer = partials[i];
+      if (!(layer.peak > 0)) continue;
+      const bus = layer.bus === "presence" ? presence : body;
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = v.oscType;
+      osc.frequency.value = f0 * layer.mult;
+      g.gain.setValueAtTime(0.0001, when);
+      g.gain.exponentialRampToValueAtTime(layer.peak, peakAt);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.0001, layer.peak * 0.9), releaseAt);
+      g.gain.exponentialRampToValueAtTime(0.0001, when + len);
+      osc.connect(g);
+      g.connect(bus);
+      osc.start(when);
+      osc.stop(when + len + 0.02);
+      nodeList.push(osc);
+      nodeList.push(g);
+    }
+    nodeList.push(body);
+    nodeList.push(presence);
   }
 
   /** Tile a ≤2-bar pattern across nBars (same tiling as tab/staff). */
@@ -1921,39 +1997,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       midiNodes = [];
     }
     function playBassSynthNote(when, dur, midi) {
-      const v = BASS_MIDI_VOICE;
-      const filt = audioCtx.createBiquadFilter();
-      filt.type = v.filterType;
-      filt.frequency.value = v.filterFreq;
-      if (filt.Q) filt.Q.value = v.filterQ;
-      filt.connect(midiBassGain);
-      const len = Math.max(v.minDur, dur || 0.2);
-      const attack = Math.min(v.attack, len * 0.35);
-      const release = Math.min(v.release, len * 0.45);
-      const peakAt = when + attack;
-      const releaseAt = Math.max(peakAt, when + len - release);
-      const layers = [
-        { midiOffset: 0, peak: v.peakGain },
-        { midiOffset: v.octaveSemitones || 0, peak: v.octaveGain || 0 },
-      ];
-      for (const layer of layers) {
-        if (!(layer.peak > 0)) continue;
-        const osc = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        osc.type = v.oscType; // soft sine — no saw/square grit
-        osc.frequency.value = midiToFreq(Number(midi) + layer.midiOffset);
-        g.gain.setValueAtTime(0.0001, when);
-        g.gain.exponentialRampToValueAtTime(layer.peak, peakAt);
-        g.gain.exponentialRampToValueAtTime(Math.max(0.0001, layer.peak * 0.9), releaseAt);
-        g.gain.exponentialRampToValueAtTime(0.0001, when + len);
-        osc.connect(g);
-        g.connect(filt);
-        osc.start(when);
-        osc.stop(when + len + 0.02);
-        midiNodes.push(osc);
-        midiNodes.push(g);
-      }
-      midiNodes.push(filt);
+      scheduleBassMidiNote(audioCtx, midiBassGain, midiNodes, when, dur, midi);
     }
     function playChordSynthNote(when, dur, midi) {
       const v = CHORD_MIDI_VOICE;
@@ -2185,39 +2229,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       insightMidiNodes = [];
     }
     function playInsightBassNote(when, dur, midi) {
-      const v = BASS_MIDI_VOICE;
-      const filt = audioCtx.createBiquadFilter();
-      filt.type = v.filterType;
-      filt.frequency.value = v.filterFreq;
-      if (filt.Q) filt.Q.value = v.filterQ;
-      filt.connect(insightBassGain);
-      const len = Math.max(v.minDur, dur || 0.2);
-      const attack = Math.min(v.attack, len * 0.35);
-      const release = Math.min(v.release, len * 0.45);
-      const peakAt = when + attack;
-      const releaseAt = Math.max(peakAt, when + len - release);
-      const layers = [
-        { midiOffset: 0, peak: v.peakGain },
-        { midiOffset: v.octaveSemitones || 0, peak: v.octaveGain || 0 },
-      ];
-      for (const layer of layers) {
-        if (!(layer.peak > 0)) continue;
-        const osc = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        osc.type = v.oscType;
-        osc.frequency.value = midiToFreq(Number(midi) + layer.midiOffset);
-        g.gain.setValueAtTime(0.0001, when);
-        g.gain.exponentialRampToValueAtTime(layer.peak, peakAt);
-        g.gain.exponentialRampToValueAtTime(Math.max(0.0001, layer.peak * 0.9), releaseAt);
-        g.gain.exponentialRampToValueAtTime(0.0001, when + len);
-        osc.connect(g);
-        g.connect(filt);
-        osc.start(when);
-        osc.stop(when + len + 0.02);
-        insightMidiNodes.push(osc);
-        insightMidiNodes.push(g);
-      }
-      insightMidiNodes.push(filt);
+      scheduleBassMidiNote(audioCtx, insightBassGain, insightMidiNodes, when, dur, midi);
     }
     function playInsightChordNote(when, dur, midi) {
       const v = CHORD_MIDI_VOICE;
@@ -4405,6 +4417,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     normalizeDrumsOutBars,
     isBarDrumsSilent,
     BASS_MIDI_VOICE,
+    bassMidiPartials,
     CHORD_MIDI_VOICE,
     parseChordSymbol,
     chordToneMidis,
