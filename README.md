@@ -1,12 +1,10 @@
 # Bass Study
 
-Human in the loop: @meirmsn. Robot hands: @meirmsn-agent.
+A practice player for learning a song and its bass line, and understanding the music theory behind it: what makes this song unique and what makes its bass line work.
+
+The song timeline and sections allow you to see the song at a high level, and tapping a section quickly jumps to it. The main view shows the song chords and their harmonic function, the bass tab and staff, and the drums staff so you can see how the rhythm and harmony are tied together by the bass line. The drawer shows highlights of this to make it easier to discover and better understand the song inner workings. Standard looping and pitch-neutral tempo control make it easier to learn a difficult line.
 
 ![Analysis view](docs/analysis-view.png)
-
-A practice player for learning a bass line with the recording, the staves, the chords, and a short explanation kept in time on one screen.
-
-It exists so a bass part can be studied against the actual track. Keeping stems, notation, and soft MIDI on the same clock, and slowing the audio while the pitch stays put, took the longest to get right. The drum staff only draws hits that were measured, so silence stays silence. It is live at [bass.meirmsn.dev](https://bass.meirmsn.dev), with three public demos on `/`, and processed personal tracks behind private Access.
 
 ## Approach
 
