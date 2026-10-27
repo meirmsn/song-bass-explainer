@@ -91,6 +91,16 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
         ],
       }), { status: 200, headers: { "content-type": "application/json" } });
     }
+    if (u.includes("/api/demo/catalog")) {
+      return new Response(JSON.stringify({
+        songs: [
+          { id: "a-good-bass-for-gambling", title: "A good bass for gambling", artist: "Komiku", license: "CC0 1.0 Universal" },
+          { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", license: "CC0 1.0 Universal" },
+          { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", license: "Public Domain Mark 1.0" },
+          { id: "like-a-prayer", title: "Like a Prayer", artist: "Madonna / study", license: "private" },
+        ],
+      }), { status: 200, headers: { "content-type": "application/json" } });
+    }
     if (u.includes("/private/api/demo/") || u.includes("/api/demo/") || u.endsWith("demo-data.json") || u.includes("/study/resource.json")) {
       return new Response(JSON.stringify(payload), {
         status: 200,
@@ -2775,7 +2785,7 @@ describe("playback rate + public CC0 stems", () => {
 describe("public has no Private link + private song typeahead", () => {
   afterEach(() => teardownPlayer());
 
-  it("public player does not expose a Private / private-entry link", async () => {
+  it("public player does not expose a Private link and lists the 3 demos under Demo", async () => {
     await bootPlayer({ privateMode: false, withStems: true });
     expect(document.querySelector("[data-private-entry]")).toBeNull();
     expect(document.querySelector('a[href="/private/player/"]')).toBeNull();
@@ -2783,7 +2793,72 @@ describe("public has no Private link + private song typeahead", () => {
     const credit = document.querySelector("[data-credit]");
     expect(credit).toBeTruthy();
     expect(credit.textContent).not.toMatch(/\bPrivate\b/);
-    expect(document.querySelector("[data-song-picker]")).toBeNull();
+
+    const PAGE_TITLE = "Song Bass Explainer - Understand Bass Lines in Songs";
+    expect(document.title).toBe(PAGE_TITLE);
+    expect(document.title).not.toMatch(/gambling|Make Funk|Maple Leaf|Like a Prayer|Fixture Tune/i);
+    const songHeading = document.querySelector(".meta .title");
+    expect(songHeading?.textContent || "").not.toBe(PAGE_TITLE);
+
+    const picker = document.querySelector("[data-song-picker][data-song-typeahead]");
+    expect(picker).toBeTruthy();
+    expect(document.querySelector("select[data-song-picker]")).toBeNull();
+    const input = document.querySelector("[data-song-typeahead-input]");
+    expect(input?.tagName.toLowerCase()).toBe("input");
+    expect(input.getAttribute("aria-label") || "").not.toMatch(/processed|public/i);
+
+    input.focus();
+    input.dispatchEvent(new Event("focus", { bubbles: true }));
+    const list = document.querySelector("[data-song-listbox]");
+    expect(list).toBeTruthy();
+    expect(list.hasAttribute("hidden")).toBe(false);
+
+    const demoGroup = list.querySelector('[data-group="demo"].song-typeahead-group');
+    expect(demoGroup).toBeTruthy();
+    expect(demoGroup.querySelector('[data-group-label="demo"]').textContent).toBe("Demo");
+    expect(list.querySelector('[data-group="processed"]')).toBeNull();
+    expect(list.querySelector('[data-group-label="public"]')).toBeNull();
+    expect(list.textContent).not.toMatch(/\bPublic\b/);
+    expect(list.textContent).not.toMatch(/\bProcessed\b/);
+
+    const demoIds = [...demoGroup.querySelectorAll("[data-song-id]")].map((o) => o.getAttribute("data-song-id"));
+    expect(demoIds).toEqual([
+      "a-good-bass-for-gambling",
+      "make-funk",
+      "maple-leaf-rag",
+    ]);
+    expect(list.querySelector('[data-song-id="like-a-prayer"]')).toBeNull();
+
+    const api = window.__BASS_PLAYER__;
+    api.nextCard();
+    expect(document.title).toBe(PAGE_TITLE);
+  });
+
+  it("public typeahead filters and keyboard Enter selects via ?song=", async () => {
+    await bootPlayer({ privateMode: false, withStems: true });
+    const assigns = [];
+    window.__BASS_SONG_NAV__ = (url, id) => assigns.push({ url: String(url), id: String(id) });
+    try {
+      const input = document.querySelector("[data-song-typeahead-input]");
+      expect(input).toBeTruthy();
+      input.focus();
+      input.value = "maple";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      const list = document.querySelector("[data-song-listbox]");
+      const opts = [...list.querySelectorAll('[role="option"]')];
+      expect(opts.map((o) => o.getAttribute("data-song-id"))).toEqual(["maple-leaf-rag"]);
+      expect(list.querySelector('[data-group-label="demo"]').textContent).toBe("Demo");
+      expect(list.querySelector('[data-group="processed"]')).toBeNull();
+      expect(list.textContent).not.toMatch(/\bPublic\b/);
+
+      input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+      expect(assigns.length).toBe(1);
+      expect(assigns[0].id).toBe("maple-leaf-rag");
+      expect(assigns[0].url).toMatch(/[?&]song=maple-leaf-rag/);
+      expect(document.title).toBe("Song Bass Explainer - Understand Bass Lines in Songs");
+    } finally {
+      delete window.__BASS_SONG_NAV__;
+    }
   });
 
   it("private player typeahead shows Demo vs Processed groups", async () => {

@@ -23,6 +23,8 @@ describe("public has no Private link + private song typeahead (source)", () => {
     expect(playerSrc).toMatch(/addGroup\("Demo",\s*"demo"/);
     expect(playerSrc).toMatch(/addGroup\("Processed",\s*"processed"/);
     expect(playerSrc).toMatch(/\/private\/api\/catalog/);
+    expect(playerSrc).toMatch(/\/api\/demo\/catalog/);
+    expect(playerSrc).not.toMatch(/addGroup\("Public"/);
     // No select/optgroup song picker
     expect(playerSrc).not.toMatch(/demoGroup\.label\s*=\s*"Demo"/);
     expect(playerSrc).not.toMatch(/createElement\("optgroup"\)/);

@@ -17,12 +17,22 @@ describe("public homepage — CC0 Komiku player", () => {
   it("/", async () => {
     const { status, text } = await fetchRaw("/");
     expect(status).toBe(200);
-    expect(text).toMatch(/Bass Study/i);
     expect(text).toMatch(/player\.js/);
     expect(text).toMatch(/__BASS_PRIVATE__\s*=\s*false/);
     expect(text).not.toMatch(/Like a Prayer/i);
     expect(text).not.toMatch(/Madonna/i);
     expect(text).not.toMatch(/\/api\/demo\/like-a-prayer/);
+    const title = (text.match(/<title>([^<]*)<\/title>/i) || [])[1] || "";
+    expect(title.length).toBeGreaterThan(0);
+    // Source contract is tests/share-meta.test.mjs. Once this shell is deployed,
+    // the live document title and og:image must match (no song name).
+    if (/Song Bass Explainer - Understand Bass Lines in Songs/.test(title)) {
+      expect(text).toContain('property="og:title" content="Song Bass Explainer - Understand Bass Lines in Songs"');
+      expect(text).toContain('property="og:image" content="https://bass.meirmsn.dev/social-preview.png"');
+      expect(text).toContain('name="twitter:title" content="Song Bass Explainer - Understand Bass Lines in Songs"');
+      expect(text).toContain('name="twitter:image" content="https://bass.meirmsn.dev/social-preview.png"');
+      expect(title).not.toMatch(/gambling|Make Funk|Maple Leaf/i);
+    }
   });
 
   it("/player/ also serves public player shell", async () => {

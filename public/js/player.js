@@ -1837,6 +1837,27 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let demo;
     // Multi-song: ?song= / ?id=. Public allowlist only. Private: demos + processed (LAP/jobs). (Tempo/WSOLA path untouched.)
     const PUBLIC_SONG_RE = /^(a-good-bass-for-gambling|make-funk|maple-leaf-rag)$/;
+    // Share/tab title. Song name stays in the player header, never in document.title.
+    const PUBLIC_PAGE_TITLE = "Song Bass Explainer - Understand Bass Lines in Songs";
+    const PUBLIC_DEMO_FALLBACK = [
+      { id: "a-good-bass-for-gambling", title: "A good bass for gambling", artist: "Komiku", group: "demo" },
+      { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", group: "demo" },
+      { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", group: "demo" },
+    ];
+    function allowlistedPublicDemos(list) {
+      const byId = new Map();
+      for (const s of list || []) {
+        const id = String((s && s.id) || "").trim();
+        if (!PUBLIC_SONG_RE.test(id) || byId.has(id)) continue;
+        byId.set(id, {
+          id,
+          title: s.title || id,
+          artist: s.artist || "",
+          group: "demo",
+        });
+      }
+      return PUBLIC_DEMO_FALLBACK.map((fallback) => byId.get(fallback.id) || Object.assign({}, fallback));
+    }
     const q = new URLSearchParams(location.search);
     const songParam = String(q.get("song") || q.get("id") || "").trim();
     const publicSlug = PUBLIC_SONG_RE.test(songParam) ? songParam : "a-good-bass-for-gambling";
@@ -1844,22 +1865,31 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let activeSongId = privateMode
       ? (songParam || "like-a-prayer")
       : publicSlug;
+    if (!privateMode) document.title = PUBLIC_PAGE_TITLE;
     if (privateMode) {
       try {
         const cres = await fetch("/private/api/catalog");
         if (cres.ok) songCatalog = await cres.json();
       } catch (_) { /* Access / offline — picker falls back to known entries */ }
       if (!songCatalog.demos?.length) {
-        songCatalog.demos = [
-          { id: "a-good-bass-for-gambling", title: "A good bass for gambling", artist: "Komiku", group: "demo" },
-          { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", group: "demo" },
-          { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", group: "demo" },
-        ];
+        songCatalog.demos = PUBLIC_DEMO_FALLBACK.map((s) => Object.assign({}, s));
       }
       if (!songCatalog.processed?.length) {
         songCatalog.processed = [
           { id: "like-a-prayer", title: "Like a Prayer", artist: "Madonna / study", group: "processed" },
         ];
+      }
+    } else {
+      try {
+        const cres = await fetch("/api/demo/catalog");
+        if (cres.ok) {
+          const data = await cres.json();
+          const songs = Array.isArray(data && data.songs) ? data.songs : [];
+          songCatalog = { demos: allowlistedPublicDemos(songs), processed: [] };
+        }
+      } catch (_) { /* offline — picker falls back to the three public demos */ }
+      if (!songCatalog.demos?.length) {
+        songCatalog = { demos: allowlistedPublicDemos([]), processed: [] };
       }
     }
     function resolvePrivateEndpoints(id) {
@@ -3762,6 +3792,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let destroyed = false;
     function render() {
       if (destroyed || !root.isConnected) return;
+      if (!privateMode) document.title = PUBLIC_PAGE_TITLE;
       const sec = SECS[secIdx];
       const bar = barAt(t);
       const nextT = barTime(bar + 1);
@@ -3861,7 +3892,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         shell.appendChild(creditRow);
       }
 
-      if (privateMode) {
+      {
         const row = el("div", { className: "song-picker-row", "data-song-picker-row": "1" });
         row.appendChild(el("label", { for: "bass-song-picker" }, ["Song"]));
         const wrap = el("div", {
@@ -3878,7 +3909,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           "aria-autocomplete": "list",
           "aria-expanded": "false",
           "aria-controls": listId,
-          "aria-label": "Type to find a demo or processed song",
+          "aria-label": privateMode ? "Type to find a demo or processed song" : "Type to find a demo",
           autocomplete: "off",
           spellcheck: "false",
           "data-song-typeahead-input": "1",
@@ -3901,7 +3932,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         }
         // Ensure active id appears under Processed if catalog lags a new job.
         const known = new Set([...(songCatalog.demos || []), ...(songCatalog.processed || [])].map((s) => s.id));
-        if (activeSongId && !known.has(activeSongId)) {
+        if (privateMode && activeSongId && !known.has(activeSongId)) {
           songCatalog.processed = [...(songCatalog.processed || []), {
             id: activeSongId,
             title: demo.title || activeSongId,
