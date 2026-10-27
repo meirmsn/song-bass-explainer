@@ -8,7 +8,7 @@ The song timeline and sections allow you to see the song at a high level, and se
 
 ## Approach
 
-This was built by talking to Grok Bot, to learn how agent-driven work feels: voice chat, raw screenshot feedback, and rapid-fire instructions. It is not the structured method in [devshop](https://github.com/meirmsn/abra-kadabra). There is no CI and no PR-gated workflow by design; this packaging pull request is an exception so the public page can be reviewed. The loop was barebones: ask, the agent ships, feedback, the next ask. A request queue showed up after rapid-fire instructions piled up. Testing was not assumed at the start; breaks prompted the question of whether tests existed, and the suite grew from there.
+This was built by talking to Grok Bot, to learn how agent-driven work felt for me: voice chat, raw screenshot feedback, and rapid-fire instructions. It is not the detailed method in [devshop](https://github.com/meirmsn/abra-kadabra). There is no CI and no PR-gated workflow by design; this pull request is an exception so the public page can be reviewed. The loop was barebones: ask, the agent ships, feedback, the next ask. I requested the agent to set up a simple request queue after rapid-fire instructions piled up.
 
 ## What it does
 - Synced bass and drum staves with key and time signatures, and a song chord row.
