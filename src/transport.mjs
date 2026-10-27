@@ -32,21 +32,20 @@ export function createTransport(opts) {
     for (let i = secs.length - 1; i >= 0; i--) if (bar >= secs[i].first) return i;
     return 0;
   };
-  const sectionLoopBounds = (i) => {
-    const s = secs[i];
-    return { lo: s.first, hi: s.end - 1 };
-  };
   const loopWindow = (lo, hi) => {
     const ls = barTimes[lo];
     const le = hi + 1 < nbars ? barTimes[hi + 1] : duration;
     return { ls, le };
   };
 
-  let secIdx = Math.min(2, secs.length - 1);
-  let { lo, hi } = sectionLoopBounds(secIdx);
-  let t = barTimes[secs[secIdx].first];
+  // Load the whole song: playhead at the first bar, loop off, no section loop.
+  // The score follows the section under the playhead. A timeline tap still loops that section.
+  let t = barTimes[0];
+  let secIdx = secIndexOfBar(barAt(t));
+  let lo = 0;
+  let hi = nbars - 1;
   let playing = false;
-  let loopOn = true;
+  let loopOn = false;
   let cardIdx = 0;
   let playbackRate = 1;
 

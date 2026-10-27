@@ -28,6 +28,7 @@ function teardownPlayer() {
   delete window.__BASS_SONG_NAV__;
   delete window.__LAST_AUDIO_CTX__;
   document.body.classList.remove("cards-drawer-open");
+  try { window.history.replaceState({}, "", "/"); } catch (_) { /* ignore */ }
   try {
     Object.defineProperty(window, "innerWidth", { configurable: true, writable: true, value: 1280 });
     Object.defineProperty(window, "innerHeight", { configurable: true, writable: true, value: 800 });
@@ -313,13 +314,27 @@ describe("player DOM shell transport", () => {
 
   it("loop toggle flips loopOn", async () => {
     const api = await bootPlayer();
+    expect(api.getState().loopOn).toBe(false);
+    api.toggleLoop();
     expect(api.getState().loopOn).toBe(true);
+    const loopBtn = [...document.querySelectorAll("button")].find((b) => /Loop/i.test(b.getAttribute("aria-label") || ""));
+    expect(loopBtn?.getAttribute("aria-label")).toMatch(/Loop on/i);
     api.toggleLoop();
     expect(api.getState().loopOn).toBe(false);
-    const loopBtn = [...document.querySelectorAll("button")].find((b) => /Loop/i.test(b.getAttribute("aria-label") || ""));
-    expect(loopBtn?.getAttribute("aria-label")).toMatch(/Loop off/i);
-    api.toggleLoop();
-    expect(api.getState().loopOn).toBe(true);
+  });
+
+  it("load starts non-loop on the whole song (playhead section, not a preselected loop)", async () => {
+    const api = await bootPlayer();
+    const s = api.getState();
+    expect(s.loopOn).toBe(false);
+    expect(s.playing).toBe(false);
+    expect(s.secIdx).toBe(0);
+    expect(s.sectionName).toBe("A");
+    expect(s.lo).toBe(0);
+    expect(s.hi).toBe(demo.nbars - 1);
+    expect(s.t).toBeCloseTo(demo.raw[0][1], 5);
+    expect(document.querySelector('[data-meta="loop"]')?.textContent).toBe("Loop —");
+    expect(document.querySelector('button[aria-label="Loop off"]')).toBeTruthy();
   });
 
   it("section pick while playing updates section", async () => {
@@ -409,7 +424,7 @@ describe("player DOM shell transport", () => {
     // Transport is the last child of header (top-right in mockup flex row).
     expect(header.lastElementChild).toBe(transport);
     const labels = [...transport.querySelectorAll("button.icon-btn")].map((b) => b.getAttribute("aria-label"));
-    expect(labels).toEqual(expect.arrayContaining(["Play", "Stop", "Loop on"]));
+    expect(labels).toEqual(expect.arrayContaining(["Play", "Stop", "Loop off"]));
     // Icons, not text labels as button content.
     for (const btn of transport.querySelectorAll("button.icon-btn")) {
       expect(btn.querySelector("svg")).toBeTruthy();
@@ -1348,17 +1363,17 @@ describe("keyboard shortcuts", () => {
 
   it("L toggles loop on and off", async () => {
     const api = await bootPlayer();
-    expect(api.getState().loopOn).toBe(true);
-    window.dispatchEvent(new KeyboardEvent("keydown", { key: "l", bubbles: true, cancelable: true }));
-    await api.waitTick(20);
     expect(api.getState().loopOn).toBe(false);
-    const loopBtnOff = [...document.querySelectorAll("button")].find((b) => /Loop/i.test(b.getAttribute("aria-label") || ""));
-    expect(loopBtnOff?.getAttribute("aria-label")).toMatch(/Loop off/i);
-    window.dispatchEvent(new KeyboardEvent("keydown", { key: "L", bubbles: true, cancelable: true }));
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "l", bubbles: true, cancelable: true }));
     await api.waitTick(20);
     expect(api.getState().loopOn).toBe(true);
     const loopBtnOn = [...document.querySelectorAll("button")].find((b) => /Loop/i.test(b.getAttribute("aria-label") || ""));
     expect(loopBtnOn?.getAttribute("aria-label")).toMatch(/Loop on/i);
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "L", bubbles: true, cancelable: true }));
+    await api.waitTick(20);
+    expect(api.getState().loopOn).toBe(false);
+    const loopBtnOff = [...document.querySelectorAll("button")].find((b) => /Loop/i.test(b.getAttribute("aria-label") || ""));
+    expect(loopBtnOff?.getAttribute("aria-label")).toMatch(/Loop off/i);
   });
 
   it("ignores shortcuts when typing in an input", async () => {
@@ -2832,6 +2847,80 @@ describe("public has no Private link + private song typeahead", () => {
     const api = window.__BASS_PLAYER__;
     api.nextCard();
     expect(document.title).toBe(PAGE_TITLE);
+  });
+
+  it("public load with no ?song= fetches Make Funk and starts the whole song", async () => {
+    window.history.replaceState({}, "", "/");
+    const api = await bootPlayer({ privateMode: false, withStems: true });
+    const urls = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
+    const songFetches = urls.filter((u) => /\/api\/demo\/(make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
+    expect(songFetches[0]).toContain("/api/demo/make-funk");
+    expect(songFetches.some((u) => u.includes("a-good-bass-for-gambling"))).toBe(false);
+    expect(songFetches.some((u) => u.includes("maple-leaf-rag"))).toBe(false);
+    const s = api.getState();
+    expect(s.loopOn).toBe(false);
+    expect(s.secIdx).toBe(0);
+    expect(s.lo).toBe(0);
+    expect(s.hi).toBe(demo.nbars - 1);
+    expect(s.t).toBeCloseTo(demo.raw[0][1], 5);
+    const input = document.querySelector("[data-song-typeahead-input]");
+    expect(input.value).toMatch(/Make Funk/);
+    input.focus();
+    input.dispatchEvent(new Event("focus", { bubbles: true }));
+    const demoIds = [...document.querySelectorAll('[data-group="demo"] [data-song-id]')].map((o) => o.getAttribute("data-song-id"));
+    expect(demoIds).toEqual([
+      "a-good-bass-for-gambling",
+      "make-funk",
+      "maple-leaf-rag",
+    ]);
+  });
+
+  it("explicit ?song= still loads that demo, still whole-song and non-loop", async () => {
+    window.history.replaceState({}, "", "/?song=a-good-bass-for-gambling");
+    const api = await bootPlayer({ privateMode: false, withStems: true });
+    const urls = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
+    const songFetches = urls.filter((u) => /\/api\/demo\/(make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
+    expect(songFetches[0]).toContain("/api/demo/a-good-bass-for-gambling");
+    expect(api.getState().loopOn).toBe(false);
+    expect(api.getState().secIdx).toBe(0);
+    expect(api.getState().lo).toBe(0);
+    expect(api.getState().hi).toBe(demo.nbars - 1);
+    expect(document.querySelector("[data-song-typeahead-input]").value).toMatch(/gambling/i);
+  });
+
+  it("song typeahead stays stable while playback re-renders", async () => {
+    const api = await bootPlayer({ privateMode: true });
+    api.play();
+    await api.waitTick(70);
+    expect(api.getState().playing).toBe(true);
+    const input = document.querySelector("[data-song-typeahead-input]");
+    const list = document.querySelector("[data-song-listbox]");
+    expect(input).toBeTruthy();
+    expect(list).toBeTruthy();
+    input.focus();
+    input.dispatchEvent(new Event("focus", { bubbles: true }));
+    input.value = "funk";
+    input.setSelectionRange(4, 4);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(list.hasAttribute("hidden")).toBe(false);
+    expect(document.activeElement).toBe(input);
+    await api.waitTick(220);
+    expect(api.getState().playing).toBe(true);
+    expect(document.querySelector("[data-song-typeahead-input]")).toBe(input);
+    expect(document.querySelector("[data-song-listbox]")).toBe(list);
+    expect(document.activeElement).toBe(input);
+    expect(input.value).toBe("funk");
+    expect(list.hasAttribute("hidden")).toBe(false);
+    const ids = [...list.querySelectorAll("[data-song-id]")].map((o) => o.getAttribute("data-song-id"));
+    expect(ids).toEqual(["make-funk"]);
+    const assigns = [];
+    window.__BASS_SONG_NAV__ = (url, id) => assigns.push({ url: String(url), id: String(id) });
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+    expect(assigns).toEqual([
+      expect.objectContaining({ id: "make-funk" }),
+    ]);
+    expect(assigns[0].url).toMatch(/[?&]song=make-funk/);
+    api.pause();
   });
 
   it("public typeahead filters and keyboard Enter selects via ?song=", async () => {

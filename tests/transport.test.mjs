@@ -17,6 +17,20 @@ function make(resync) {
   });
 }
 
+describe("initial load", () => {
+  it("starts at the whole song with loop off and no section loop", () => {
+    const tr = make();
+    const s = tr.getState();
+    expect(s.playing).toBe(false);
+    expect(s.loopOn).toBe(false);
+    expect(s.secIdx).toBe(0);
+    expect(s.lo).toBe(0);
+    expect(s.hi).toBe(demo.nbars - 1);
+    expect(s.t).toBeCloseTo(barTimes[0], 5);
+    expect(s.sectionName).toBe(demo.secs[0].name);
+  });
+});
+
 describe("transport play/pause/stop", () => {
   it("starts paused and play toggles to playing", () => {
     const tr = make();

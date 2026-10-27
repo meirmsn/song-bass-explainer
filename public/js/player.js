@@ -1837,6 +1837,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let demo;
     // Multi-song: ?song= / ?id=. Public allowlist only. Private: demos + processed (LAP/jobs). (Tempo/WSOLA path untouched.)
     const PUBLIC_SONG_RE = /^(a-good-bass-for-gambling|make-funk|maple-leaf-rag)$/;
+    const PUBLIC_DEFAULT_SONG = "make-funk";
     // Share/tab title. Song name stays in the player header, never in document.title.
     const PUBLIC_PAGE_TITLE = "Song Bass Explainer - Understand Bass Lines in Songs";
     const PUBLIC_DEMO_FALLBACK = [
@@ -1860,7 +1861,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     }
     const q = new URLSearchParams(location.search);
     const songParam = String(q.get("song") || q.get("id") || "").trim();
-    const publicSlug = PUBLIC_SONG_RE.test(songParam) ? songParam : "a-good-bass-for-gambling";
+    const publicSlug = PUBLIC_SONG_RE.test(songParam) ? songParam : PUBLIC_DEFAULT_SONG;
     let songCatalog = { demos: [], processed: [] };
     let activeSongId = privateMode
       ? (songParam || "like-a-prayer")
@@ -1966,9 +1967,11 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     const barEdgeX = (bar, viewLo, viewHi) => X0 + ((bar - viewLo) / (viewHi - viewLo + 1)) * W;
 
     const root = document.getElementById("app");
-    let secIdx = Math.min(2, SECS.length - 1);
-    let lo = SECS[secIdx].first, hi = SECS[secIdx].end - 1;
-    let t = BARS[SECS[secIdx].first].t, playing = false, loopOn = true, cardIdx = 0;
+    // Whole song on load (and on every picker navigation, which is a fresh document):
+    // loop off, range is every bar, score shows the section under the playhead.
+    let t = BARS[0].t, playing = false, loopOn = false, cardIdx = 0;
+    let secIdx = secIndexOfBar(barAt(t));
+    let lo = 0, hi = NBARS - 1;
     let cardsDrawerOpen = false;
     let timer = null;
     const dragSession = { current: null };
@@ -3789,6 +3792,288 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       });
     }
 
+    // Built once. Playback calls render() every 50ms and used to replaceChildren()
+    // the whole app, which destroyed this input (focus loss, query reset, list close).
+    function buildSongPicker() {
+      const row = el("div", { className: "song-picker-row", "data-song-picker-row": "1" });
+      row.appendChild(el("label", { for: "bass-song-picker" }, ["Song"]));
+      const wrap = el("div", {
+        className: "song-typeahead",
+        "data-song-picker": "1",
+        "data-song-typeahead": "1",
+      });
+      const listId = "bass-song-listbox";
+      const input = el("input", {
+        id: "bass-song-picker",
+        type: "text",
+        className: "song-typeahead-input",
+        role: "combobox",
+        "aria-autocomplete": "list",
+        "aria-expanded": "false",
+        "aria-controls": listId,
+        "aria-label": privateMode ? "Type to find a demo or processed song" : "Type to find a demo",
+        autocomplete: "off",
+        spellcheck: "false",
+        "data-song-typeahead-input": "1",
+      });
+      const listbox = el("div", {
+        id: listId,
+        className: "song-typeahead-list",
+        role: "listbox",
+        "data-song-listbox": "1",
+        hidden: "true",
+      });
+      wrap.appendChild(input);
+      wrap.appendChild(listbox);
+      row.appendChild(wrap);
+
+      function songLabel(s) {
+        if (!s) return "";
+        return (s.artist ? s.artist + " — " : "") + (s.title || s.id);
+      }
+      // Ensure active id appears under Processed if catalog lags a new job.
+      const known = new Set([...(songCatalog.demos || []), ...(songCatalog.processed || [])].map((s) => s.id));
+      if (privateMode && activeSongId && !known.has(activeSongId)) {
+        songCatalog.processed = [...(songCatalog.processed || []), {
+          id: activeSongId,
+          title: demo.title || activeSongId,
+          artist: demo.artist || "",
+          group: "processed",
+        }];
+      }
+      const allSongs = [
+        ...(songCatalog.demos || []).map((s) => Object.assign({}, s, { group: "demo" })),
+        ...(songCatalog.processed || []).map((s) => Object.assign({}, s, { group: "processed" })),
+      ];
+      const activeMeta = allSongs.find((s) => s.id === activeSongId) || { id: activeSongId, title: demo.title || activeSongId };
+      input.value = songLabel(activeMeta);
+
+      let open = false;
+      let highlightIdx = -1;
+      let visible = [];
+      let blurTimer = 0;
+      let blurGen = 0;
+
+      function goToSong(id) {
+        const next = String(id || "").trim();
+        if (!next || next === activeSongId) {
+          closeList(true);
+          return;
+        }
+        // Full navigation. The next document boots at the first bar with loop off.
+        const u = new URL(location.href);
+        u.searchParams.set("song", next);
+        const target = u.pathname + "?" + u.searchParams.toString() + u.hash;
+        if (typeof window.__BASS_SONG_NAV__ === "function") {
+          window.__BASS_SONG_NAV__(target, next);
+          return;
+        }
+        location.assign(target);
+      }
+
+      function filterSongs(query) {
+        const q = String(query || "").trim().toLowerCase();
+        if (!q) return allSongs.slice();
+        return allSongs.filter((s) => {
+          const hay = [s.id, s.title, s.artist, songLabel(s)].filter(Boolean).join(" ").toLowerCase();
+          return hay.includes(q);
+        });
+      }
+
+      function setExpanded(isOpen) {
+        open = isOpen;
+        input.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        if (isOpen) listbox.removeAttribute("hidden");
+        else listbox.setAttribute("hidden", "true");
+      }
+
+      function closeList(restore) {
+        setExpanded(false);
+        highlightIdx = -1;
+        visible = [];
+        listbox.innerHTML = "";
+        // Playback re-renders must not wipe a query that still has focus.
+        if (restore && document.activeElement !== input) input.value = songLabel(activeMeta);
+      }
+
+      function renderList(query) {
+        visible = filterSongs(query);
+        listbox.innerHTML = "";
+        if (!visible.length) {
+          listbox.appendChild(el("div", { className: "song-typeahead-empty", "data-song-empty": "1" }, ["No matches"]));
+          highlightIdx = -1;
+          setExpanded(true);
+          return;
+        }
+        const demos = visible.filter((s) => s.group === "demo");
+        const processed = visible.filter((s) => s.group === "processed");
+        let flatIdx = 0;
+        function addGroup(label, groupKey, items) {
+          if (!items.length) return;
+          const group = el("div", { className: "song-typeahead-group", "data-group": groupKey });
+          group.appendChild(el("div", {
+            className: "song-typeahead-group-label",
+            role: "presentation",
+            "data-group-label": groupKey,
+          }, [label]));
+          for (const s of items) {
+            const idx = flatIdx++;
+            const opt = el("button", {
+              type: "button",
+              className: "song-typeahead-option",
+              role: "option",
+              id: "bass-song-opt-" + idx,
+              "data-song-id": s.id,
+              "data-group": groupKey,
+              "data-option-index": String(idx),
+              "aria-selected": idx === highlightIdx ? "true" : "false",
+            }, [songLabel(s)]);
+            opt.addEventListener("mousedown", (e) => {
+              e.preventDefault(); // keep focus; avoid blur before click
+              goToSong(s.id);
+            });
+            group.appendChild(opt);
+          }
+          listbox.appendChild(group);
+        }
+        addGroup("Demo", "demo", demos);
+        addGroup("Processed", "processed", processed);
+        if (highlightIdx < 0 || highlightIdx >= visible.length) highlightIdx = 0;
+        syncHighlight();
+        setExpanded(true);
+      }
+
+      function syncHighlight() {
+        const opts = [...listbox.querySelectorAll('[role="option"]')];
+        opts.forEach((opt, i) => {
+          const on = i === highlightIdx;
+          opt.setAttribute("aria-selected", on ? "true" : "false");
+          if (on) {
+            input.setAttribute("aria-activedescendant", opt.id);
+            try { opt.scrollIntoView({ block: "nearest" }); } catch (_) { /* jsdom */ }
+          }
+        });
+        if (highlightIdx < 0) input.removeAttribute("aria-activedescendant");
+      }
+
+      function openList(seedQuery) {
+        if (blurTimer) { clearTimeout(blurTimer); blurTimer = 0; }
+        highlightIdx = Math.max(0, visible.length ? highlightIdx : 0);
+        renderList(seedQuery != null ? seedQuery : input.value);
+      }
+
+      input.addEventListener("focus", () => {
+        if (row.__picker && row.__picker.holdFocus) {
+          row.__picker.holdFocus = false;
+          return;
+        }
+        openList("");
+        try { input.select(); } catch (_) { /* ignore */ }
+      });
+      input.addEventListener("input", () => {
+        highlightIdx = 0;
+        renderList(input.value);
+      });
+      input.addEventListener("keydown", (e) => {
+        const key = e.key;
+        if (key === "ArrowDown") {
+          e.preventDefault();
+          if (!open) openList(input.value);
+          else if (visible.length) {
+            highlightIdx = (highlightIdx + 1) % visible.length;
+            syncHighlight();
+          }
+          return;
+        }
+        if (key === "ArrowUp") {
+          e.preventDefault();
+          if (!open) openList(input.value);
+          else if (visible.length) {
+            highlightIdx = (highlightIdx - 1 + visible.length) % visible.length;
+            syncHighlight();
+          }
+          return;
+        }
+        if (key === "Enter") {
+          if (!open) return;
+          e.preventDefault();
+          const pick = visible[highlightIdx] || visible[0];
+          if (pick) goToSong(pick.id);
+          return;
+        }
+        if (key === "Escape") {
+          if (!open) return;
+          e.preventDefault();
+          closeList(true);
+          return;
+        }
+      });
+      input.addEventListener("blur", () => {
+        const token = ++blurGen;
+        blurTimer = setTimeout(() => {
+          if (token !== blurGen) return;
+          if (document.activeElement === input) return;
+          if (row.__picker && row.__picker.holdFocus) return;
+          closeList(true);
+        }, 120);
+      });
+      row.__picker = {
+        holdFocus: false,
+        cancelBlur() {
+          blurGen += 1;
+          if (blurTimer) { clearTimeout(blurTimer); blurTimer = 0; }
+        },
+      };
+      return row;
+
+    }
+
+    let songPickerRow = null;
+    function commitPlayerRoot(nodes) {
+      let slot = null;
+      for (const n of nodes) {
+        if (n && n.querySelector) {
+          const found = n.querySelector("[data-picker-slot]");
+          if (found) slot = found;
+        }
+      }
+      if (!songPickerRow) songPickerRow = buildSongPicker();
+      const input = songPickerRow.querySelector("[data-song-typeahead-input]");
+      const pickerApi = songPickerRow.__picker;
+      const hadFocus = Boolean(input && document.activeElement === input);
+      const typed = input ? input.value : "";
+      let selStart = null;
+      let selEnd = null;
+      if (hadFocus) {
+        try { selStart = input.selectionStart; selEnd = input.selectionEnd; } catch (_) { /* jsdom */ }
+      }
+      if (hadFocus && pickerApi) {
+        pickerApi.holdFocus = true;
+        pickerApi.cancelBlur();
+      }
+      // Attach the new tree first, then move the live picker between connected
+      // parents so the focused input is never removed from the document.
+      for (const n of nodes) root.appendChild(n);
+      if (slot) slot.replaceWith(songPickerRow);
+      else root.appendChild(songPickerRow);
+      const keep = new Set(nodes);
+      for (const child of [...root.childNodes]) {
+        if (!keep.has(child) && child !== songPickerRow) child.remove();
+      }
+      if (hadFocus && input) {
+        if (pickerApi) pickerApi.cancelBlur();
+        if (input.value !== typed) input.value = typed;
+        if (document.activeElement !== input) {
+          if (pickerApi) pickerApi.holdFocus = true;
+          input.focus();
+        }
+        try {
+          if (selStart != null && selEnd != null) input.setSelectionRange(selStart, selEnd);
+        } catch (_) { /* jsdom */ }
+        if (pickerApi) pickerApi.holdFocus = false;
+      }
+    }
+
     let destroyed = false;
     function render() {
       if (destroyed || !root.isConnected) return;
@@ -3815,7 +4100,6 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       const deck = CARDS_EFF[sec.id] || CARDS_EFF[sec.kind] || CARDS[sec.id] || CARDS[sec.kind] || CARDS.intro;
       const card = deck[cardIdx % deck.length];
 
-      root.replaceChildren();
       const phoneLayout = isPhoneLayout();
       const shell = el("div", { className: "shell", "data-phone": phoneLayout ? "1" : "0" });
 
@@ -3892,218 +4176,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         shell.appendChild(creditRow);
       }
 
-      {
-        const row = el("div", { className: "song-picker-row", "data-song-picker-row": "1" });
-        row.appendChild(el("label", { for: "bass-song-picker" }, ["Song"]));
-        const wrap = el("div", {
-          className: "song-typeahead",
-          "data-song-picker": "1",
-          "data-song-typeahead": "1",
-        });
-        const listId = "bass-song-listbox";
-        const input = el("input", {
-          id: "bass-song-picker",
-          type: "text",
-          className: "song-typeahead-input",
-          role: "combobox",
-          "aria-autocomplete": "list",
-          "aria-expanded": "false",
-          "aria-controls": listId,
-          "aria-label": privateMode ? "Type to find a demo or processed song" : "Type to find a demo",
-          autocomplete: "off",
-          spellcheck: "false",
-          "data-song-typeahead-input": "1",
-        });
-        const listbox = el("div", {
-          id: listId,
-          className: "song-typeahead-list",
-          role: "listbox",
-          "data-song-listbox": "1",
-          hidden: "true",
-        });
-        wrap.appendChild(input);
-        wrap.appendChild(listbox);
-        row.appendChild(wrap);
-        shell.appendChild(row);
-
-        function songLabel(s) {
-          if (!s) return "";
-          return (s.artist ? s.artist + " — " : "") + (s.title || s.id);
-        }
-        // Ensure active id appears under Processed if catalog lags a new job.
-        const known = new Set([...(songCatalog.demos || []), ...(songCatalog.processed || [])].map((s) => s.id));
-        if (privateMode && activeSongId && !known.has(activeSongId)) {
-          songCatalog.processed = [...(songCatalog.processed || []), {
-            id: activeSongId,
-            title: demo.title || activeSongId,
-            artist: demo.artist || "",
-            group: "processed",
-          }];
-        }
-        const allSongs = [
-          ...(songCatalog.demos || []).map((s) => Object.assign({}, s, { group: "demo" })),
-          ...(songCatalog.processed || []).map((s) => Object.assign({}, s, { group: "processed" })),
-        ];
-        const activeMeta = allSongs.find((s) => s.id === activeSongId) || { id: activeSongId, title: demo.title || activeSongId };
-        input.value = songLabel(activeMeta);
-
-        let open = false;
-        let highlightIdx = -1;
-        let visible = [];
-        let blurTimer = 0;
-
-        function goToSong(id) {
-          const next = String(id || "").trim();
-          if (!next || next === activeSongId) {
-            closeList(true);
-            return;
-          }
-          const u = new URL(location.href);
-          u.searchParams.set("song", next);
-          const target = u.pathname + "?" + u.searchParams.toString() + u.hash;
-          if (typeof window.__BASS_SONG_NAV__ === "function") {
-            window.__BASS_SONG_NAV__(target, next);
-            return;
-          }
-          location.assign(target);
-        }
-
-        function filterSongs(query) {
-          const q = String(query || "").trim().toLowerCase();
-          if (!q) return allSongs.slice();
-          return allSongs.filter((s) => {
-            const hay = [s.id, s.title, s.artist, songLabel(s)].filter(Boolean).join(" ").toLowerCase();
-            return hay.includes(q);
-          });
-        }
-
-        function setExpanded(isOpen) {
-          open = isOpen;
-          input.setAttribute("aria-expanded", isOpen ? "true" : "false");
-          if (isOpen) listbox.removeAttribute("hidden");
-          else listbox.setAttribute("hidden", "true");
-        }
-
-        function closeList(restore) {
-          setExpanded(false);
-          highlightIdx = -1;
-          visible = [];
-          listbox.innerHTML = "";
-          if (restore) input.value = songLabel(activeMeta);
-        }
-
-        function renderList(query) {
-          visible = filterSongs(query);
-          listbox.innerHTML = "";
-          if (!visible.length) {
-            listbox.appendChild(el("div", { className: "song-typeahead-empty", "data-song-empty": "1" }, ["No matches"]));
-            highlightIdx = -1;
-            setExpanded(true);
-            return;
-          }
-          const demos = visible.filter((s) => s.group === "demo");
-          const processed = visible.filter((s) => s.group === "processed");
-          let flatIdx = 0;
-          function addGroup(label, groupKey, items) {
-            if (!items.length) return;
-            const group = el("div", { className: "song-typeahead-group", "data-group": groupKey });
-            group.appendChild(el("div", {
-              className: "song-typeahead-group-label",
-              role: "presentation",
-              "data-group-label": groupKey,
-            }, [label]));
-            for (const s of items) {
-              const idx = flatIdx++;
-              const opt = el("button", {
-                type: "button",
-                className: "song-typeahead-option",
-                role: "option",
-                id: "bass-song-opt-" + idx,
-                "data-song-id": s.id,
-                "data-group": groupKey,
-                "data-option-index": String(idx),
-                "aria-selected": idx === highlightIdx ? "true" : "false",
-              }, [songLabel(s)]);
-              opt.addEventListener("mousedown", (e) => {
-                e.preventDefault(); // keep focus; avoid blur before click
-                goToSong(s.id);
-              });
-              group.appendChild(opt);
-            }
-            listbox.appendChild(group);
-          }
-          addGroup("Demo", "demo", demos);
-          addGroup("Processed", "processed", processed);
-          if (highlightIdx < 0 || highlightIdx >= visible.length) highlightIdx = 0;
-          syncHighlight();
-          setExpanded(true);
-        }
-
-        function syncHighlight() {
-          const opts = [...listbox.querySelectorAll('[role="option"]')];
-          opts.forEach((opt, i) => {
-            const on = i === highlightIdx;
-            opt.setAttribute("aria-selected", on ? "true" : "false");
-            if (on) {
-              input.setAttribute("aria-activedescendant", opt.id);
-              try { opt.scrollIntoView({ block: "nearest" }); } catch (_) { /* jsdom */ }
-            }
-          });
-          if (highlightIdx < 0) input.removeAttribute("aria-activedescendant");
-        }
-
-        function openList(seedQuery) {
-          if (blurTimer) { clearTimeout(blurTimer); blurTimer = 0; }
-          highlightIdx = Math.max(0, visible.length ? highlightIdx : 0);
-          renderList(seedQuery != null ? seedQuery : input.value);
-        }
-
-        input.addEventListener("focus", () => {
-          openList("");
-          try { input.select(); } catch (_) { /* ignore */ }
-        });
-        input.addEventListener("input", () => {
-          highlightIdx = 0;
-          renderList(input.value);
-        });
-        input.addEventListener("keydown", (e) => {
-          const key = e.key;
-          if (key === "ArrowDown") {
-            e.preventDefault();
-            if (!open) openList(input.value);
-            else if (visible.length) {
-              highlightIdx = (highlightIdx + 1) % visible.length;
-              syncHighlight();
-            }
-            return;
-          }
-          if (key === "ArrowUp") {
-            e.preventDefault();
-            if (!open) openList(input.value);
-            else if (visible.length) {
-              highlightIdx = (highlightIdx - 1 + visible.length) % visible.length;
-              syncHighlight();
-            }
-            return;
-          }
-          if (key === "Enter") {
-            if (!open) return;
-            e.preventDefault();
-            const pick = visible[highlightIdx] || visible[0];
-            if (pick) goToSong(pick.id);
-            return;
-          }
-          if (key === "Escape") {
-            if (!open) return;
-            e.preventDefault();
-            closeList(true);
-            return;
-          }
-        });
-        input.addEventListener("blur", () => {
-          blurTimer = setTimeout(() => closeList(true), 120);
-        });
-      }
+      shell.appendChild(el("div", { "data-picker-slot": "1" }));
 
       shell.appendChild(el("div", { className: "timeline" }, [makeTimeline()]));
 
@@ -4257,7 +4330,6 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       if (phone) {
         // Score stack only — cards move into the slide-away bottom sheet.
         shell.appendChild(grid);
-        root.appendChild(shell);
 
         const peek = el("button", {
           type: "button",
@@ -4281,7 +4353,6 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         peekRow.appendChild(el("span", { className: "phone-cards-peek-count" }, [((cardIdx % deck.length) + 1) + "/" + deck.length + " · open"]));
         peek.appendChild(peekRow);
         if (cardsDrawerOpen) peek.hidden = true;
-        root.appendChild(peek);
 
         const backdrop = el("button", {
           type: "button",
@@ -4290,7 +4361,6 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           "aria-label": "Close flashcards",
         });
         if (!cardsDrawerOpen) backdrop.hidden = true;
-        root.appendChild(backdrop);
 
         const drawer = el("div", {
           className: "cards-drawer" + (cardsDrawerOpen ? " open" : ""),
@@ -4313,13 +4383,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         }, ["×"]));
         drawer.appendChild(handle);
         drawer.appendChild(cards);
-        root.appendChild(drawer);
+        commitPlayerRoot([shell, peek, backdrop, drawer]);
       } else {
         cardsDrawerOpen = false;
         document.body.classList.remove("cards-drawer-open");
         grid.appendChild(cards);
         shell.appendChild(grid);
-        root.appendChild(shell);
+        commitPlayerRoot([shell]);
       }
     }
 
