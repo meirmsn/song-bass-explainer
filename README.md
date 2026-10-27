@@ -40,7 +40,7 @@ Runtime
 
 `npm test` runs vitest. `npm run deploy` runs the tests, then Wrangler. Rebuilding a track still needs the models, a machine that can run them, and the R2 buckets.
 
-No CI. A long-lived Cloudflare deploy token ships this personal tool. To harden a personal deploy, add pull-request CI, short-lived deploy credentials, and a secrets scan — advice, not a feature of this site.
+No CI. A Cloudflare deploy token ships this personal tool. To harden a personal deploy, add pull-request CI, short-lived deploy credentials, and a secrets scan — advice, not a feature of this site.
 
 ## Build log
 - 2026-10-25 — first version: player shell and Cloudflare Worker imported; bass MIDI is a soft sine plus a quiet octave layer.
