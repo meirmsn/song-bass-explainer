@@ -31,7 +31,6 @@ This was built by talking to Grok Bot, to learn how agent-driven work feels: voi
 
 ## Known limitations
 - There is no public YouTube paste-to-process path.
-- The drum staff only shows hits detected for that song. If there are none, it stays empty; we do not invent a default backbeat.
 - No CI (by design, see Approach above).
 
 ## Run it
