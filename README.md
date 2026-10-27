@@ -42,7 +42,6 @@ browser player
 bass.meirmsn.dev
      |
      +-- WSOLA tempo (pitch kept)
-     +-- drumHits only (empty = rests)
 ```
 
 `npm test` runs vitest. `npm run deploy` runs those tests, then Wrangler from a working tree. Rebuilding a track still needs the models, a machine, and the R2 buckets.
