@@ -33,10 +33,9 @@ This was built by talking to Grok Bot, to learn how agent-driven work feels: voi
 
 ## Known limitations
 - Stem audio is not in git. The Worker serves it from R2.
-- Private Access is for the owner. There is no public YouTube paste-to-process path. A private intake form sits behind Access.
-- The drum kit is only processed `drumHits`. Missing hits leave the staff empty. Maple Leaf Rag ships that way: piano, and almost no kit.
-- MacBook Air speakers struggle with low bass MIDI. A presence layer was researched and left unshipped.
-- No CI.
+- There is no public YouTube paste-to-process path.
+- The drum staff only shows hits detected for that song. If there are none, it stays empty; we do not invent a default backbeat.
+- No CI (by design, see Approach above).
 
 ## Run it
 - Open the live demo: https://bass.meirmsn.dev
