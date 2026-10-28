@@ -5,8 +5,29 @@ import {
   PRIVATE_PROCESSED_DEMOS,
 } from "../src/catalog.mjs";
 
-/** Private DEMO group = public demos + private-only regression (Komiku). */
+/** Private DEMO group = public MIDI demos + private-only regression (Komiku, Make Funk, Maple). */
 const PRIVATE_CATALOG_DEMOS = {
+  "pocket-funk": {
+    id: "pocket-funk",
+    title: "Pocket Funk",
+    artist: "Song Bass Explainer",
+    license: "CC0 1.0 Universal",
+    api: "/api/demo/pocket-funk",
+  },
+  "radio-pop": {
+    id: "radio-pop",
+    title: "Radio Pop",
+    artist: "Song Bass Explainer",
+    license: "CC0 1.0 Universal",
+    api: "/api/demo/radio-pop",
+  },
+  "backbeat-rock": {
+    id: "backbeat-rock",
+    title: "Backbeat Rock",
+    artist: "Song Bass Explainer",
+    license: "CC0 1.0 Universal",
+    api: "/api/demo/backbeat-rock",
+  },
   "a-good-bass-for-gambling": {
     id: "a-good-bass-for-gambling",
     title: "A good bass for gambling",
@@ -21,13 +42,6 @@ const PRIVATE_CATALOG_DEMOS = {
     license: "CC0 1.0 Universal",
     api: "/api/demo/make-funk",
   },
-  "pocket-funk": {
-    id: "pocket-funk",
-    title: "Pocket Funk",
-    artist: "Song Bass Explainer",
-    license: "CC0 1.0 Universal",
-    api: "/api/demo/pocket-funk",
-  },
   "maple-leaf-rag": {
     id: "maple-leaf-rag",
     title: "Maple Leaf Rag",
@@ -37,9 +51,11 @@ const PRIVATE_CATALOG_DEMOS = {
   },
 };
 
-/** Public catalog scope — Pocket Funk only. Maple Leaf and Make Funk stay private/regression. */
+/** Public catalog — Pocket Funk hero plus Radio Pop and Backbeat Rock. Maple stays private. */
 const PUBLIC_DEMOS = {
   "pocket-funk": PRIVATE_CATALOG_DEMOS["pocket-funk"],
+  "radio-pop": PRIVATE_CATALOG_DEMOS["radio-pop"],
+  "backbeat-rock": PRIVATE_CATALOG_DEMOS["backbeat-rock"],
 };
 
 describe("buildPrivateCatalog grouping", () => {
@@ -59,9 +75,11 @@ describe("buildPrivateCatalog grouping", () => {
     });
     expect(catalogGroupsSeparated(catalog)).toBe(true);
     expect(catalog.demos.map((s) => s.id)).toEqual([
+      "pocket-funk",
+      "radio-pop",
+      "backbeat-rock",
       "a-good-bass-for-gambling",
       "make-funk",
-      "pocket-funk",
       "maple-leaf-rag",
     ]);
     expect(catalog.demos.every((s) => s.group === "demo")).toBe(true);
@@ -89,12 +107,13 @@ describe("buildPrivateCatalog grouping", () => {
 });
 
 describe("public catalog scope", () => {
-  it("public DEMO list is Pocket Funk only (Maple Leaf and Make Funk private)", () => {
-    expect(Object.keys(PUBLIC_DEMOS)).toEqual(["pocket-funk"]);
+  it("public DEMO list is Pocket Funk + Radio Pop + Backbeat Rock", () => {
+    expect(Object.keys(PUBLIC_DEMOS).sort()).toEqual(["backbeat-rock", "pocket-funk", "radio-pop"]);
     expect(PUBLIC_DEMOS["maple-leaf-rag"]).toBeUndefined();
     expect(PUBLIC_DEMOS["a-good-bass-for-gambling"]).toBeUndefined();
     expect(PUBLIC_DEMOS["make-funk"]).toBeUndefined();
     expect(PRIVATE_CATALOG_DEMOS["a-good-bass-for-gambling"]).toBeTruthy();
     expect(PRIVATE_CATALOG_DEMOS["make-funk"]).toBeTruthy();
+    expect(PRIVATE_CATALOG_DEMOS["maple-leaf-rag"]).toBeTruthy();
   });
 });

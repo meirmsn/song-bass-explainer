@@ -558,8 +558,248 @@ def build_maple():
     return demo
 
 
+def _progression(song, sec, chord_for):
+    seq = []
+    for b in range(sec["first"], sec["end"]):
+        ch, _deg = chord_for(b)
+        if ch and (not seq or seq[-1] != ch):
+            seq.append(ch)
+    return seq
+
+
+def apply_style_insights(demo, song):
+    """Claim-local barRange, pattern-step highlights, harmony chips = section chords."""
+    from style_demos import roman
+
+    def chord_for(b):
+        return song_chord(song, b)
+
+    for sec in demo["secs"]:
+        pat = (demo["patterns"].get(sec["id"]) or [{}])[0]
+        notes = pat.get("notes") or []
+        home = notes[0]["midi"] if notes else 36
+
+        def at(step):
+            for n in notes:
+                if n["step"] == step:
+                    return n
+            return None
+
+        first = notes[0] if notes else {"step": 0, "midi": home}
+        beat3 = at(8) or (notes[min(2, len(notes) - 1)] if notes else first)
+        fig = []
+        seen = set()
+        for n in notes:
+            key = (n["step"], n["midi"])
+            if key in seen:
+                continue
+            seen.add(key)
+            fig.append({"step": n["step"], "midi": n["midi"], "text": "line"})
+            if len(fig) == 3:
+                break
+        if not fig:
+            fig = [{"step": 0, "midi": home, "text": "home"}]
+
+        seq = _progression(song, sec, chord_for)
+        romans = [roman(song, ch) for ch in seq]
+        labeled = " – ".join(
+            f"{ch} ({rn})" if rn else ch for ch, rn in zip(seq, romans)
+        )
+        harm_highlights = []
+        for i, (ch, rn) in enumerate(zip(seq, romans)):
+            harm_highlights.append({
+                "step": i * 8,
+                "kind": "chord",
+                "chord": ch,
+                "text": f"{ch} = {rn}" if rn else ch,
+                "midi": home,
+            })
+
+        cards = demo["cards"][sec["id"]]
+        by_label = {c["label"]: c for c in cards}
+        by_label["Pocket"]["insight"]["barRange"] = [0, 1]
+        by_label["Pocket"]["insight"]["highlights"] = [
+            {"step": first["step"], "midi": first["midi"], "text": "with the kick"},
+            {"step": beat3["step"], "midi": beat3["midi"], "text": "backbeat"},
+        ]
+        by_label["Figure"]["insight"]["barRange"] = [0, 1]
+        by_label["Figure"]["insight"]["highlights"] = fig
+        by_label["Figure"]["insight"]["title"] = f"{sec['name']} line"
+        by_label["Harmony"]["body"] = (
+            f"{sec['name']} is {labeled} — the same symbols as the main chord-name row. "
+            "Bass roots those changes; no extra chords are implied."
+        )
+        by_label["Harmony"]["insight"]["barRange"] = [0, 1]
+        by_label["Harmony"]["insight"]["title"] = " – ".join(seq) if seq else sec["name"]
+        by_label["Harmony"]["insight"]["highlights"] = harm_highlights or [
+            {"step": 0, "kind": "chord", "chord": seq[0] if seq else song["key"], "text": "chord", "midi": home}
+        ]
+        by_label["Missable"]["insight"]["barRange"] = [0, 1]
+        # Light a real pattern note so the schematic is not an empty claim.
+        miss = notes[-1] if notes else first
+        earlier = notes[max(0, len(notes) // 2)] if notes else first
+        by_label["Missable"]["insight"]["highlights"] = [
+            {"step": earlier["step"], "midi": earlier["midi"], "text": "hold the line"},
+            {"step": miss["step"], "midi": miss["midi"], "text": "don’t chase"},
+        ]
+        by_label["Missable"]["body"] = (
+            f"Easy miss in {sec['name']} (bars {sec['first']}–{sec['end'] - 1}): "
+            "ornamenting past the written line. Play the MIDI pocket before adding notes."
+        )
+        demo["cards"][sec["kind"]] = cards
+
+
+def song_chord(song, bar):
+    from style_demos import chord_for_bar
+    return chord_for_bar(song, bar)
+
+
+def build_style_demo(slug: str):
+    """Package work/demo-<slug> from analysis/midi_hits.json + style_demos.SONGS."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from style_demos import SONGS, song_dir
+
+    song = SONGS[slug]
+    root = song_dir(song)
+    hits = json.loads((root / "analysis" / "midi_hits.json").read_text())
+    nbars = song["nbars"]
+    bpm = float(song["bpm"])
+    duration = float(song["duration"])
+    bass = clamp_hits(hits["bassHits"], nbars)
+    drums = clamp_hits(hits["drumHits"], nbars)
+    if len(bass) < 40:
+        raise SystemExit(f"{slug}: bassHits too thin ({len(bass)})")
+    kinds = {h["kind"] for h in drums}
+    missing = {"kick", "snare", "hat"} - kinds
+    if missing or len(drums) < 80:
+        raise SystemExit(f"{slug}: kit incomplete {missing} drums={len(drums)}")
+
+    secs = song["secs"]
+
+    def chord_for(b):
+        return song_chord(song, b)
+
+    patterns = {}
+    for sec in secs:
+        pid = f"{sec['id']}_bass"
+        patterns[sec["id"]] = [pattern_from_hits(bass, sec, pid, f"{sec['name']} MIDI line")]
+        if not patterns[sec["id"]][0]["notes"]:
+            raise SystemExit(f"{slug}: empty pattern {sec['id']}")
+
+    cards = build_cards(
+        secs, bass, key=song["key"], has_drums=True,
+        pocket_bodies=song["pocket_bodies"], chord_for_bar=chord_for,
+    )
+    beat = build_beat(bpm, nbars, duration)
+    player = f"https://bass.meirmsn.dev/?song={slug}"
+    demo = {
+        "schema": "bass.study.v1",
+        "title": song["title"],
+        "artist": song["artist"],
+        "bpm": bpm,
+        "timeSig": "4/4",
+        "keys": song["key"],
+        "nbars": nbars,
+        "duration": duration,
+        "bassHits": bass,
+        "drumHits": drums,
+        "drumsOutBars": [],
+        "secs": secs,
+        "patterns": patterns,
+        "cards": cards,
+        "raw": build_raw(secs, nbars, 60.0 / bpm * 4, chord_for),
+        "credit": {
+            "title": song["title"],
+            "artist": song["artist"],
+            "license": "CC0 1.0 Universal",
+            "source": "MIDI-authored demo (bass + kit + " + song["harm_name"] + ")",
+            "url": player,
+        },
+        "meta": {
+            "insightSlots": "pocket|figure|harmony|missable",
+            "insightRedesign": "lean-B-2026-10-26",
+            "license": "CC0 1.0 Universal",
+            "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "source": "MIDI-authored (FluidSynth / FluidR3_GM)",
+            "sourceUrl": player,
+            "album": "MIDI demos",
+            "analysis": "MIDI→hits 1:1 via scripts/midi_to_hits.py; audio rendered from same MIDI (FluidSynth)",
+            "insightRequired": True,
+            "insightCount": len(secs) * 4,
+            "drumsSource": "GM channel-10 from authored MIDI (exact)",
+            "drumsSchema": "bass.drums.v1",
+            "drumHitCount": len(drums),
+            "bassHitCount": len(bass),
+            "midiAuthoritative": True,
+        },
+        "semantic": {
+            "schema": "bass.semantic.v1",
+            "source": "lean-B cards; bass+drums from MIDI (scripts/midi_to_hits.py)",
+            "confidence": "high — MIDI-authored; hits match render",
+        },
+        "stems": {
+            "available": True,
+            "access": "public",
+            "muteBassSupported": True,
+            "drumsAvailable": True,
+            "dbSupported": True,
+            "format": "aac",
+            "bass": f"/api/demo/{slug}/stems/bass.m4a",
+            "no_bass": f"/api/demo/{slug}/stems/no_bass.m4a",
+            "drums": f"/api/demo/{slug}/stems/drums.m4a",
+            "bass_wav": f"/api/demo/{slug}/stems/bass.wav",
+            "no_bass_wav": f"/api/demo/{slug}/stems/no_bass.wav",
+            "drums_wav": f"/api/demo/{slug}/stems/drums.wav",
+            "other": f"/api/demo/{slug}/stems/other.m4a",
+        },
+        "merge": {"procedural_only": False, "waiting_bot": False, "report": "analysis/merge-report.json"},
+    }
+    apply_style_insights(demo, song)
+
+    attribution = f"""# {song['title']} — attribution
+
+- Title: {song['title']}
+- Author: Song Bass Explainer (MIDI-authored study groove)
+- License: CC0 1.0 Universal — https://creativecommons.org/publicdomain/zero/1.0/
+- Audio: FluidSynth render of the same MIDI (FluidR3_GM soundfont)
+- Hits: scripts/midi_to_hits.py (authoritative MIDI → bassHits/drumHits)
+- Key: {song['key']} · {bpm:g} BPM · {nbars} bars · {duration:g}s
+- Created: 2026-10-28 (America/Los_Angeles)
+"""
+    ship = f"""# {song['title']} — MIDI-first public demo
+
+## 2026-10-28
+- Original CC0 {song['key']} groove, {bpm:g} BPM, {nbars} bars, {duration:g}s
+- Bass + GM kit (kick/snare/hat) + {song['harm_name']}, polyphonic abs-time MIDI
+- Hits from scripts/midi_to_hits.py (1:1 with MIDI)
+- Public DEMO catalog alongside Pocket Funk. Maple Leaf Rag is not a public hero.
+"""
+    write_demo(
+        root,
+        demo,
+        beat,
+        hits,
+        {
+            "ATTRIBUTION.md": attribution,
+            "SHIP.md": ship,
+            "LICENSE": "CC0 1.0 Universal\n",
+            "source/midi_url.txt": f"authored: work/demo-{slug}/source/{slug}.mid\n",
+            "source/download_date.txt": "2026-10-28 America/Los_Angeles\n",
+        },
+    )
+    return demo
+
+
 if __name__ == "__main__":
-    pf = build_pocket_funk()
-    ml = build_maple()
-    print("PF insightCount", pf["meta"]["insightCount"], "cards sections", len(pf["secs"]))
-    print("ML insightCount", ml["meta"]["insightCount"], "bass", len(ml["bassHits"]))
+    import sys
+    args = sys.argv[1:]
+    if not args:
+        pf = build_pocket_funk()
+        ml = build_maple()
+        print("PF insightCount", pf["meta"]["insightCount"], "cards sections", len(pf["secs"]))
+        print("ML insightCount", ml["meta"]["insightCount"], "bass", len(ml["bassHits"]))
+    else:
+        for slug in args:
+            demo = build_style_demo(slug)
+            print(slug, "insight", demo["meta"]["insightCount"], "bass", len(demo["bassHits"]), "drums", len(demo["drumHits"]))

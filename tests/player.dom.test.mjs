@@ -94,6 +94,8 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
           { id: "a-good-bass-for-gambling", title: "A good bass for gambling", artist: "Komiku", group: "demo" },
           { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", group: "demo" },
           { id: "pocket-funk", title: "Pocket Funk", artist: "Song Bass Explainer", group: "demo" },
+          { id: "radio-pop", title: "Radio Pop", artist: "Song Bass Explainer", group: "demo" },
+          { id: "backbeat-rock", title: "Backbeat Rock", artist: "Song Bass Explainer", group: "demo" },
           { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", group: "demo" },
         ],
         processed: [
@@ -105,6 +107,8 @@ async function bootPlayer({ privateMode = true, withStems = false, mutatePayload
       return new Response(JSON.stringify({
         songs: [
           { id: "pocket-funk", title: "Pocket Funk", artist: "Song Bass Explainer", license: "CC0 1.0 Universal" },
+          { id: "radio-pop", title: "Radio Pop", artist: "Song Bass Explainer", license: "CC0 1.0 Universal" },
+          { id: "backbeat-rock", title: "Backbeat Rock", artist: "Song Bass Explainer", license: "CC0 1.0 Universal" },
           { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", license: "Public Domain" },
           { id: "like-a-prayer", title: "Like a Prayer", artist: "Madonna / study", license: "private" },
         ],
@@ -2934,7 +2938,11 @@ describe("public has no Private link + private song typeahead", () => {
     expect(list.textContent).not.toMatch(/\bProcessed\b/);
 
     const demoIds = [...demoGroup.querySelectorAll("[data-song-id]")].map((o) => o.getAttribute("data-song-id"));
-    expect(demoIds).toEqual(["pocket-funk"]);
+    expect(demoIds).toEqual([
+      "pocket-funk",
+      "radio-pop",
+      "backbeat-rock",
+    ]);
     expect(demoIds).not.toContain("maple-leaf-rag");
     expect(list.querySelector('[data-song-id="like-a-prayer"]')).toBeNull();
 
@@ -2947,10 +2955,11 @@ describe("public has no Private link + private song typeahead", () => {
     window.history.replaceState({}, "", "/");
     const api = await bootPlayer({ privateMode: false, withStems: true });
     const urls = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
-    const songFetches = urls.filter((u) => /\/api\/demo\/(pocket-funk|make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
+    const songFetches = urls.filter((u) => /\/api\/demo\/(pocket-funk|radio-pop|backbeat-rock|make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
     expect(songFetches[0]).toContain("/api/demo/pocket-funk");
     expect(songFetches.some((u) => u.includes("a-good-bass-for-gambling"))).toBe(false);
     expect(songFetches.some((u) => u.includes("maple-leaf-rag"))).toBe(false);
+    expect(songFetches.some((u) => u.includes("radio-pop"))).toBe(false);
     const s = api.getState();
     expect(s.loopOn).toBe(false);
     expect(s.secIdx).toBe(0);
@@ -2962,27 +2971,38 @@ describe("public has no Private link + private song typeahead", () => {
     input.focus();
     input.dispatchEvent(new Event("focus", { bubbles: true }));
     const demoIds = [...document.querySelectorAll('[data-group="demo"] [data-song-id]')].map((o) => o.getAttribute("data-song-id"));
-    expect(demoIds).toEqual(["pocket-funk"]);
+    expect(demoIds).toEqual([
+      "pocket-funk",
+      "radio-pop",
+      "backbeat-rock",
+    ]);
   });
 
-  it("explicit ?song=maple-leaf-rag falls back to Pocket Funk; unknown/Komiku does too", async () => {
-    window.history.replaceState({}, "", "/?song=maple-leaf-rag");
+  it("explicit ?song=radio-pop loads that demo; Maple and Komiku fall back to Pocket Funk", async () => {
+    window.history.replaceState({}, "", "/?song=radio-pop");
     const api = await bootPlayer({ privateMode: false, withStems: true });
     const urls = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
-    const songFetches = urls.filter((u) => /\/api\/demo\/(pocket-funk|make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
-    expect(songFetches[0]).toContain("/api/demo/pocket-funk");
-    expect(songFetches.some((u) => u.includes("maple-leaf-rag"))).toBe(false);
+    const songFetches = urls.filter((u) => /\/api\/demo\/(pocket-funk|radio-pop|backbeat-rock|make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
+    expect(songFetches[0]).toContain("/api/demo/radio-pop");
     expect(api.getState().loopOn).toBe(false);
     expect(api.getState().secIdx).toBe(0);
     expect(api.getState().lo).toBe(0);
     expect(api.getState().hi).toBe(demo.nbars - 1);
-    expect(document.querySelector("[data-song-typeahead-input]").value).toMatch(/Pocket Funk/i);
+    expect(document.querySelector("[data-song-typeahead-input]").value).toMatch(/Radio Pop/i);
+
+    // Maple Leaf dropped from the public allowlist → default Pocket Funk
+    window.history.replaceState({}, "", "/?song=maple-leaf-rag");
+    await bootPlayer({ privateMode: false, withStems: true });
+    const urlsMaple = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
+    const mapleFetches = urlsMaple.filter((u) => /\/api\/demo\/(pocket-funk|radio-pop|backbeat-rock|make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
+    expect(mapleFetches[0]).toContain("/api/demo/pocket-funk");
+    expect(mapleFetches.some((u) => u.includes("maple-leaf-rag") && !u.includes("catalog"))).toBe(false);
 
     // Komiku dropped from public allowlist → default Pocket Funk
     window.history.replaceState({}, "", "/?song=a-good-bass-for-gambling");
     await bootPlayer({ privateMode: false, withStems: true });
     const urls2 = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
-    const songFetches2 = urls2.filter((u) => /\/api\/demo\/(pocket-funk|make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
+    const songFetches2 = urls2.filter((u) => /\/api\/demo\/(pocket-funk|radio-pop|backbeat-rock|make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
     expect(songFetches2[0]).toContain("/api/demo/pocket-funk");
     expect(songFetches2.some((u) => u.includes("a-good-bass-for-gambling") && !u.includes("catalog"))).toBe(false);
   });
@@ -3030,19 +3050,21 @@ describe("public has no Private link + private song typeahead", () => {
       const input = document.querySelector("[data-song-typeahead-input]");
       expect(input).toBeTruthy();
       input.focus();
-      input.value = "pocket";
+      input.value = "radio";
       input.dispatchEvent(new Event("input", { bubbles: true }));
       const list = document.querySelector("[data-song-listbox]");
       const opts = [...list.querySelectorAll('[role="option"]')];
-      expect(opts.map((o) => o.getAttribute("data-song-id"))).toEqual(["pocket-funk"]);
+      expect(opts.map((o) => o.getAttribute("data-song-id"))).toEqual(["radio-pop"]);
       expect(list.textContent).not.toMatch(/Maple Leaf/i);
       expect(list.querySelector('[data-group-label="demo"]').textContent).toBe("Demo");
       expect(list.querySelector('[data-group="processed"]')).toBeNull();
       expect(list.textContent).not.toMatch(/\bPublic\b/);
 
-      // Pocket Funk is already loaded, so Enter stays put.
       input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
-      expect(assigns.length).toBe(0);
+      expect(assigns.length).toBe(1);
+      expect(assigns[0].id).toBe("radio-pop");
+      expect(assigns[0].url).toMatch(/[?&]song=radio-pop/);
+
       input.value = "maple";
       input.dispatchEvent(new Event("input", { bubbles: true }));
       expect(list.querySelectorAll('[role="option"]').length).toBe(0);
@@ -3079,6 +3101,8 @@ describe("public has no Private link + private song typeahead", () => {
     const procIds = [...procGroup.querySelectorAll("[data-song-id]")].map((o) => o.getAttribute("data-song-id"));
     expect(demoIds).toContain("a-good-bass-for-gambling");
     expect(demoIds).toContain("make-funk");
+    expect(demoIds).toContain("radio-pop");
+    expect(demoIds).toContain("backbeat-rock");
     expect(demoIds).toContain("maple-leaf-rag");
     expect(procIds).toContain("like-a-prayer");
     expect(demoIds).not.toContain("like-a-prayer");

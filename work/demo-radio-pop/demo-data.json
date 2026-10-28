@@ -1,0 +1,9054 @@
+{
+  "schema": "bass.study.v1",
+  "title": "Radio Pop",
+  "artist": "Song Bass Explainer",
+  "bpm": 120.0,
+  "timeSig": "4/4",
+  "keys": "C",
+  "nbars": 48,
+  "duration": 96.0,
+  "bassHits": [
+    {
+      "bar": 2,
+      "step": 0,
+      "midi": 36,
+      "dur": 8
+    },
+    {
+      "bar": 2,
+      "step": 8,
+      "midi": 43,
+      "dur": 8
+    },
+    {
+      "bar": 3,
+      "step": 0,
+      "midi": 36,
+      "dur": 8
+    },
+    {
+      "bar": 3,
+      "step": 8,
+      "midi": 43,
+      "dur": 8
+    },
+    {
+      "bar": 4,
+      "step": 0,
+      "midi": 36,
+      "dur": 4
+    },
+    {
+      "bar": 4,
+      "step": 4,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 4,
+      "step": 6,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 4,
+      "step": 8,
+      "midi": 36,
+      "dur": 4
+    },
+    {
+      "bar": 4,
+      "step": 12,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 4,
+      "step": 14,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 5,
+      "step": 0,
+      "midi": 36,
+      "dur": 4
+    },
+    {
+      "bar": 5,
+      "step": 4,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 5,
+      "step": 6,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 5,
+      "step": 8,
+      "midi": 36,
+      "dur": 4
+    },
+    {
+      "bar": 5,
+      "step": 12,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 5,
+      "step": 14,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 6,
+      "step": 0,
+      "midi": 43,
+      "dur": 4
+    },
+    {
+      "bar": 6,
+      "step": 4,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 6,
+      "step": 6,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 6,
+      "step": 8,
+      "midi": 43,
+      "dur": 4
+    },
+    {
+      "bar": 6,
+      "step": 12,
+      "midi": 55,
+      "dur": 2
+    },
+    {
+      "bar": 6,
+      "step": 14,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 7,
+      "step": 0,
+      "midi": 43,
+      "dur": 4
+    },
+    {
+      "bar": 7,
+      "step": 4,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 7,
+      "step": 6,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 7,
+      "step": 8,
+      "midi": 43,
+      "dur": 4
+    },
+    {
+      "bar": 7,
+      "step": 12,
+      "midi": 55,
+      "dur": 2
+    },
+    {
+      "bar": 7,
+      "step": 14,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 8,
+      "step": 0,
+      "midi": 45,
+      "dur": 4
+    },
+    {
+      "bar": 8,
+      "step": 4,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 8,
+      "step": 6,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 8,
+      "step": 8,
+      "midi": 45,
+      "dur": 4
+    },
+    {
+      "bar": 8,
+      "step": 12,
+      "midi": 57,
+      "dur": 2
+    },
+    {
+      "bar": 8,
+      "step": 14,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 9,
+      "step": 0,
+      "midi": 45,
+      "dur": 4
+    },
+    {
+      "bar": 9,
+      "step": 4,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 9,
+      "step": 6,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 9,
+      "step": 8,
+      "midi": 45,
+      "dur": 4
+    },
+    {
+      "bar": 9,
+      "step": 12,
+      "midi": 57,
+      "dur": 2
+    },
+    {
+      "bar": 9,
+      "step": 14,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 10,
+      "step": 0,
+      "midi": 41,
+      "dur": 4
+    },
+    {
+      "bar": 10,
+      "step": 4,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 10,
+      "step": 6,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 10,
+      "step": 8,
+      "midi": 41,
+      "dur": 4
+    },
+    {
+      "bar": 10,
+      "step": 12,
+      "midi": 53,
+      "dur": 2
+    },
+    {
+      "bar": 10,
+      "step": 14,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 11,
+      "step": 0,
+      "midi": 41,
+      "dur": 4
+    },
+    {
+      "bar": 11,
+      "step": 4,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 11,
+      "step": 6,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 11,
+      "step": 8,
+      "midi": 41,
+      "dur": 4
+    },
+    {
+      "bar": 11,
+      "step": 12,
+      "midi": 53,
+      "dur": 2
+    },
+    {
+      "bar": 11,
+      "step": 14,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 12,
+      "step": 0,
+      "midi": 38,
+      "dur": 4
+    },
+    {
+      "bar": 12,
+      "step": 4,
+      "midi": 41,
+      "dur": 4
+    },
+    {
+      "bar": 12,
+      "step": 8,
+      "midi": 45,
+      "dur": 4
+    },
+    {
+      "bar": 12,
+      "step": 12,
+      "midi": 48,
+      "dur": 4
+    },
+    {
+      "bar": 13,
+      "step": 0,
+      "midi": 38,
+      "dur": 4
+    },
+    {
+      "bar": 13,
+      "step": 4,
+      "midi": 41,
+      "dur": 4
+    },
+    {
+      "bar": 13,
+      "step": 8,
+      "midi": 45,
+      "dur": 4
+    },
+    {
+      "bar": 13,
+      "step": 12,
+      "midi": 48,
+      "dur": 4
+    },
+    {
+      "bar": 14,
+      "step": 0,
+      "midi": 43,
+      "dur": 4
+    },
+    {
+      "bar": 14,
+      "step": 4,
+      "midi": 47,
+      "dur": 4
+    },
+    {
+      "bar": 14,
+      "step": 8,
+      "midi": 50,
+      "dur": 4
+    },
+    {
+      "bar": 14,
+      "step": 12,
+      "midi": 53,
+      "dur": 4
+    },
+    {
+      "bar": 15,
+      "step": 0,
+      "midi": 43,
+      "dur": 4
+    },
+    {
+      "bar": 15,
+      "step": 4,
+      "midi": 47,
+      "dur": 4
+    },
+    {
+      "bar": 15,
+      "step": 8,
+      "midi": 50,
+      "dur": 4
+    },
+    {
+      "bar": 15,
+      "step": 12,
+      "midi": 53,
+      "dur": 4
+    },
+    {
+      "bar": 16,
+      "step": 0,
+      "midi": 36,
+      "dur": 3
+    },
+    {
+      "bar": 16,
+      "step": 3,
+      "midi": 48,
+      "dur": 1
+    },
+    {
+      "bar": 16,
+      "step": 4,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 16,
+      "step": 6,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 16,
+      "step": 8,
+      "midi": 48,
+      "dur": 4
+    },
+    {
+      "bar": 16,
+      "step": 12,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 16,
+      "step": 14,
+      "midi": 42,
+      "dur": 2
+    },
+    {
+      "bar": 17,
+      "step": 0,
+      "midi": 43,
+      "dur": 3
+    },
+    {
+      "bar": 17,
+      "step": 3,
+      "midi": 55,
+      "dur": 1
+    },
+    {
+      "bar": 17,
+      "step": 4,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 17,
+      "step": 6,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 17,
+      "step": 8,
+      "midi": 55,
+      "dur": 4
+    },
+    {
+      "bar": 17,
+      "step": 12,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 17,
+      "step": 14,
+      "midi": 44,
+      "dur": 2
+    },
+    {
+      "bar": 18,
+      "step": 0,
+      "midi": 45,
+      "dur": 3
+    },
+    {
+      "bar": 18,
+      "step": 3,
+      "midi": 57,
+      "dur": 1
+    },
+    {
+      "bar": 18,
+      "step": 4,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 18,
+      "step": 6,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 18,
+      "step": 8,
+      "midi": 57,
+      "dur": 4
+    },
+    {
+      "bar": 18,
+      "step": 12,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 18,
+      "step": 14,
+      "midi": 42,
+      "dur": 2
+    },
+    {
+      "bar": 19,
+      "step": 0,
+      "midi": 41,
+      "dur": 3
+    },
+    {
+      "bar": 19,
+      "step": 3,
+      "midi": 53,
+      "dur": 1
+    },
+    {
+      "bar": 19,
+      "step": 4,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 19,
+      "step": 6,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 19,
+      "step": 8,
+      "midi": 53,
+      "dur": 4
+    },
+    {
+      "bar": 19,
+      "step": 12,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 19,
+      "step": 14,
+      "midi": 37,
+      "dur": 2
+    },
+    {
+      "bar": 20,
+      "step": 0,
+      "midi": 36,
+      "dur": 3
+    },
+    {
+      "bar": 20,
+      "step": 3,
+      "midi": 48,
+      "dur": 1
+    },
+    {
+      "bar": 20,
+      "step": 4,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 20,
+      "step": 6,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 20,
+      "step": 8,
+      "midi": 48,
+      "dur": 4
+    },
+    {
+      "bar": 20,
+      "step": 12,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 20,
+      "step": 14,
+      "midi": 42,
+      "dur": 2
+    },
+    {
+      "bar": 21,
+      "step": 0,
+      "midi": 43,
+      "dur": 3
+    },
+    {
+      "bar": 21,
+      "step": 3,
+      "midi": 55,
+      "dur": 1
+    },
+    {
+      "bar": 21,
+      "step": 4,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 21,
+      "step": 6,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 21,
+      "step": 8,
+      "midi": 55,
+      "dur": 4
+    },
+    {
+      "bar": 21,
+      "step": 12,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 21,
+      "step": 14,
+      "midi": 44,
+      "dur": 2
+    },
+    {
+      "bar": 22,
+      "step": 0,
+      "midi": 45,
+      "dur": 3
+    },
+    {
+      "bar": 22,
+      "step": 3,
+      "midi": 57,
+      "dur": 1
+    },
+    {
+      "bar": 22,
+      "step": 4,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 22,
+      "step": 6,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 22,
+      "step": 8,
+      "midi": 57,
+      "dur": 4
+    },
+    {
+      "bar": 22,
+      "step": 12,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 22,
+      "step": 14,
+      "midi": 42,
+      "dur": 2
+    },
+    {
+      "bar": 23,
+      "step": 0,
+      "midi": 41,
+      "dur": 3
+    },
+    {
+      "bar": 23,
+      "step": 3,
+      "midi": 53,
+      "dur": 1
+    },
+    {
+      "bar": 23,
+      "step": 4,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 23,
+      "step": 6,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 23,
+      "step": 8,
+      "midi": 53,
+      "dur": 4
+    },
+    {
+      "bar": 23,
+      "step": 12,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 23,
+      "step": 14,
+      "midi": 37,
+      "dur": 2
+    },
+    {
+      "bar": 24,
+      "step": 0,
+      "midi": 36,
+      "dur": 4
+    },
+    {
+      "bar": 24,
+      "step": 4,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 24,
+      "step": 6,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 24,
+      "step": 8,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 24,
+      "step": 10,
+      "midi": 40,
+      "dur": 2
+    },
+    {
+      "bar": 24,
+      "step": 12,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 24,
+      "step": 14,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 25,
+      "step": 0,
+      "midi": 36,
+      "dur": 4
+    },
+    {
+      "bar": 25,
+      "step": 4,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 25,
+      "step": 6,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 25,
+      "step": 8,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 25,
+      "step": 10,
+      "midi": 40,
+      "dur": 2
+    },
+    {
+      "bar": 25,
+      "step": 12,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 25,
+      "step": 14,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 26,
+      "step": 0,
+      "midi": 43,
+      "dur": 4
+    },
+    {
+      "bar": 26,
+      "step": 4,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 26,
+      "step": 6,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 26,
+      "step": 8,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 26,
+      "step": 10,
+      "midi": 47,
+      "dur": 2
+    },
+    {
+      "bar": 26,
+      "step": 12,
+      "midi": 55,
+      "dur": 2
+    },
+    {
+      "bar": 26,
+      "step": 14,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 27,
+      "step": 0,
+      "midi": 43,
+      "dur": 4
+    },
+    {
+      "bar": 27,
+      "step": 4,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 27,
+      "step": 6,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 27,
+      "step": 8,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 27,
+      "step": 10,
+      "midi": 47,
+      "dur": 2
+    },
+    {
+      "bar": 27,
+      "step": 12,
+      "midi": 55,
+      "dur": 2
+    },
+    {
+      "bar": 27,
+      "step": 14,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 28,
+      "step": 0,
+      "midi": 45,
+      "dur": 4
+    },
+    {
+      "bar": 28,
+      "step": 4,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 28,
+      "step": 6,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 28,
+      "step": 8,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 28,
+      "step": 10,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 28,
+      "step": 12,
+      "midi": 57,
+      "dur": 2
+    },
+    {
+      "bar": 28,
+      "step": 14,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 29,
+      "step": 0,
+      "midi": 45,
+      "dur": 4
+    },
+    {
+      "bar": 29,
+      "step": 4,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 29,
+      "step": 6,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 29,
+      "step": 8,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 29,
+      "step": 10,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 29,
+      "step": 12,
+      "midi": 57,
+      "dur": 2
+    },
+    {
+      "bar": 29,
+      "step": 14,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 30,
+      "step": 0,
+      "midi": 41,
+      "dur": 4
+    },
+    {
+      "bar": 30,
+      "step": 4,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 30,
+      "step": 6,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 30,
+      "step": 8,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 30,
+      "step": 10,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 30,
+      "step": 12,
+      "midi": 53,
+      "dur": 2
+    },
+    {
+      "bar": 30,
+      "step": 14,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 31,
+      "step": 0,
+      "midi": 41,
+      "dur": 4
+    },
+    {
+      "bar": 31,
+      "step": 4,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 31,
+      "step": 6,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 31,
+      "step": 8,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 31,
+      "step": 10,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 31,
+      "step": 12,
+      "midi": 53,
+      "dur": 2
+    },
+    {
+      "bar": 31,
+      "step": 14,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 32,
+      "step": 0,
+      "midi": 45,
+      "dur": 6
+    },
+    {
+      "bar": 32,
+      "step": 6,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 32,
+      "step": 8,
+      "midi": 57,
+      "dur": 8
+    },
+    {
+      "bar": 33,
+      "step": 0,
+      "midi": 45,
+      "dur": 6
+    },
+    {
+      "bar": 33,
+      "step": 6,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 33,
+      "step": 8,
+      "midi": 57,
+      "dur": 8
+    },
+    {
+      "bar": 34,
+      "step": 0,
+      "midi": 41,
+      "dur": 6
+    },
+    {
+      "bar": 34,
+      "step": 6,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 34,
+      "step": 8,
+      "midi": 53,
+      "dur": 8
+    },
+    {
+      "bar": 35,
+      "step": 0,
+      "midi": 41,
+      "dur": 6
+    },
+    {
+      "bar": 35,
+      "step": 6,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 35,
+      "step": 8,
+      "midi": 53,
+      "dur": 8
+    },
+    {
+      "bar": 36,
+      "step": 0,
+      "midi": 36,
+      "dur": 6
+    },
+    {
+      "bar": 36,
+      "step": 6,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 36,
+      "step": 8,
+      "midi": 48,
+      "dur": 8
+    },
+    {
+      "bar": 37,
+      "step": 0,
+      "midi": 36,
+      "dur": 6
+    },
+    {
+      "bar": 37,
+      "step": 6,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 37,
+      "step": 8,
+      "midi": 48,
+      "dur": 8
+    },
+    {
+      "bar": 38,
+      "step": 0,
+      "midi": 43,
+      "dur": 6
+    },
+    {
+      "bar": 38,
+      "step": 6,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 38,
+      "step": 8,
+      "midi": 55,
+      "dur": 8
+    },
+    {
+      "bar": 39,
+      "step": 0,
+      "midi": 43,
+      "dur": 6
+    },
+    {
+      "bar": 39,
+      "step": 6,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 39,
+      "step": 8,
+      "midi": 55,
+      "dur": 8
+    },
+    {
+      "bar": 40,
+      "step": 0,
+      "midi": 36,
+      "dur": 3
+    },
+    {
+      "bar": 40,
+      "step": 3,
+      "midi": 48,
+      "dur": 1
+    },
+    {
+      "bar": 40,
+      "step": 4,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 40,
+      "step": 6,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 40,
+      "step": 8,
+      "midi": 48,
+      "dur": 4
+    },
+    {
+      "bar": 40,
+      "step": 12,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 40,
+      "step": 14,
+      "midi": 42,
+      "dur": 2
+    },
+    {
+      "bar": 41,
+      "step": 0,
+      "midi": 43,
+      "dur": 3
+    },
+    {
+      "bar": 41,
+      "step": 3,
+      "midi": 55,
+      "dur": 1
+    },
+    {
+      "bar": 41,
+      "step": 4,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 41,
+      "step": 6,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 41,
+      "step": 8,
+      "midi": 55,
+      "dur": 4
+    },
+    {
+      "bar": 41,
+      "step": 12,
+      "midi": 50,
+      "dur": 2
+    },
+    {
+      "bar": 41,
+      "step": 14,
+      "midi": 44,
+      "dur": 2
+    },
+    {
+      "bar": 42,
+      "step": 0,
+      "midi": 45,
+      "dur": 3
+    },
+    {
+      "bar": 42,
+      "step": 3,
+      "midi": 57,
+      "dur": 1
+    },
+    {
+      "bar": 42,
+      "step": 4,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 42,
+      "step": 6,
+      "midi": 45,
+      "dur": 2
+    },
+    {
+      "bar": 42,
+      "step": 8,
+      "midi": 57,
+      "dur": 4
+    },
+    {
+      "bar": 42,
+      "step": 12,
+      "midi": 52,
+      "dur": 2
+    },
+    {
+      "bar": 42,
+      "step": 14,
+      "midi": 42,
+      "dur": 2
+    },
+    {
+      "bar": 43,
+      "step": 0,
+      "midi": 41,
+      "dur": 3
+    },
+    {
+      "bar": 43,
+      "step": 3,
+      "midi": 53,
+      "dur": 1
+    },
+    {
+      "bar": 43,
+      "step": 4,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 43,
+      "step": 6,
+      "midi": 41,
+      "dur": 2
+    },
+    {
+      "bar": 43,
+      "step": 8,
+      "midi": 53,
+      "dur": 4
+    },
+    {
+      "bar": 43,
+      "step": 12,
+      "midi": 48,
+      "dur": 2
+    },
+    {
+      "bar": 43,
+      "step": 14,
+      "midi": 37,
+      "dur": 2
+    },
+    {
+      "bar": 44,
+      "step": 0,
+      "midi": 36,
+      "dur": 3
+    },
+    {
+      "bar": 44,
+      "step": 3,
+      "midi": 48,
+      "dur": 1
+    },
+    {
+      "bar": 44,
+      "step": 4,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 44,
+      "step": 6,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 44,
+      "step": 8,
+      "midi": 48,
+      "dur": 4
+    },
+    {
+      "bar": 44,
+      "step": 12,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 44,
+      "step": 14,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 45,
+      "step": 0,
+      "midi": 36,
+      "dur": 3
+    },
+    {
+      "bar": 45,
+      "step": 3,
+      "midi": 48,
+      "dur": 1
+    },
+    {
+      "bar": 45,
+      "step": 4,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 45,
+      "step": 6,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 45,
+      "step": 8,
+      "midi": 48,
+      "dur": 4
+    },
+    {
+      "bar": 45,
+      "step": 12,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 45,
+      "step": 14,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 46,
+      "step": 0,
+      "midi": 36,
+      "dur": 3
+    },
+    {
+      "bar": 46,
+      "step": 3,
+      "midi": 48,
+      "dur": 1
+    },
+    {
+      "bar": 46,
+      "step": 4,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 46,
+      "step": 6,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 46,
+      "step": 8,
+      "midi": 48,
+      "dur": 4
+    },
+    {
+      "bar": 46,
+      "step": 12,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 46,
+      "step": 14,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 47,
+      "step": 0,
+      "midi": 36,
+      "dur": 3
+    },
+    {
+      "bar": 47,
+      "step": 3,
+      "midi": 48,
+      "dur": 1
+    },
+    {
+      "bar": 47,
+      "step": 4,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 47,
+      "step": 6,
+      "midi": 36,
+      "dur": 2
+    },
+    {
+      "bar": 47,
+      "step": 8,
+      "midi": 48,
+      "dur": 4
+    },
+    {
+      "bar": 47,
+      "step": 12,
+      "midi": 43,
+      "dur": 2
+    },
+    {
+      "bar": 47,
+      "step": 14,
+      "midi": 36,
+      "dur": 2
+    }
+  ],
+  "drumHits": [
+    {
+      "bar": 0,
+      "step": 0,
+      "kind": "crash",
+      "midi": 49
+    },
+    {
+      "bar": 0,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 0,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 0,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 0,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 0,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 0,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 0,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 0,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 0,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 0,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 0,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 0,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 1,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 1,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 1,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 1,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 1,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 1,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 1,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 1,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 1,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 1,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 1,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 1,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 2,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 2,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 2,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 2,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 2,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 2,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 2,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 2,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 2,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 2,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 2,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 2,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 2,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 2,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 3,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 3,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 3,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 3,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 3,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 3,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 3,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 3,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 3,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 3,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 3,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 3,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 3,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 3,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 4,
+      "step": 0,
+      "kind": "crash",
+      "midi": 49
+    },
+    {
+      "bar": 4,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 4,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 4,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 4,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 4,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 4,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 4,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 4,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 4,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 4,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 4,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 4,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 4,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 4,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 5,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 5,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 5,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 5,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 5,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 5,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 5,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 5,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 5,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 5,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 5,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 5,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 5,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 5,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 6,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 6,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 6,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 6,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 6,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 6,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 6,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 6,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 6,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 6,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 6,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 6,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 6,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 6,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 7,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 7,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 7,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 7,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 7,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 7,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 7,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 7,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 7,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 7,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 7,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 7,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 7,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 7,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 8,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 8,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 8,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 8,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 8,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 8,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 8,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 8,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 8,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 8,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 8,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 8,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 8,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 8,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 9,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 9,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 9,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 9,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 9,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 9,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 9,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 9,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 9,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 9,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 9,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 9,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 9,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 9,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 10,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 10,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 10,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 10,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 10,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 10,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 10,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 10,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 10,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 10,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 10,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 10,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 10,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 10,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 11,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 11,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 11,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 11,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 11,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 11,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 11,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 11,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 11,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 11,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 11,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 11,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 11,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 11,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 12,
+      "step": 0,
+      "kind": "crash",
+      "midi": 49
+    },
+    {
+      "bar": 12,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 12,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 12,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 12,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 12,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 12,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 12,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 12,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 12,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 12,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 12,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 12,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 12,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 12,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 13,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 13,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 13,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 13,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 13,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 13,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 13,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 13,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 13,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 13,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 13,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 13,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 13,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 13,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 14,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 14,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 14,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 14,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 14,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 14,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 14,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 14,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 14,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 14,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 14,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 14,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 14,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 14,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 15,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 15,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 15,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 15,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 15,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 15,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 15,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 15,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 15,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 15,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 15,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 15,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 15,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 15,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 16,
+      "step": 0,
+      "kind": "crash",
+      "midi": 49
+    },
+    {
+      "bar": 16,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 16,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 16,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 16,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 16,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 16,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 16,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 16,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 16,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 16,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 16,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 16,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 16,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 16,
+      "step": 14,
+      "kind": "hat",
+      "midi": 46
+    },
+    {
+      "bar": 17,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 17,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 17,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 17,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 17,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 17,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 17,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 17,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 17,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 17,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 17,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 17,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 17,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 17,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 18,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 18,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 18,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 18,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 18,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 18,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 18,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 18,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 18,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 18,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 18,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 18,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 18,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 18,
+      "step": 14,
+      "kind": "hat",
+      "midi": 46
+    },
+    {
+      "bar": 19,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 19,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 19,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 19,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 19,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 19,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 19,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 19,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 19,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 19,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 19,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 19,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 19,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 19,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 20,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 20,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 20,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 20,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 20,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 20,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 20,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 20,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 20,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 20,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 20,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 20,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 20,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 20,
+      "step": 14,
+      "kind": "hat",
+      "midi": 46
+    },
+    {
+      "bar": 21,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 21,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 21,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 21,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 21,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 21,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 21,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 21,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 21,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 21,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 21,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 21,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 21,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 21,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 22,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 22,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 22,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 22,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 22,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 22,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 22,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 22,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 22,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 22,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 22,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 22,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 22,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 22,
+      "step": 14,
+      "kind": "hat",
+      "midi": 46
+    },
+    {
+      "bar": 23,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 23,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 23,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 23,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 23,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 23,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 23,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 23,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 23,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 23,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 23,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 23,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 23,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 23,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 24,
+      "step": 0,
+      "kind": "crash",
+      "midi": 49
+    },
+    {
+      "bar": 24,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 24,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 24,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 24,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 24,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 24,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 24,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 24,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 24,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 24,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 24,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 24,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 24,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 24,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 25,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 25,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 25,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 25,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 25,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 25,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 25,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 25,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 25,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 25,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 25,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 25,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 25,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 25,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 26,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 26,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 26,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 26,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 26,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 26,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 26,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 26,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 26,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 26,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 26,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 26,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 26,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 26,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 27,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 27,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 27,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 27,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 27,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 27,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 27,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 27,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 27,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 27,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 27,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 27,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 27,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 27,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 28,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 28,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 28,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 28,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 28,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 28,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 28,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 28,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 28,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 28,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 28,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 28,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 28,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 28,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 29,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 29,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 29,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 29,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 29,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 29,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 29,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 29,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 29,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 29,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 29,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 29,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 29,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 29,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 30,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 30,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 30,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 30,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 30,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 30,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 30,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 30,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 30,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 30,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 30,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 30,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 30,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 30,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 31,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 31,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 31,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 31,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 31,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 31,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 31,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 31,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 31,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 31,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 31,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 31,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 31,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 31,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 32,
+      "step": 0,
+      "kind": "crash",
+      "midi": 49
+    },
+    {
+      "bar": 32,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 32,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 32,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 32,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 32,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 32,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 32,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 32,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 32,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 32,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 32,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 32,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 32,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 32,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 33,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 33,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 33,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 33,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 33,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 33,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 33,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 33,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 33,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 33,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 33,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 33,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 33,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 33,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 34,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 34,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 34,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 34,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 34,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 34,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 34,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 34,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 34,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 34,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 34,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 34,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 34,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 34,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 35,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 35,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 35,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 35,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 35,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 35,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 35,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 35,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 35,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 35,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 35,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 35,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 35,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 35,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 36,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 36,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 36,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 36,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 36,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 36,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 36,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 36,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 36,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 36,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 36,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 36,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 36,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 36,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 37,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 37,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 37,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 37,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 37,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 37,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 37,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 37,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 37,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 37,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 37,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 37,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 37,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 37,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 38,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 38,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 38,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 38,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 38,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 38,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 38,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 38,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 38,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 38,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 38,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 38,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 38,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 38,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 39,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 39,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 39,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 39,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 39,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 39,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 39,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 39,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 39,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 39,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 39,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 39,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 39,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 39,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 40,
+      "step": 0,
+      "kind": "crash",
+      "midi": 49
+    },
+    {
+      "bar": 40,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 40,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 40,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 40,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 40,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 40,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 40,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 40,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 40,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 40,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 40,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 40,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 40,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 40,
+      "step": 14,
+      "kind": "hat",
+      "midi": 46
+    },
+    {
+      "bar": 41,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 41,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 41,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 41,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 41,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 41,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 41,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 41,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 41,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 41,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 41,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 41,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 41,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 41,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 42,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 42,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 42,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 42,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 42,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 42,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 42,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 42,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 42,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 42,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 42,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 42,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 42,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 42,
+      "step": 14,
+      "kind": "hat",
+      "midi": 46
+    },
+    {
+      "bar": 43,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 43,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 43,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 43,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 43,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 43,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 43,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 43,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 43,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 43,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 43,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 43,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 43,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 43,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 44,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 44,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 44,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 44,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 44,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 44,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 44,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 44,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 44,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 44,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 44,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 44,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 44,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 44,
+      "step": 14,
+      "kind": "hat",
+      "midi": 46
+    },
+    {
+      "bar": 45,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 45,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 45,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 45,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 45,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 45,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 45,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 45,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 45,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 45,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 45,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 45,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 45,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 45,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 46,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 46,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 46,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 46,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 46,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 46,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 46,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 46,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 46,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 46,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 46,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 46,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 46,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 46,
+      "step": 14,
+      "kind": "hat",
+      "midi": 46
+    },
+    {
+      "bar": 47,
+      "step": 0,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 47,
+      "step": 0,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 47,
+      "step": 2,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 47,
+      "step": 4,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 47,
+      "step": 4,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 47,
+      "step": 4,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 47,
+      "step": 6,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 47,
+      "step": 8,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 47,
+      "step": 8,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 47,
+      "step": 10,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 47,
+      "step": 12,
+      "kind": "hat",
+      "midi": 42
+    },
+    {
+      "bar": 47,
+      "step": 12,
+      "kind": "kick",
+      "midi": 36
+    },
+    {
+      "bar": 47,
+      "step": 12,
+      "kind": "snare",
+      "midi": 38
+    },
+    {
+      "bar": 47,
+      "step": 14,
+      "kind": "hat",
+      "midi": 42
+    }
+  ],
+  "drumsOutBars": [],
+  "secs": [
+    {
+      "id": "intro",
+      "name": "Intro",
+      "first": 0,
+      "end": 4,
+      "kind": "intro",
+      "ci": 0
+    },
+    {
+      "id": "v1",
+      "name": "Verse",
+      "first": 4,
+      "end": 12,
+      "kind": "verse",
+      "ci": 1
+    },
+    {
+      "id": "pre",
+      "name": "Pre-chorus",
+      "first": 12,
+      "end": 16,
+      "kind": "pre",
+      "ci": 2
+    },
+    {
+      "id": "ch1",
+      "name": "Chorus",
+      "first": 16,
+      "end": 24,
+      "kind": "chorus",
+      "ci": 3
+    },
+    {
+      "id": "v2",
+      "name": "Verse 2",
+      "first": 24,
+      "end": 32,
+      "kind": "verse",
+      "ci": 1
+    },
+    {
+      "id": "br",
+      "name": "Bridge",
+      "first": 32,
+      "end": 40,
+      "kind": "bridge",
+      "ci": 4
+    },
+    {
+      "id": "ch2",
+      "name": "Chorus out",
+      "first": 40,
+      "end": 48,
+      "kind": "chorus",
+      "ci": 3
+    }
+  ],
+  "patterns": {
+    "intro": [
+      {
+        "id": "intro_bass",
+        "name": "Intro MIDI line",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36,
+            "dur": 8
+          },
+          {
+            "step": 8,
+            "midi": 43,
+            "dur": 8
+          },
+          {
+            "step": 16,
+            "midi": 36,
+            "dur": 8
+          },
+          {
+            "step": 24,
+            "midi": 43,
+            "dur": 8
+          }
+        ],
+        "midi": true,
+        "sectionNotes": [
+          {
+            "step": 32,
+            "midi": 36,
+            "dur": 8
+          },
+          {
+            "step": 40,
+            "midi": 43,
+            "dur": 8
+          },
+          {
+            "step": 48,
+            "midi": 36,
+            "dur": 8
+          },
+          {
+            "step": 56,
+            "midi": 43,
+            "dur": 8
+          }
+        ],
+        "sectionBars": [
+          2,
+          3
+        ]
+      }
+    ],
+    "v1": [
+      {
+        "id": "v1_bass",
+        "name": "Verse MIDI line",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 4,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 6,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 8,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 12,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 14,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 16,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 20,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 22,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 24,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 28,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 30,
+            "midi": 36,
+            "dur": 2
+          }
+        ],
+        "midi": true,
+        "sectionNotes": [
+          {
+            "step": 0,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 4,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 6,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 8,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 12,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 14,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 16,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 20,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 22,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 24,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 28,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 30,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 32,
+            "midi": 43,
+            "dur": 4
+          },
+          {
+            "step": 36,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 38,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 40,
+            "midi": 43,
+            "dur": 4
+          },
+          {
+            "step": 44,
+            "midi": 55,
+            "dur": 2
+          },
+          {
+            "step": 46,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 48,
+            "midi": 43,
+            "dur": 4
+          },
+          {
+            "step": 52,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 54,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 56,
+            "midi": 43,
+            "dur": 4
+          },
+          {
+            "step": 60,
+            "midi": 55,
+            "dur": 2
+          },
+          {
+            "step": 62,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 64,
+            "midi": 45,
+            "dur": 4
+          },
+          {
+            "step": 68,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 70,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 72,
+            "midi": 45,
+            "dur": 4
+          },
+          {
+            "step": 76,
+            "midi": 57,
+            "dur": 2
+          },
+          {
+            "step": 78,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 80,
+            "midi": 45,
+            "dur": 4
+          },
+          {
+            "step": 84,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 86,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 88,
+            "midi": 45,
+            "dur": 4
+          },
+          {
+            "step": 92,
+            "midi": 57,
+            "dur": 2
+          },
+          {
+            "step": 94,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 96,
+            "midi": 41,
+            "dur": 4
+          },
+          {
+            "step": 100,
+            "midi": 41,
+            "dur": 2
+          },
+          {
+            "step": 102,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 104,
+            "midi": 41,
+            "dur": 4
+          },
+          {
+            "step": 108,
+            "midi": 53,
+            "dur": 2
+          },
+          {
+            "step": 110,
+            "midi": 41,
+            "dur": 2
+          },
+          {
+            "step": 112,
+            "midi": 41,
+            "dur": 4
+          },
+          {
+            "step": 116,
+            "midi": 41,
+            "dur": 2
+          },
+          {
+            "step": 118,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 120,
+            "midi": 41,
+            "dur": 4
+          },
+          {
+            "step": 124,
+            "midi": 53,
+            "dur": 2
+          },
+          {
+            "step": 126,
+            "midi": 41,
+            "dur": 2
+          }
+        ],
+        "sectionBars": [
+          4,
+          5
+        ]
+      }
+    ],
+    "pre": [
+      {
+        "id": "pre_bass",
+        "name": "Pre-chorus MIDI line",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 38,
+            "dur": 4
+          },
+          {
+            "step": 4,
+            "midi": 41,
+            "dur": 4
+          },
+          {
+            "step": 8,
+            "midi": 45,
+            "dur": 4
+          },
+          {
+            "step": 12,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 16,
+            "midi": 38,
+            "dur": 4
+          },
+          {
+            "step": 20,
+            "midi": 41,
+            "dur": 4
+          },
+          {
+            "step": 24,
+            "midi": 45,
+            "dur": 4
+          },
+          {
+            "step": 28,
+            "midi": 48,
+            "dur": 4
+          }
+        ],
+        "midi": true,
+        "sectionNotes": [
+          {
+            "step": 0,
+            "midi": 38,
+            "dur": 4
+          },
+          {
+            "step": 4,
+            "midi": 41,
+            "dur": 4
+          },
+          {
+            "step": 8,
+            "midi": 45,
+            "dur": 4
+          },
+          {
+            "step": 12,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 16,
+            "midi": 38,
+            "dur": 4
+          },
+          {
+            "step": 20,
+            "midi": 41,
+            "dur": 4
+          },
+          {
+            "step": 24,
+            "midi": 45,
+            "dur": 4
+          },
+          {
+            "step": 28,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 32,
+            "midi": 43,
+            "dur": 4
+          },
+          {
+            "step": 36,
+            "midi": 47,
+            "dur": 4
+          },
+          {
+            "step": 40,
+            "midi": 50,
+            "dur": 4
+          },
+          {
+            "step": 44,
+            "midi": 53,
+            "dur": 4
+          },
+          {
+            "step": 48,
+            "midi": 43,
+            "dur": 4
+          },
+          {
+            "step": 52,
+            "midi": 47,
+            "dur": 4
+          },
+          {
+            "step": 56,
+            "midi": 50,
+            "dur": 4
+          },
+          {
+            "step": 60,
+            "midi": 53,
+            "dur": 4
+          }
+        ],
+        "sectionBars": [
+          12,
+          13
+        ]
+      }
+    ],
+    "ch1": [
+      {
+        "id": "ch1_bass",
+        "name": "Chorus MIDI line",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36,
+            "dur": 3
+          },
+          {
+            "step": 3,
+            "midi": 48,
+            "dur": 1
+          },
+          {
+            "step": 4,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 6,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 8,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 12,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 14,
+            "midi": 42,
+            "dur": 2
+          },
+          {
+            "step": 16,
+            "midi": 43,
+            "dur": 3
+          },
+          {
+            "step": 19,
+            "midi": 55,
+            "dur": 1
+          },
+          {
+            "step": 20,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 22,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 24,
+            "midi": 55,
+            "dur": 4
+          },
+          {
+            "step": 28,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 30,
+            "midi": 44,
+            "dur": 2
+          }
+        ],
+        "midi": true,
+        "sectionNotes": [
+          {
+            "step": 0,
+            "midi": 36,
+            "dur": 3
+          },
+          {
+            "step": 3,
+            "midi": 48,
+            "dur": 1
+          },
+          {
+            "step": 4,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 6,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 8,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 12,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 14,
+            "midi": 42,
+            "dur": 2
+          },
+          {
+            "step": 16,
+            "midi": 43,
+            "dur": 3
+          },
+          {
+            "step": 19,
+            "midi": 55,
+            "dur": 1
+          },
+          {
+            "step": 20,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 22,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 24,
+            "midi": 55,
+            "dur": 4
+          },
+          {
+            "step": 28,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 30,
+            "midi": 44,
+            "dur": 2
+          },
+          {
+            "step": 32,
+            "midi": 45,
+            "dur": 3
+          },
+          {
+            "step": 35,
+            "midi": 57,
+            "dur": 1
+          },
+          {
+            "step": 36,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 38,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 40,
+            "midi": 57,
+            "dur": 4
+          },
+          {
+            "step": 44,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 46,
+            "midi": 42,
+            "dur": 2
+          },
+          {
+            "step": 48,
+            "midi": 41,
+            "dur": 3
+          },
+          {
+            "step": 51,
+            "midi": 53,
+            "dur": 1
+          },
+          {
+            "step": 52,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 54,
+            "midi": 41,
+            "dur": 2
+          },
+          {
+            "step": 56,
+            "midi": 53,
+            "dur": 4
+          },
+          {
+            "step": 60,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 62,
+            "midi": 37,
+            "dur": 2
+          },
+          {
+            "step": 64,
+            "midi": 36,
+            "dur": 3
+          },
+          {
+            "step": 67,
+            "midi": 48,
+            "dur": 1
+          },
+          {
+            "step": 68,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 70,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 72,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 76,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 78,
+            "midi": 42,
+            "dur": 2
+          },
+          {
+            "step": 80,
+            "midi": 43,
+            "dur": 3
+          },
+          {
+            "step": 83,
+            "midi": 55,
+            "dur": 1
+          },
+          {
+            "step": 84,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 86,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 88,
+            "midi": 55,
+            "dur": 4
+          },
+          {
+            "step": 92,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 94,
+            "midi": 44,
+            "dur": 2
+          },
+          {
+            "step": 96,
+            "midi": 45,
+            "dur": 3
+          },
+          {
+            "step": 99,
+            "midi": 57,
+            "dur": 1
+          },
+          {
+            "step": 100,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 102,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 104,
+            "midi": 57,
+            "dur": 4
+          },
+          {
+            "step": 108,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 110,
+            "midi": 42,
+            "dur": 2
+          },
+          {
+            "step": 112,
+            "midi": 41,
+            "dur": 3
+          },
+          {
+            "step": 115,
+            "midi": 53,
+            "dur": 1
+          },
+          {
+            "step": 116,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 118,
+            "midi": 41,
+            "dur": 2
+          },
+          {
+            "step": 120,
+            "midi": 53,
+            "dur": 4
+          },
+          {
+            "step": 124,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 126,
+            "midi": 37,
+            "dur": 2
+          }
+        ],
+        "sectionBars": [
+          16,
+          17
+        ]
+      }
+    ],
+    "v2": [
+      {
+        "id": "v2_bass",
+        "name": "Verse 2 MIDI line",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 4,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 6,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 8,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 10,
+            "midi": 40,
+            "dur": 2
+          },
+          {
+            "step": 12,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 14,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 16,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 20,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 22,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 24,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 26,
+            "midi": 40,
+            "dur": 2
+          },
+          {
+            "step": 28,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 30,
+            "midi": 36,
+            "dur": 2
+          }
+        ],
+        "midi": true,
+        "sectionNotes": [
+          {
+            "step": 0,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 4,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 6,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 8,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 10,
+            "midi": 40,
+            "dur": 2
+          },
+          {
+            "step": 12,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 14,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 16,
+            "midi": 36,
+            "dur": 4
+          },
+          {
+            "step": 20,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 22,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 24,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 26,
+            "midi": 40,
+            "dur": 2
+          },
+          {
+            "step": 28,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 30,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 32,
+            "midi": 43,
+            "dur": 4
+          },
+          {
+            "step": 36,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 38,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 40,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 42,
+            "midi": 47,
+            "dur": 2
+          },
+          {
+            "step": 44,
+            "midi": 55,
+            "dur": 2
+          },
+          {
+            "step": 46,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 48,
+            "midi": 43,
+            "dur": 4
+          },
+          {
+            "step": 52,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 54,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 56,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 58,
+            "midi": 47,
+            "dur": 2
+          },
+          {
+            "step": 60,
+            "midi": 55,
+            "dur": 2
+          },
+          {
+            "step": 62,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 64,
+            "midi": 45,
+            "dur": 4
+          },
+          {
+            "step": 68,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 70,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 72,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 74,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 76,
+            "midi": 57,
+            "dur": 2
+          },
+          {
+            "step": 78,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 80,
+            "midi": 45,
+            "dur": 4
+          },
+          {
+            "step": 84,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 86,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 88,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 90,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 92,
+            "midi": 57,
+            "dur": 2
+          },
+          {
+            "step": 94,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 96,
+            "midi": 41,
+            "dur": 4
+          },
+          {
+            "step": 100,
+            "midi": 41,
+            "dur": 2
+          },
+          {
+            "step": 102,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 104,
+            "midi": 41,
+            "dur": 2
+          },
+          {
+            "step": 106,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 108,
+            "midi": 53,
+            "dur": 2
+          },
+          {
+            "step": 110,
+            "midi": 41,
+            "dur": 2
+          },
+          {
+            "step": 112,
+            "midi": 41,
+            "dur": 4
+          },
+          {
+            "step": 116,
+            "midi": 41,
+            "dur": 2
+          },
+          {
+            "step": 118,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 120,
+            "midi": 41,
+            "dur": 2
+          },
+          {
+            "step": 122,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 124,
+            "midi": 53,
+            "dur": 2
+          },
+          {
+            "step": 126,
+            "midi": 41,
+            "dur": 2
+          }
+        ],
+        "sectionBars": [
+          24,
+          25
+        ]
+      }
+    ],
+    "br": [
+      {
+        "id": "br_bass",
+        "name": "Bridge MIDI line",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 45,
+            "dur": 6
+          },
+          {
+            "step": 6,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 8,
+            "midi": 57,
+            "dur": 8
+          },
+          {
+            "step": 16,
+            "midi": 45,
+            "dur": 6
+          },
+          {
+            "step": 22,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 24,
+            "midi": 57,
+            "dur": 8
+          }
+        ],
+        "midi": true,
+        "sectionNotes": [
+          {
+            "step": 0,
+            "midi": 45,
+            "dur": 6
+          },
+          {
+            "step": 6,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 8,
+            "midi": 57,
+            "dur": 8
+          },
+          {
+            "step": 16,
+            "midi": 45,
+            "dur": 6
+          },
+          {
+            "step": 22,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 24,
+            "midi": 57,
+            "dur": 8
+          },
+          {
+            "step": 32,
+            "midi": 41,
+            "dur": 6
+          },
+          {
+            "step": 38,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 40,
+            "midi": 53,
+            "dur": 8
+          },
+          {
+            "step": 48,
+            "midi": 41,
+            "dur": 6
+          },
+          {
+            "step": 54,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 56,
+            "midi": 53,
+            "dur": 8
+          },
+          {
+            "step": 64,
+            "midi": 36,
+            "dur": 6
+          },
+          {
+            "step": 70,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 72,
+            "midi": 48,
+            "dur": 8
+          },
+          {
+            "step": 80,
+            "midi": 36,
+            "dur": 6
+          },
+          {
+            "step": 86,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 88,
+            "midi": 48,
+            "dur": 8
+          },
+          {
+            "step": 96,
+            "midi": 43,
+            "dur": 6
+          },
+          {
+            "step": 102,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 104,
+            "midi": 55,
+            "dur": 8
+          },
+          {
+            "step": 112,
+            "midi": 43,
+            "dur": 6
+          },
+          {
+            "step": 118,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 120,
+            "midi": 55,
+            "dur": 8
+          }
+        ],
+        "sectionBars": [
+          32,
+          33
+        ]
+      }
+    ],
+    "ch2": [
+      {
+        "id": "ch2_bass",
+        "name": "Chorus out MIDI line",
+        "notes": [
+          {
+            "step": 0,
+            "midi": 36,
+            "dur": 3
+          },
+          {
+            "step": 3,
+            "midi": 48,
+            "dur": 1
+          },
+          {
+            "step": 4,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 6,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 8,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 12,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 14,
+            "midi": 42,
+            "dur": 2
+          },
+          {
+            "step": 16,
+            "midi": 43,
+            "dur": 3
+          },
+          {
+            "step": 19,
+            "midi": 55,
+            "dur": 1
+          },
+          {
+            "step": 20,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 22,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 24,
+            "midi": 55,
+            "dur": 4
+          },
+          {
+            "step": 28,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 30,
+            "midi": 44,
+            "dur": 2
+          }
+        ],
+        "midi": true,
+        "sectionNotes": [
+          {
+            "step": 0,
+            "midi": 36,
+            "dur": 3
+          },
+          {
+            "step": 3,
+            "midi": 48,
+            "dur": 1
+          },
+          {
+            "step": 4,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 6,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 8,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 12,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 14,
+            "midi": 42,
+            "dur": 2
+          },
+          {
+            "step": 16,
+            "midi": 43,
+            "dur": 3
+          },
+          {
+            "step": 19,
+            "midi": 55,
+            "dur": 1
+          },
+          {
+            "step": 20,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 22,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 24,
+            "midi": 55,
+            "dur": 4
+          },
+          {
+            "step": 28,
+            "midi": 50,
+            "dur": 2
+          },
+          {
+            "step": 30,
+            "midi": 44,
+            "dur": 2
+          },
+          {
+            "step": 32,
+            "midi": 45,
+            "dur": 3
+          },
+          {
+            "step": 35,
+            "midi": 57,
+            "dur": 1
+          },
+          {
+            "step": 36,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 38,
+            "midi": 45,
+            "dur": 2
+          },
+          {
+            "step": 40,
+            "midi": 57,
+            "dur": 4
+          },
+          {
+            "step": 44,
+            "midi": 52,
+            "dur": 2
+          },
+          {
+            "step": 46,
+            "midi": 42,
+            "dur": 2
+          },
+          {
+            "step": 48,
+            "midi": 41,
+            "dur": 3
+          },
+          {
+            "step": 51,
+            "midi": 53,
+            "dur": 1
+          },
+          {
+            "step": 52,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 54,
+            "midi": 41,
+            "dur": 2
+          },
+          {
+            "step": 56,
+            "midi": 53,
+            "dur": 4
+          },
+          {
+            "step": 60,
+            "midi": 48,
+            "dur": 2
+          },
+          {
+            "step": 62,
+            "midi": 37,
+            "dur": 2
+          },
+          {
+            "step": 64,
+            "midi": 36,
+            "dur": 3
+          },
+          {
+            "step": 67,
+            "midi": 48,
+            "dur": 1
+          },
+          {
+            "step": 68,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 70,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 72,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 76,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 78,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 80,
+            "midi": 36,
+            "dur": 3
+          },
+          {
+            "step": 83,
+            "midi": 48,
+            "dur": 1
+          },
+          {
+            "step": 84,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 86,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 88,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 92,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 94,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 96,
+            "midi": 36,
+            "dur": 3
+          },
+          {
+            "step": 99,
+            "midi": 48,
+            "dur": 1
+          },
+          {
+            "step": 100,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 102,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 104,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 108,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 110,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 112,
+            "midi": 36,
+            "dur": 3
+          },
+          {
+            "step": 115,
+            "midi": 48,
+            "dur": 1
+          },
+          {
+            "step": 116,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 118,
+            "midi": 36,
+            "dur": 2
+          },
+          {
+            "step": 120,
+            "midi": 48,
+            "dur": 4
+          },
+          {
+            "step": 124,
+            "midi": 43,
+            "dur": 2
+          },
+          {
+            "step": 126,
+            "midi": 36,
+            "dur": 2
+          }
+        ],
+        "sectionBars": [
+          40,
+          41
+        ]
+      }
+    ]
+  },
+  "cards": {
+    "intro": [
+      {
+        "label": "Pocket",
+        "body": "Four-on-the-floor kick and 8th hats for two bars. Bass enters on beat 1 of bar 3 with long C roots \u2014 don\u2019t rush it.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "intro_bass",
+          "title": "Intro pocket",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "with the kick"
+            },
+            {
+              "step": 8,
+              "midi": 43,
+              "text": "backbeat"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Figure",
+        "body": "Bass line centers on C\u2013G. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "intro_bass",
+          "title": "Intro line",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "line"
+            },
+            {
+              "step": 8,
+              "midi": 43,
+              "text": "line"
+            },
+            {
+              "step": 16,
+              "midi": 36,
+              "text": "line"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Harmony",
+        "body": "Intro is C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "insight": {
+          "layer": "harmony",
+          "patternId": "intro_bass",
+          "title": "C",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 36
+            }
+          ]
+        }
+      },
+      {
+        "label": "Missable",
+        "body": "Easy miss in Intro (bars 0\u20133): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "intro_bass",
+          "title": "Pocket discipline",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 36,
+              "text": "hold the line"
+            },
+            {
+              "step": 24,
+              "midi": 43,
+              "text": "don\u2019t chase"
+            }
+          ]
+        }
+      }
+    ],
+    "v1": [
+      {
+        "label": "Pocket",
+        "body": "Pop verse pocket: kick on every quarter, snare on 2 and 4. Bass is quarters and 8ths (root, fifth, octave), not funk 16ths.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "v1_bass",
+          "title": "Verse pocket",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "with the kick"
+            },
+            {
+              "step": 8,
+              "midi": 36,
+              "text": "backbeat"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Figure",
+        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "v1_bass",
+          "title": "Verse line",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "line"
+            },
+            {
+              "step": 4,
+              "midi": 36,
+              "text": "line"
+            },
+            {
+              "step": 6,
+              "midi": 43,
+              "text": "line"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Harmony",
+        "body": "Verse is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "insight": {
+          "layer": "harmony",
+          "patternId": "v1_bass",
+          "title": "C \u2013 G \u2013 Am \u2013 F",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 36
+            },
+            {
+              "step": 8,
+              "kind": "chord",
+              "chord": "G",
+              "text": "G = V",
+              "midi": 36
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "Am = vi",
+              "midi": 36
+            },
+            {
+              "step": 24,
+              "kind": "chord",
+              "chord": "F",
+              "text": "F = IV",
+              "midi": 36
+            }
+          ]
+        }
+      },
+      {
+        "label": "Missable",
+        "body": "Easy miss in Verse (bars 4\u201311): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "v1_bass",
+          "title": "Pocket discipline",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 36,
+              "text": "hold the line"
+            },
+            {
+              "step": 30,
+              "midi": 36,
+              "text": "don\u2019t chase"
+            }
+          ]
+        }
+      }
+    ],
+    "verse": [
+      {
+        "label": "Pocket",
+        "body": "Same four-on-the-floor pocket. Verse 2 adds a chord-tone on beat 3; don\u2019t turn it into a fill.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "v2_bass",
+          "title": "Verse 2 pocket",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "with the kick"
+            },
+            {
+              "step": 8,
+              "midi": 36,
+              "text": "backbeat"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Figure",
+        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "v2_bass",
+          "title": "Verse 2 line",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "line"
+            },
+            {
+              "step": 4,
+              "midi": 36,
+              "text": "line"
+            },
+            {
+              "step": 6,
+              "midi": 43,
+              "text": "line"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Harmony",
+        "body": "Verse 2 is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "insight": {
+          "layer": "harmony",
+          "patternId": "v2_bass",
+          "title": "C \u2013 G \u2013 Am \u2013 F",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 36
+            },
+            {
+              "step": 8,
+              "kind": "chord",
+              "chord": "G",
+              "text": "G = V",
+              "midi": 36
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "Am = vi",
+              "midi": 36
+            },
+            {
+              "step": 24,
+              "kind": "chord",
+              "chord": "F",
+              "text": "F = IV",
+              "midi": 36
+            }
+          ]
+        }
+      },
+      {
+        "label": "Missable",
+        "body": "Easy miss in Verse 2 (bars 24\u201331): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "v2_bass",
+          "title": "Pocket discipline",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 36,
+              "text": "hold the line"
+            },
+            {
+              "step": 30,
+              "midi": 36,
+              "text": "don\u2019t chase"
+            }
+          ]
+        }
+      }
+    ],
+    "pre": [
+      {
+        "label": "Pocket",
+        "body": "Pre-chorus walks the chord: Dm arpeggio then G7 (the F on top is the 7th). Lock those quarters to the kick.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "pre_bass",
+          "title": "Pre-chorus pocket",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 38,
+              "text": "with the kick"
+            },
+            {
+              "step": 8,
+              "midi": 45,
+              "text": "backbeat"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Figure",
+        "body": "Bass line centers on D\u2013F\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "pre_bass",
+          "title": "Pre-chorus line",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 38,
+              "text": "line"
+            },
+            {
+              "step": 4,
+              "midi": 41,
+              "text": "line"
+            },
+            {
+              "step": 8,
+              "midi": 45,
+              "text": "line"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Harmony",
+        "body": "Pre-chorus is Dm (ii) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "insight": {
+          "layer": "harmony",
+          "patternId": "pre_bass",
+          "title": "Dm \u2013 G7",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Dm",
+              "text": "Dm = ii",
+              "midi": 38
+            },
+            {
+              "step": 8,
+              "kind": "chord",
+              "chord": "G7",
+              "text": "G7 = V7",
+              "midi": 38
+            }
+          ]
+        }
+      },
+      {
+        "label": "Missable",
+        "body": "Easy miss in Pre-chorus (bars 12\u201315): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "pre_bass",
+          "title": "Pocket discipline",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 38,
+              "text": "hold the line"
+            },
+            {
+              "step": 28,
+              "midi": 48,
+              "text": "don\u2019t chase"
+            }
+          ]
+        }
+      }
+    ],
+    "ch1": [
+      {
+        "label": "Pocket",
+        "body": "Chorus hook: root on 1, octave pop on the last 16th of beat 1, fifth on 2. Changes are one bar each \u2014 C G Am F.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "ch1_bass",
+          "title": "Chorus pocket",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "with the kick"
+            },
+            {
+              "step": 8,
+              "midi": 48,
+              "text": "backbeat"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Figure",
+        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "ch1_bass",
+          "title": "Chorus line",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "line"
+            },
+            {
+              "step": 3,
+              "midi": 48,
+              "text": "line"
+            },
+            {
+              "step": 4,
+              "midi": 43,
+              "text": "line"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Harmony",
+        "body": "Chorus is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "insight": {
+          "layer": "harmony",
+          "patternId": "ch1_bass",
+          "title": "C \u2013 G \u2013 Am \u2013 F \u2013 C \u2013 G \u2013 Am \u2013 F",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 36
+            },
+            {
+              "step": 8,
+              "kind": "chord",
+              "chord": "G",
+              "text": "G = V",
+              "midi": 36
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "Am = vi",
+              "midi": 36
+            },
+            {
+              "step": 24,
+              "kind": "chord",
+              "chord": "F",
+              "text": "F = IV",
+              "midi": 36
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 36
+            },
+            {
+              "step": 40,
+              "kind": "chord",
+              "chord": "G",
+              "text": "G = V",
+              "midi": 36
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "Am = vi",
+              "midi": 36
+            },
+            {
+              "step": 56,
+              "kind": "chord",
+              "chord": "F",
+              "text": "F = IV",
+              "midi": 36
+            }
+          ]
+        }
+      },
+      {
+        "label": "Missable",
+        "body": "Easy miss in Chorus (bars 16\u201323): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "ch1_bass",
+          "title": "Pocket discipline",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 43,
+              "text": "hold the line"
+            },
+            {
+              "step": 30,
+              "midi": 44,
+              "text": "don\u2019t chase"
+            }
+          ]
+        }
+      }
+    ],
+    "chorus": [
+      {
+        "label": "Pocket",
+        "body": "Chorus returns. Sit the octave pop in the pocket; the kit does not syncopate with you.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "ch2_bass",
+          "title": "Chorus out pocket",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "with the kick"
+            },
+            {
+              "step": 8,
+              "midi": 48,
+              "text": "backbeat"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Figure",
+        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "ch2_bass",
+          "title": "Chorus out line",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "line"
+            },
+            {
+              "step": 3,
+              "midi": 48,
+              "text": "line"
+            },
+            {
+              "step": 4,
+              "midi": 43,
+              "text": "line"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Harmony",
+        "body": "Chorus out is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "insight": {
+          "layer": "harmony",
+          "patternId": "ch2_bass",
+          "title": "C \u2013 G \u2013 Am \u2013 F \u2013 C",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 36
+            },
+            {
+              "step": 8,
+              "kind": "chord",
+              "chord": "G",
+              "text": "G = V",
+              "midi": 36
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "Am = vi",
+              "midi": 36
+            },
+            {
+              "step": 24,
+              "kind": "chord",
+              "chord": "F",
+              "text": "F = IV",
+              "midi": 36
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 36
+            }
+          ]
+        }
+      },
+      {
+        "label": "Missable",
+        "body": "Easy miss in Chorus out (bars 40\u201347): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "ch2_bass",
+          "title": "Pocket discipline",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 43,
+              "text": "hold the line"
+            },
+            {
+              "step": 30,
+              "midi": 44,
+              "text": "don\u2019t chase"
+            }
+          ]
+        }
+      }
+    ],
+    "v2": [
+      {
+        "label": "Pocket",
+        "body": "Same four-on-the-floor pocket. Verse 2 adds a chord-tone on beat 3; don\u2019t turn it into a fill.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "v2_bass",
+          "title": "Verse 2 pocket",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "with the kick"
+            },
+            {
+              "step": 8,
+              "midi": 36,
+              "text": "backbeat"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Figure",
+        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "v2_bass",
+          "title": "Verse 2 line",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "line"
+            },
+            {
+              "step": 4,
+              "midi": 36,
+              "text": "line"
+            },
+            {
+              "step": 6,
+              "midi": 43,
+              "text": "line"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Harmony",
+        "body": "Verse 2 is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "insight": {
+          "layer": "harmony",
+          "patternId": "v2_bass",
+          "title": "C \u2013 G \u2013 Am \u2013 F",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 36
+            },
+            {
+              "step": 8,
+              "kind": "chord",
+              "chord": "G",
+              "text": "G = V",
+              "midi": 36
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "Am = vi",
+              "midi": 36
+            },
+            {
+              "step": 24,
+              "kind": "chord",
+              "chord": "F",
+              "text": "F = IV",
+              "midi": 36
+            }
+          ]
+        }
+      },
+      {
+        "label": "Missable",
+        "body": "Easy miss in Verse 2 (bars 24\u201331): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "v2_bass",
+          "title": "Pocket discipline",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 36,
+              "text": "hold the line"
+            },
+            {
+              "step": 30,
+              "midi": 36,
+              "text": "don\u2019t chase"
+            }
+          ]
+        }
+      }
+    ],
+    "br": [
+      {
+        "label": "Pocket",
+        "body": "Bridge opens the notes up (root, fifth, octave) under the same kick grid. Leave the 16th grid alone.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "br_bass",
+          "title": "Bridge pocket",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 45,
+              "text": "with the kick"
+            },
+            {
+              "step": 8,
+              "midi": 57,
+              "text": "backbeat"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Figure",
+        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "br_bass",
+          "title": "Bridge line",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 45,
+              "text": "line"
+            },
+            {
+              "step": 6,
+              "midi": 52,
+              "text": "line"
+            },
+            {
+              "step": 8,
+              "midi": 57,
+              "text": "line"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Harmony",
+        "body": "Bridge is Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "insight": {
+          "layer": "harmony",
+          "patternId": "br_bass",
+          "title": "Am \u2013 F \u2013 C \u2013 G7",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "Am = vi",
+              "midi": 45
+            },
+            {
+              "step": 8,
+              "kind": "chord",
+              "chord": "F",
+              "text": "F = IV",
+              "midi": 45
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 45
+            },
+            {
+              "step": 24,
+              "kind": "chord",
+              "chord": "G7",
+              "text": "G7 = V7",
+              "midi": 45
+            }
+          ]
+        }
+      },
+      {
+        "label": "Missable",
+        "body": "Easy miss in Bridge (bars 32\u201339): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "br_bass",
+          "title": "Pocket discipline",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 45,
+              "text": "hold the line"
+            },
+            {
+              "step": 24,
+              "midi": 57,
+              "text": "don\u2019t chase"
+            }
+          ]
+        }
+      }
+    ],
+    "bridge": [
+      {
+        "label": "Pocket",
+        "body": "Bridge opens the notes up (root, fifth, octave) under the same kick grid. Leave the 16th grid alone.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "br_bass",
+          "title": "Bridge pocket",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 45,
+              "text": "with the kick"
+            },
+            {
+              "step": 8,
+              "midi": 57,
+              "text": "backbeat"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Figure",
+        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "br_bass",
+          "title": "Bridge line",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 45,
+              "text": "line"
+            },
+            {
+              "step": 6,
+              "midi": 52,
+              "text": "line"
+            },
+            {
+              "step": 8,
+              "midi": 57,
+              "text": "line"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Harmony",
+        "body": "Bridge is Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "insight": {
+          "layer": "harmony",
+          "patternId": "br_bass",
+          "title": "Am \u2013 F \u2013 C \u2013 G7",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "Am = vi",
+              "midi": 45
+            },
+            {
+              "step": 8,
+              "kind": "chord",
+              "chord": "F",
+              "text": "F = IV",
+              "midi": 45
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 45
+            },
+            {
+              "step": 24,
+              "kind": "chord",
+              "chord": "G7",
+              "text": "G7 = V7",
+              "midi": 45
+            }
+          ]
+        }
+      },
+      {
+        "label": "Missable",
+        "body": "Easy miss in Bridge (bars 32\u201339): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "br_bass",
+          "title": "Pocket discipline",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 45,
+              "text": "hold the line"
+            },
+            {
+              "step": 24,
+              "midi": 57,
+              "text": "don\u2019t chase"
+            }
+          ]
+        }
+      }
+    ],
+    "ch2": [
+      {
+        "label": "Pocket",
+        "body": "Chorus returns. Sit the octave pop in the pocket; the kit does not syncopate with you.",
+        "insight": {
+          "layer": "pocket",
+          "patternId": "ch2_bass",
+          "title": "Chorus out pocket",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "with the kick"
+            },
+            {
+              "step": 8,
+              "midi": 48,
+              "text": "backbeat"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Figure",
+        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "insight": {
+          "layer": "figure",
+          "patternId": "ch2_bass",
+          "title": "Chorus out line",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "midi": 36,
+              "text": "line"
+            },
+            {
+              "step": 3,
+              "midi": 48,
+              "text": "line"
+            },
+            {
+              "step": 4,
+              "midi": 43,
+              "text": "line"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Harmony",
+        "body": "Chorus out is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "insight": {
+          "layer": "harmony",
+          "patternId": "ch2_bass",
+          "title": "C \u2013 G \u2013 Am \u2013 F \u2013 C",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 0,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 36
+            },
+            {
+              "step": 8,
+              "kind": "chord",
+              "chord": "G",
+              "text": "G = V",
+              "midi": 36
+            },
+            {
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am",
+              "text": "Am = vi",
+              "midi": 36
+            },
+            {
+              "step": 24,
+              "kind": "chord",
+              "chord": "F",
+              "text": "F = IV",
+              "midi": 36
+            },
+            {
+              "step": 32,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I",
+              "midi": 36
+            }
+          ]
+        }
+      },
+      {
+        "label": "Missable",
+        "body": "Easy miss in Chorus out (bars 40\u201347): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "insight": {
+          "layer": "missable",
+          "patternId": "ch2_bass",
+          "title": "Pocket discipline",
+          "barRange": [
+            0,
+            1
+          ],
+          "highlights": [
+            {
+              "step": 16,
+              "midi": 43,
+              "text": "hold the line"
+            },
+            {
+              "step": 30,
+              "midi": 44,
+              "text": "don\u2019t chase"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "raw": [
+    [
+      0,
+      0.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      1,
+      2.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      2,
+      4.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      3,
+      6.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      4,
+      8.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      5,
+      10.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      6,
+      12.0,
+      "G",
+      "G.B.D"
+    ],
+    [
+      7,
+      14.0,
+      "G",
+      "G.B.D"
+    ],
+    [
+      8,
+      16.0,
+      "Am",
+      "A.C.E"
+    ],
+    [
+      9,
+      18.0,
+      "Am",
+      "A.C.E"
+    ],
+    [
+      10,
+      20.0,
+      "F",
+      "F.A.C"
+    ],
+    [
+      11,
+      22.0,
+      "F",
+      "F.A.C"
+    ],
+    [
+      12,
+      24.0,
+      "Dm",
+      "D.F.A"
+    ],
+    [
+      13,
+      26.0,
+      "Dm",
+      "D.F.A"
+    ],
+    [
+      14,
+      28.0,
+      "G7",
+      "G.B.D.F"
+    ],
+    [
+      15,
+      30.0,
+      "G7",
+      "G.B.D.F"
+    ],
+    [
+      16,
+      32.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      17,
+      34.0,
+      "G",
+      "G.B.D"
+    ],
+    [
+      18,
+      36.0,
+      "Am",
+      "A.C.E"
+    ],
+    [
+      19,
+      38.0,
+      "F",
+      "F.A.C"
+    ],
+    [
+      20,
+      40.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      21,
+      42.0,
+      "G",
+      "G.B.D"
+    ],
+    [
+      22,
+      44.0,
+      "Am",
+      "A.C.E"
+    ],
+    [
+      23,
+      46.0,
+      "F",
+      "F.A.C"
+    ],
+    [
+      24,
+      48.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      25,
+      50.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      26,
+      52.0,
+      "G",
+      "G.B.D"
+    ],
+    [
+      27,
+      54.0,
+      "G",
+      "G.B.D"
+    ],
+    [
+      28,
+      56.0,
+      "Am",
+      "A.C.E"
+    ],
+    [
+      29,
+      58.0,
+      "Am",
+      "A.C.E"
+    ],
+    [
+      30,
+      60.0,
+      "F",
+      "F.A.C"
+    ],
+    [
+      31,
+      62.0,
+      "F",
+      "F.A.C"
+    ],
+    [
+      32,
+      64.0,
+      "Am",
+      "A.C.E"
+    ],
+    [
+      33,
+      66.0,
+      "Am",
+      "A.C.E"
+    ],
+    [
+      34,
+      68.0,
+      "F",
+      "F.A.C"
+    ],
+    [
+      35,
+      70.0,
+      "F",
+      "F.A.C"
+    ],
+    [
+      36,
+      72.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      37,
+      74.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      38,
+      76.0,
+      "G7",
+      "G.B.D.F"
+    ],
+    [
+      39,
+      78.0,
+      "G7",
+      "G.B.D.F"
+    ],
+    [
+      40,
+      80.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      41,
+      82.0,
+      "G",
+      "G.B.D"
+    ],
+    [
+      42,
+      84.0,
+      "Am",
+      "A.C.E"
+    ],
+    [
+      43,
+      86.0,
+      "F",
+      "F.A.C"
+    ],
+    [
+      44,
+      88.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      45,
+      90.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      46,
+      92.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      47,
+      94.0,
+      "C",
+      "C.E.G"
+    ],
+    [
+      48,
+      96.0,
+      null,
+      null
+    ]
+  ],
+  "credit": {
+    "title": "Radio Pop",
+    "artist": "Song Bass Explainer",
+    "license": "CC0 1.0 Universal",
+    "source": "MIDI-authored demo (bass + kit + ep)",
+    "url": "https://bass.meirmsn.dev/?song=radio-pop"
+  },
+  "meta": {
+    "insightSlots": "pocket|figure|harmony|missable",
+    "insightRedesign": "lean-B-2026-10-26",
+    "license": "CC0 1.0 Universal",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "MIDI-authored (FluidSynth / FluidR3_GM)",
+    "sourceUrl": "https://bass.meirmsn.dev/?song=radio-pop",
+    "album": "MIDI demos",
+    "analysis": "MIDI\u2192hits 1:1 via scripts/midi_to_hits.py; audio rendered from same MIDI (FluidSynth)",
+    "insightRequired": true,
+    "insightCount": 28,
+    "drumsSource": "GM channel-10 from authored MIDI (exact)",
+    "drumsSchema": "bass.drums.v1",
+    "drumHitCount": 675,
+    "bassHitCount": 260,
+    "midiAuthoritative": true
+  },
+  "semantic": {
+    "schema": "bass.semantic.v1",
+    "source": "lean-B cards; bass+drums from MIDI (scripts/midi_to_hits.py)",
+    "confidence": "high \u2014 MIDI-authored; hits match render"
+  },
+  "stems": {
+    "available": true,
+    "access": "public",
+    "muteBassSupported": true,
+    "drumsAvailable": true,
+    "dbSupported": true,
+    "format": "aac",
+    "bass": "/api/demo/radio-pop/stems/bass.m4a",
+    "no_bass": "/api/demo/radio-pop/stems/no_bass.m4a",
+    "drums": "/api/demo/radio-pop/stems/drums.m4a",
+    "bass_wav": "/api/demo/radio-pop/stems/bass.wav",
+    "no_bass_wav": "/api/demo/radio-pop/stems/no_bass.wav",
+    "drums_wav": "/api/demo/radio-pop/stems/drums.wav",
+    "other": "/api/demo/radio-pop/stems/other.m4a"
+  },
+  "merge": {
+    "procedural_only": false,
+    "waiting_bot": false,
+    "report": "analysis/merge-report.json"
+  }
+}

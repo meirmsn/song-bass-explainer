@@ -27,11 +27,15 @@ work/*
 !work/demo-make-funk/
 !work/demo-maple-leaf-rag/
 !work/demo-pocket-funk/
+!work/demo-radio-pop/
+!work/demo-backbeat-rock/
 work/demo-a-good-bass-for-gambling/stems/
 work/demo-a-good-bass-for-gambling/source/
 work/demo-make-funk/stems/
 work/demo-maple-leaf-rag/stems/
 work/demo-pocket-funk/stems/
+work/demo-radio-pop/stems/
+work/demo-backbeat-rock/stems/
 logs/
 .env*
 

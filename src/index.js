@@ -7,7 +7,8 @@ import { buildPrivateCatalog, PRIVATE_PROCESSED_DEMOS } from "./catalog.mjs";
 
 const ACCOUNT = "91a68408014ad4deb94e432d231f4af8";
 
-/** Public CC0/PDM demos listed on / and /api/demo/catalog. Never add like-a-prayer. */
+/** Public CC0/PDM demos listed on / and /api/demo/catalog. Never add like-a-prayer.
+ *  Pocket Funk stays the default hero. Maple Leaf Rag is private-only (no kit). */
 const PUBLIC_DEMOS = {
   "pocket-funk": {
     id: "pocket-funk",
@@ -19,6 +20,28 @@ const PUBLIC_DEMOS = {
     sourceUrl: "https://bass.meirmsn.dev/?song=pocket-funk",
     api: "/api/demo/pocket-funk",
     player: "/?song=pocket-funk",
+  },
+  "radio-pop": {
+    id: "radio-pop",
+    title: "Radio Pop",
+    artist: "Song Bass Explainer",
+    license: "CC0 1.0 Universal",
+    album: "MIDI demos",
+    source: "MIDI-authored (FluidSynth)",
+    sourceUrl: "https://bass.meirmsn.dev/?song=radio-pop",
+    api: "/api/demo/radio-pop",
+    player: "/?song=radio-pop",
+  },
+  "backbeat-rock": {
+    id: "backbeat-rock",
+    title: "Backbeat Rock",
+    artist: "Song Bass Explainer",
+    license: "CC0 1.0 Universal",
+    album: "MIDI demos",
+    source: "MIDI-authored (FluidSynth)",
+    sourceUrl: "https://bass.meirmsn.dev/?song=backbeat-rock",
+    api: "/api/demo/backbeat-rock",
+    player: "/?song=backbeat-rock",
   },
 };
 
@@ -169,6 +192,8 @@ export default {
           publicDemoStemsPresent = Boolean(
             (await env.DEMO_BUCKET.head("demo/a-good-bass-for-gambling/stems/bass.m4a")) ||
             (await env.DEMO_BUCKET.head("demo/pocket-funk/stems/bass.m4a")) ||
+            (await env.DEMO_BUCKET.head("demo/radio-pop/stems/bass.m4a")) ||
+            (await env.DEMO_BUCKET.head("demo/backbeat-rock/stems/bass.m4a")) ||
             (await env.DEMO_BUCKET.head("demo/make-funk/stems/bass.m4a")) ||
             (await env.DEMO_BUCKET.head("demo/maple-leaf-rag/stems/other.m4a"))
           );

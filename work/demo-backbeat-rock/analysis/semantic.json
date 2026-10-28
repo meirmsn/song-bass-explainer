@@ -1,0 +1,5 @@
+{
+  "schema": "bass.semantic.v1",
+  "source": "lean-B cards; bass+drums from MIDI (scripts/midi_to_hits.py)",
+  "confidence": "high \u2014 MIDI-authored; hits match render"
+}
