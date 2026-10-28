@@ -125,6 +125,13 @@ def figure_body(highlights):
     return f"Lit pitches are {lit} ({claim}). They match the MIDI stem."
 
 
+def midi_at(pat_notes, step, fallback=None):
+    for n in pat_notes or []:
+        if n.get("step") == step:
+            return n.get("midi", fallback)
+    return fallback
+
+
 def pocket_highlights(pat_notes, home, has_drums):
     kick = "kick/bass 1" if has_drums else "LH 1"
     back = "backbeat pocket" if has_drums else "LH 3"
@@ -132,19 +139,44 @@ def pocket_highlights(pat_notes, home, has_drums):
     if ghosts and has_drums:
         bass_g = next((n for n in ghosts if n["step"] == 10), ghosts[0])
         return [
-            {"step": 0, "midi": home, "text": kick},
+            {"step": 0, "midi": midi_at(pat_notes, 0, home), "text": kick},
             {"step": 3, "kind": "snare", "text": "ghost", "ghost": True},
             {"step": bass_g["step"], "midi": bass_g["midi"], "text": "bass ghost", "ghost": True},
             {"step": 11, "kind": "snare", "text": "ghost", "ghost": True},
         ]
     return [
-        {"step": 0, "midi": home, "text": kick},
-        {"step": 8, "midi": home, "text": back},
+        {"step": 0, "midi": midi_at(pat_notes, 0, home), "text": kick},
+        {"step": 8, "midi": midi_at(pat_notes, 8, home), "text": back},
     ]
 
 
+def missable_highlights(pat_notes, home):
+    """Two real pattern notes. Never stamp the home pitch onto a different attack."""
+    by_step = {}
+    for n in pat_notes or []:
+        by_step.setdefault(n["step"], n)
+    out = []
+    seen = set()
+
+    def add(n):
+        if not n or n["step"] in seen:
+            return
+        seen.add(n["step"])
+        out.append({"step": n["step"], "midi": n["midi"], "text": "don’t chase"})
+
+    for step in (8, 12):
+        add(by_step.get(step))
+    for n in pat_notes or []:
+        if len(out) >= 2:
+            break
+        add(n)
+    if not out and home is not None:
+        out.append({"step": 0, "midi": home, "text": "don’t chase"})
+    return out[:2]
+
+
 def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar=None, patterns=None):
-    """Lean-B cards. Harmony chips must match the main chord-name row (no invented Bb)."""
+    """Lean-B cards. Harmony chips must match the main chord-name row."""
     cards = {}
 
     def section_chord(sec):
@@ -175,8 +207,7 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
             )
         if ch == "D7":
             return (
-                "Lift sits on D7 (IV7 in Am) — matches the main chord row. "
-                "Bass roots on D; this is a real change from the Am7 groove, not a mirage."
+                "Lift sits on D7 (IV7 in Am) — matches the main chord row. Bass roots on D."
             )
         if ch == "E7":
             return (
@@ -185,7 +216,7 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
         return (
             f"Section harmony is {ch}"
             + (f" ({rn})" if rn else "")
-            + " — same symbol as the main chord-name row. Bass supports that chord; no invented extras."
+            + " — same symbol as the main chord-name row. Bass supports that chord."
         )
 
     for sec in secs:
@@ -209,12 +240,9 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
         # One chord for the section: one chip. A second "still Am7" at step 16
         # only existed to fill a padded bar the claim never needed.
         harm_hi = [
-            {"step": 0, "kind": "chord", "chord": ch, "text": f"{ch} = {rn}" if rn else ch, "midi": home},
+            {"step": 0, "kind": "chord", "chord": ch, "text": f"{ch} = {rn}" if rn else ch, "midi": midi_at(pat_notes, 0, home)},
         ]
-        miss_hi = [
-            {"step": 8, "midi": home, "text": "don’t chase"},
-            {"step": 12, "midi": home, "text": "don’t chase"},
-        ]
+        miss_hi = missable_highlights(pat_notes, home)
         cards[sec["id"]] = [
             {
                 "label": "Pocket",
@@ -299,26 +327,42 @@ def build_beat(bpm, nbars, duration, time_sig="4/4"):
     }
 
 
+def require_adversarial_review(demo: dict, label: str):
+    """Demo authoring stops here when insight cards contradict the MIDI."""
+    import importlib.util
+    path = Path(__file__).resolve().parent / "adversarial_review.py"
+    spec = importlib.util.spec_from_file_location("adversarial_review", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    errors = mod.review_demo(demo, label)
+    if errors:
+        raise SystemExit(label + " failed adversarial review:\n" + "\n".join(errors))
+
+
 def write_demo(out_dir: Path, demo: dict, beat: dict, midi_hits: dict, extra_files: dict):
+    require_adversarial_review(demo, demo.get("title") or out_dir.name)
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "analysis").mkdir(exist_ok=True)
     (out_dir / "study").mkdir(exist_ok=True)
     (out_dir / "source").mkdir(exist_ok=True)
 
+    def dump(obj):
+        return json.dumps(obj, indent=2) + "\n"
+
     demo_path = out_dir / "demo-data.json"
-    demo_path.write_text(json.dumps(demo, indent=2))
-    (out_dir / "study" / "resource.json").write_text(json.dumps(demo, indent=2))
-    (out_dir / "analysis" / "beat.json").write_text(json.dumps(beat, indent=2))
+    demo_path.write_text(dump(demo))
+    (out_dir / "study" / "resource.json").write_text(dump(demo))
+    (out_dir / "analysis" / "beat.json").write_text(dump(beat))
     (out_dir / "analysis" / "bass_hits.json").write_text(
-        json.dumps({"schema": "bass.hits.v1", "bassHits": demo["bassHits"], "source": "midi"}, indent=2)
+        dump({"schema": "bass.hits.v1", "bassHits": demo["bassHits"], "source": "midi"})
     )
     (out_dir / "analysis" / "drum_hits.json").write_text(
-        json.dumps({"schema": "bass.drums.v1", "drumHits": demo["drumHits"], "source": "midi"}, indent=2)
+        dump({"schema": "bass.drums.v1", "drumHits": demo["drumHits"], "source": "midi"})
     )
-    (out_dir / "analysis" / "midi_hits.json").write_text(json.dumps(midi_hits, indent=2))
-    (out_dir / "analysis" / "semantic.json").write_text(json.dumps(demo["semantic"], indent=2))
+    (out_dir / "analysis" / "midi_hits.json").write_text(dump(midi_hits))
+    (out_dir / "analysis" / "semantic.json").write_text(dump(demo["semantic"]))
     (out_dir / "analysis" / "merge-report.json").write_text(
-        json.dumps({"source": "midi-first", "amt": False, "ok": True}, indent=2)
+        dump({"source": "midi-first", "amt": False, "ok": True})
     )
     for name, text in extra_files.items():
         (out_dir / name).write_text(text)
@@ -586,7 +630,7 @@ def build_maple():
         "a1": "No kit — Mutopia LH is the bass voice. Feel stride: low on 1 & 3, mid chord on 2 & 4.",
         "verse": "LH stride pulse (no drums).",
         "chorus": "Strain lift — keep the oom-pah, don’t invent a backbeat.",
-        "bridge": "Trio: still piano LH only; no invented kit.",
+        "bridge": "Trio: piano LH only.",
         "tag": "Coda — ride the LH stride out.",
     }
     # override pattern ids in cards for _lh
@@ -742,14 +786,19 @@ def apply_style_insights(demo, song):
             f"{ch} ({rn})" if rn else ch for ch, rn in zip(seq, romans)
         )
         harm_highlights = []
+        by_step = {n["step"]: n for n in notes}
         for i, (ch, rn) in enumerate(zip(seq, romans)):
-            harm_highlights.append({
-                "step": i * 8,
+            step = i * 8
+            item = {
+                "step": step,
                 "kind": "chord",
                 "chord": ch,
                 "text": f"{ch} = {rn}" if rn else ch,
-                "midi": home,
-            })
+            }
+            heard = by_step.get(step)
+            if heard is not None:
+                item["midi"] = heard["midi"]
+            harm_highlights.append(item)
 
         cards = demo["cards"][sec["id"]]
         by_label = {c["label"]: c for c in cards}
@@ -765,7 +814,7 @@ def apply_style_insights(demo, song):
         by_label["Figure"]["body"] = figure_body(fig)
         by_label["Harmony"]["body"] = (
             f"{sec['name']} is {labeled} — the same symbols as the main chord-name row. "
-            "Bass roots those changes; no extra chords are implied."
+            "Bass roots those changes."
         )
         harm_hi = harm_highlights or [
             {"step": 0, "kind": "chord", "chord": seq[0] if seq else song["key"], "text": "chord", "midi": home}

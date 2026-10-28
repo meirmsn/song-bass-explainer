@@ -7458,7 +7458,7 @@
           "title": "Intro pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7476,44 +7476,39 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on C\u2013G. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are C \u00b7 G (C+G). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "intro_bass",
-          "title": "Intro line",
+          "title": "C+G",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 36,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 8,
               "midi": 43,
-              "text": "line"
-            },
-            {
-              "step": 16,
-              "midi": 36,
-              "text": "line"
+              "text": "G"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Intro is C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "body": "Intro is C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
         "insight": {
           "layer": "harmony",
           "patternId": "intro_bass",
           "title": "C",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7534,7 +7529,7 @@
           "patternId": "intro_bass",
           "title": "Pocket discipline",
           "barRange": [
-            0,
+            1,
             1
           ],
           "highlights": [
@@ -7562,7 +7557,7 @@
           "title": "Verse pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7580,37 +7575,37 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "v1_bass",
-          "title": "Verse line",
+          "title": "C+G",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 36,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 4,
               "midi": 36,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 6,
               "midi": 43,
-              "text": "line"
+              "text": "G"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Verse is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "body": "Verse is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
         "insight": {
           "layer": "harmony",
           "patternId": "v1_bass",
@@ -7659,7 +7654,7 @@
           "patternId": "v1_bass",
           "title": "Pocket discipline",
           "barRange": [
-            0,
+            1,
             1
           ],
           "highlights": [
@@ -7687,7 +7682,7 @@
           "title": "Verse 2 pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7705,37 +7700,37 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "v2_bass",
-          "title": "Verse 2 line",
+          "title": "C+G",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 36,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 4,
               "midi": 36,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 6,
               "midi": 43,
-              "text": "line"
+              "text": "G"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Verse 2 is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "body": "Verse 2 is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
         "insight": {
           "layer": "harmony",
           "patternId": "v2_bass",
@@ -7784,7 +7779,7 @@
           "patternId": "v2_bass",
           "title": "Pocket discipline",
           "barRange": [
-            0,
+            1,
             1
           ],
           "highlights": [
@@ -7812,7 +7807,7 @@
           "title": "Pre-chorus pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7830,44 +7825,44 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on D\u2013F\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are D \u00b7 F \u00b7 A (D+F+A). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "pre_bass",
-          "title": "Pre-chorus line",
+          "title": "D+F+A",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 38,
-              "text": "line"
+              "text": "D"
             },
             {
               "step": 4,
               "midi": 41,
-              "text": "line"
+              "text": "F"
             },
             {
               "step": 8,
               "midi": 45,
-              "text": "line"
+              "text": "A"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Pre-chorus is Dm (ii) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "body": "Pre-chorus is Dm (ii) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
         "insight": {
           "layer": "harmony",
           "patternId": "pre_bass",
           "title": "Dm \u2013 G7",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7882,7 +7877,7 @@
               "kind": "chord",
               "chord": "G7",
               "text": "G7 = V7",
-              "midi": 38
+              "midi": 45
             }
           ]
         }
@@ -7895,7 +7890,7 @@
           "patternId": "pre_bass",
           "title": "Pocket discipline",
           "barRange": [
-            0,
+            1,
             1
           ],
           "highlights": [
@@ -7923,7 +7918,7 @@
           "title": "Chorus pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7941,44 +7936,44 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "ch1_bass",
-          "title": "Chorus line",
+          "title": "C+G",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 36,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 3,
               "midi": 48,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 4,
               "midi": 43,
-              "text": "line"
+              "text": "G"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Chorus is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "body": "Chorus is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
         "insight": {
           "layer": "harmony",
           "patternId": "ch1_bass",
           "title": "C \u2013 G \u2013 Am \u2013 F \u2013 C \u2013 G \u2013 Am \u2013 F",
           "barRange": [
             0,
-            1
+            3
           ],
           "highlights": [
             {
@@ -7993,49 +7988,45 @@
               "kind": "chord",
               "chord": "G",
               "text": "G = V",
-              "midi": 36
+              "midi": 48
             },
             {
               "step": 16,
               "kind": "chord",
               "chord": "Am",
               "text": "Am = vi",
-              "midi": 36
+              "midi": 43
             },
             {
               "step": 24,
               "kind": "chord",
               "chord": "F",
               "text": "F = IV",
-              "midi": 36
+              "midi": 55
             },
             {
               "step": 32,
               "kind": "chord",
               "chord": "C",
-              "text": "C = I",
-              "midi": 36
+              "text": "C = I"
             },
             {
               "step": 40,
               "kind": "chord",
               "chord": "G",
-              "text": "G = V",
-              "midi": 36
+              "text": "G = V"
             },
             {
               "step": 48,
               "kind": "chord",
               "chord": "Am",
-              "text": "Am = vi",
-              "midi": 36
+              "text": "Am = vi"
             },
             {
               "step": 56,
               "kind": "chord",
               "chord": "F",
-              "text": "F = IV",
-              "midi": 36
+              "text": "F = IV"
             }
           ]
         }
@@ -8048,7 +8039,7 @@
           "patternId": "ch1_bass",
           "title": "Pocket discipline",
           "barRange": [
-            0,
+            1,
             1
           ],
           "highlights": [
@@ -8076,7 +8067,7 @@
           "title": "Chorus out pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8094,44 +8085,44 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "ch2_bass",
-          "title": "Chorus out line",
+          "title": "C+G",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 36,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 3,
               "midi": 48,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 4,
               "midi": 43,
-              "text": "line"
+              "text": "G"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Chorus out is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "body": "Chorus out is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
         "insight": {
           "layer": "harmony",
           "patternId": "ch2_bass",
           "title": "C \u2013 G \u2013 Am \u2013 F \u2013 C",
           "barRange": [
             0,
-            1
+            2
           ],
           "highlights": [
             {
@@ -8146,28 +8137,27 @@
               "kind": "chord",
               "chord": "G",
               "text": "G = V",
-              "midi": 36
+              "midi": 48
             },
             {
               "step": 16,
               "kind": "chord",
               "chord": "Am",
               "text": "Am = vi",
-              "midi": 36
+              "midi": 43
             },
             {
               "step": 24,
               "kind": "chord",
               "chord": "F",
               "text": "F = IV",
-              "midi": 36
+              "midi": 55
             },
             {
               "step": 32,
               "kind": "chord",
               "chord": "C",
-              "text": "C = I",
-              "midi": 36
+              "text": "C = I"
             }
           ]
         }
@@ -8180,7 +8170,7 @@
           "patternId": "ch2_bass",
           "title": "Pocket discipline",
           "barRange": [
-            0,
+            1,
             1
           ],
           "highlights": [
@@ -8208,7 +8198,7 @@
           "title": "Verse 2 pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8226,37 +8216,37 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "v2_bass",
-          "title": "Verse 2 line",
+          "title": "C+G",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 36,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 4,
               "midi": 36,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 6,
               "midi": 43,
-              "text": "line"
+              "text": "G"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Verse 2 is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "body": "Verse 2 is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
         "insight": {
           "layer": "harmony",
           "patternId": "v2_bass",
@@ -8305,7 +8295,7 @@
           "patternId": "v2_bass",
           "title": "Pocket discipline",
           "barRange": [
-            0,
+            1,
             1
           ],
           "highlights": [
@@ -8333,7 +8323,7 @@
           "title": "Bridge pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8351,37 +8341,37 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are A \u00b7 E \u00b7 A (A+E). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
-          "title": "Bridge line",
+          "title": "A+E",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 45,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 6,
               "midi": 52,
-              "text": "line"
+              "text": "E"
             },
             {
               "step": 8,
               "midi": 57,
-              "text": "line"
+              "text": "A"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Bridge is Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "body": "Bridge is Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
         "insight": {
           "layer": "harmony",
           "patternId": "br_bass",
@@ -8403,7 +8393,7 @@
               "kind": "chord",
               "chord": "F",
               "text": "F = IV",
-              "midi": 45
+              "midi": 57
             },
             {
               "step": 16,
@@ -8417,7 +8407,7 @@
               "kind": "chord",
               "chord": "G7",
               "text": "G7 = V7",
-              "midi": 45
+              "midi": 57
             }
           ]
         }
@@ -8430,7 +8420,7 @@
           "patternId": "br_bass",
           "title": "Pocket discipline",
           "barRange": [
-            0,
+            1,
             1
           ],
           "highlights": [
@@ -8458,7 +8448,7 @@
           "title": "Bridge pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8476,37 +8466,37 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are A \u00b7 E \u00b7 A (A+E). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
-          "title": "Bridge line",
+          "title": "A+E",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 45,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 6,
               "midi": 52,
-              "text": "line"
+              "text": "E"
             },
             {
               "step": 8,
               "midi": 57,
-              "text": "line"
+              "text": "A"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Bridge is Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "body": "Bridge is Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
         "insight": {
           "layer": "harmony",
           "patternId": "br_bass",
@@ -8528,7 +8518,7 @@
               "kind": "chord",
               "chord": "F",
               "text": "F = IV",
-              "midi": 45
+              "midi": 57
             },
             {
               "step": 16,
@@ -8542,7 +8532,7 @@
               "kind": "chord",
               "chord": "G7",
               "text": "G7 = V7",
-              "midi": 45
+              "midi": 57
             }
           ]
         }
@@ -8555,7 +8545,7 @@
           "patternId": "br_bass",
           "title": "Pocket discipline",
           "barRange": [
-            0,
+            1,
             1
           ],
           "highlights": [
@@ -8583,7 +8573,7 @@
           "title": "Chorus out pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8601,44 +8591,44 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on C\u2013G\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "ch2_bass",
-          "title": "Chorus out line",
+          "title": "C+G",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 36,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 3,
               "midi": 48,
-              "text": "line"
+              "text": "C"
             },
             {
               "step": 4,
               "midi": 43,
-              "text": "line"
+              "text": "G"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Chorus out is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes; no extra chords are implied.",
+        "body": "Chorus out is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
         "insight": {
           "layer": "harmony",
           "patternId": "ch2_bass",
           "title": "C \u2013 G \u2013 Am \u2013 F \u2013 C",
           "barRange": [
             0,
-            1
+            2
           ],
           "highlights": [
             {
@@ -8653,28 +8643,27 @@
               "kind": "chord",
               "chord": "G",
               "text": "G = V",
-              "midi": 36
+              "midi": 48
             },
             {
               "step": 16,
               "kind": "chord",
               "chord": "Am",
               "text": "Am = vi",
-              "midi": 36
+              "midi": 43
             },
             {
               "step": 24,
               "kind": "chord",
               "chord": "F",
               "text": "F = IV",
-              "midi": 36
+              "midi": 55
             },
             {
               "step": 32,
               "kind": "chord",
               "chord": "C",
-              "text": "C = I",
-              "midi": 36
+              "text": "C = I"
             }
           ]
         }
@@ -8687,7 +8676,7 @@
           "patternId": "ch2_bass",
           "title": "Pocket discipline",
           "barRange": [
-            0,
+            1,
             1
           ],
           "highlights": [
