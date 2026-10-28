@@ -1410,6 +1410,53 @@
     return collapsed;
   }
 
+  /**
+   * Bars that have at least one highlight. A bar with only dim hits is omitted.
+   * Ghost claims are stored once and tiled, so every bar of the authored
+   * window counts as highlighted.
+   */
+  function litClaimBars(barRange, highlights) {
+    const authored = Array.isArray(barRange) && barRange.length >= 2
+      ? [barRange[0] | 0, barRange[1] | 0]
+      : [0, 0];
+    if (authored[1] < authored[0]) authored[1] = authored[0];
+    const lit = new Set();
+    let saw = false;
+    let tileGhosts = false;
+    const hs = Array.isArray(highlights) ? highlights : [];
+    for (let i = 0; i < hs.length; i++) {
+      const h = hs[i];
+      if (!h || !Number.isFinite(h.step)) continue;
+      saw = true;
+      if (h.ghost === true || h.ghost === 1) tileGhosts = true;
+      else lit.add(Math.floor((h.step | 0) / 16));
+    }
+    if (!saw) {
+      const all = [];
+      for (let b = authored[0]; b <= authored[1]; b++) all.push(b);
+      return all.length ? all : [0];
+    }
+    if (tileGhosts) {
+      for (let b = authored[0]; b <= authored[1]; b++) lit.add(b);
+    }
+    let bars = [];
+    lit.forEach((b) => {
+      if (b >= authored[0] && b <= authored[1]) bars.push(b);
+    });
+    bars.sort((a, b) => a - b);
+    if (!bars.length) {
+      bars = [];
+      lit.forEach((b) => bars.push(b));
+      bars.sort((a, b) => a - b);
+    }
+    return bars.length ? bars : [authored[0]];
+  }
+
+  function fitClaimBarRange(barRange, highlights) {
+    const bars = litClaimBars(barRange, highlights);
+    return [bars[0], bars[bars.length - 1]];
+  }
+
   function makeCardInsight(insight, pattern, voiceModes) {
     if (!insight || typeof insight !== "object") return null;
     const layer = insight.layer || "figure";
@@ -1417,12 +1464,21 @@
     const isHarmony = layer === "harmony";
     const highlightsAll = Array.isArray(insight.highlights) ? insight.highlights : [];
     const highlights = highlightsAll.filter((h) => h && (h.text || h.kind || h.chord || Number.isFinite(h.step))).slice(0, 4);
-    const barRange = Array.isArray(insight.barRange) && insight.barRange.length >= 2
-      ? [insight.barRange[0] | 0, insight.barRange[1] | 0]
-      : [0, 0];
-    const nBars = Math.max(1, barRange[1] - barRange[0] + 1);
-    const step0 = barRange[0] * 16;
+    // Only bars that contain a highlight. Holes are not drawn.
+    const claimBars = litClaimBars(insight.barRange, highlights);
+    const nBars = claimBars.length;
     const totalSteps = nBars * 16;
+    const barSlot = new Map();
+    for (let i = 0; i < claimBars.length; i++) barSlot.set(claimBars[i], i);
+    function slotOf(step) {
+      const st = step | 0;
+      const idx = barSlot.get(Math.floor(st / 16));
+      if (idx == null) return null;
+      return idx * 16 + (st - Math.floor(st / 16) * 16);
+    }
+    function inClaim(step) {
+      return slotOf(step) != null;
+    }
     const wrap = el("div", { className: "card-insight", "data-insight-layer": layer });
     const head = el("div", { className: "card-insight-head" });
     if (insight.title) head.appendChild(el("div", { className: "card-insight-title" }, [insight.title]));
@@ -1533,8 +1589,13 @@
       "aria-label": insight.title || "Pattern insight",
       class: "card-insight-svg",
       "data-insight-two-staff": "1",
+      "data-insight-bars": String(nBars),
     });
-    const sx = (s) => gx0 + ((s - step0 + 0.5) / totalSteps) * gw;
+    const sx = (s) => {
+      const slot = slotOf(s);
+      if (slot == null) return gx0;
+      return gx0 + ((slot + 0.5) / totalSteps) * gw;
+    };
 
     function drawStaffBand(y0, h, label) {
       for (let b = 0; b < nBars; b++) {
@@ -1576,12 +1637,14 @@
     }
 
     // Beat numbers under drums
-    for (let s = 0; s < totalSteps; s += 4) {
-      const beat = ((s % 16) / 4) + 1;
-      svg.appendChild(svgEl("text", {
-        x: sx(step0 + s), y: drumY + 30, "text-anchor": "middle",
-        "font-size": 8, fill: "#6b7280",
-      }, [document.createTextNode(String(beat))]));
+    for (let i = 0; i < claimBars.length; i++) {
+      for (let beat = 0; beat < 4; beat++) {
+        const abs = claimBars[i] * 16 + beat * 4;
+        svg.appendChild(svgEl("text", {
+          x: sx(abs), y: drumY + 30, "text-anchor": "middle",
+          "font-size": 8, fill: "#6b7280",
+        }, [document.createTextNode(String(beat + 1))]));
+      }
     }
 
     const patNotes = (pattern && Array.isArray(pattern.notes)) ? pattern.notes : [];
@@ -1654,7 +1717,7 @@
           }, [document.createTextNode("rest")]));
         }
       } else {
-        const inRange = patNotes.filter((n) => n.step >= step0 && n.step < step0 + totalSteps);
+        const inRange = patNotes.filter((n) => inClaim(n.step));
         inRange.forEach((n) => {
           const arr = hiByStep.get(n.step) || [];
           const litBass = insightBassClaimAt(highlights, n.step);
@@ -1708,7 +1771,7 @@
           if (!h || !Number.isFinite(h.step)) return;
           if (insightHighlightDrumKind(h) || String(h.kind || "").toLowerCase() === "chord") return;
           const st = h.step | 0;
-          if (st < step0 || st >= step0 + totalSteps) return;
+          if (!inClaim(st)) return;
           if (inRange.some((n) => n.step === st)) return;
           const m = Number.isFinite(h.midi) ? h.midi : 33;
           const sp = staffPos(m);
@@ -1804,8 +1867,8 @@
       ["hat", "snare", "kick"].forEach((kind) => {
         const drawn = new Set();
         const offs = INSIGHT_DRUM_GRID[kind];
-        for (let bar = 0; bar < nBars; bar++) {
-          const base = step0 + bar * 16;
+        for (let bar = 0; bar < claimBars.length; bar++) {
+          const base = claimBars[bar] * 16;
           for (let i = 0; i < offs.length; i++) {
             const st = base + offs[i];
             drawn.add(st);
@@ -1813,22 +1876,22 @@
             drawDrumDot(st, kind, Boolean(claim), Boolean(claim && noteIsGhost(claim)));
           }
         }
-        // Ghost claims tile across every bar of the window (the groove repeats).
+        // Ghost claims tile across every shown bar (each of those bars has a highlight).
         // Other off-grid drum highlights are drawn once at their step.
         highlights.forEach((h) => {
           if (!h || !Number.isFinite(h.step) || insightHighlightDrumKind(h) !== kind) return;
           const off = (h.step | 0) % 16;
           const ghost = noteIsGhost(h);
           if (ghost) {
-            for (let bar = 0; bar < nBars; bar++) {
-              const st = step0 + bar * 16 + off;
-              if (st < step0 || st >= step0 + totalSteps || drawn.has(st)) continue;
+            for (let bar = 0; bar < claimBars.length; bar++) {
+              const st = claimBars[bar] * 16 + off;
+              if (!inClaim(st) || drawn.has(st)) continue;
               drawn.add(st);
               drawDrumDot(st, kind, true, true);
             }
           } else {
             const st = h.step | 0;
-            if (st < step0 || st >= step0 + totalSteps || drawn.has(st)) return;
+            if (!inClaim(st) || drawn.has(st)) return;
             drawn.add(st);
             drawDrumDot(st, kind, true, false);
           }
@@ -1838,7 +1901,7 @@
 
     // Annotation labels (top band) with leader lines — max 4
     const labelSlots = highlights.filter((h) => h && h.text && Number.isFinite(h.step)
-      && h.step >= step0 && h.step < step0 + totalSteps).slice(0, 4);
+      && inClaim(h.step)).slice(0, 4);
     labelSlots.forEach((h, i) => {
       const st = h.step | 0;
       const x = sx(st);
@@ -1917,17 +1980,26 @@
     if (!insight || typeof insight !== "object") { out.empty = true; return out; }
     const layer = insight.layer || "figure";
     out.layer = layer;
-    const barRange = Array.isArray(insight.barRange) && insight.barRange.length >= 2
-      ? [insight.barRange[0] | 0, insight.barRange[1] | 0]
-      : [0, 0];
-    const nBars = Math.max(1, barRange[1] - barRange[0] + 1);
-    const step0 = barRange[0] * 16;
+    const highlights = Array.isArray(insight.highlights) ? insight.highlights : [];
+    const claimBars = litClaimBars(insight.barRange, highlights);
+    const nBars = claimBars.length;
+    const contiguous = nBars > 0 && claimBars[nBars - 1] - claimBars[0] + 1 === nBars;
+    const step0 = contiguous ? claimBars[0] * 16 : 0;
     const totalSteps = nBars * 16;
+    const barSlot = new Map();
+    for (let i = 0; i < claimBars.length; i++) barSlot.set(claimBars[i], i);
+    function eventStep(abs) {
+      const st = abs | 0;
+      const bar = Math.floor(st / 16);
+      const idx = barSlot.get(bar);
+      if (idx == null) return null;
+      const local = st - bar * 16;
+      return contiguous ? st : idx * 16 + local;
+    }
     out.step0 = step0;
     out.totalSteps = totalSteps;
     const patternEmpty = insight.patternId === "empty" || (pattern && pattern.id === "empty");
     out.empty = Boolean(patternEmpty);
-    const highlights = Array.isArray(insight.highlights) ? insight.highlights : [];
 
     if (layer === "harmony" || v === "chords") {
       const chords = highlights.filter((h) => h && (h.kind === "chord" || h.chord));
@@ -1949,16 +2021,17 @@
 
     if (v === "all" || v === "bass") {
       const patNotes = (pattern && Array.isArray(pattern.notes)) ? pattern.notes : [];
-      const inRange = patNotes.filter((n) => n.step >= step0 && n.step < step0 + totalSteps);
+      const inRange = patNotes.filter((n) => eventStep(n.step) != null);
       const seen = new Set();
       for (let i = 0; i < inRange.length; i++) {
         const n = inRange[i];
-        const key = n.step + ":" + n.midi;
+        const shown = eventStep(n.step);
+        const key = shown + ":" + n.midi;
         if (seen.has(key)) continue;
         seen.add(key);
         const claimGhost = highlights.some((h) => h && noteIsGhost(h) && (h.step | 0) === n.step && Number(h.midi) === Number(n.midi));
         out.bass.push({
-          step: n.step,
+          step: shown,
           midi: n.midi,
           lit: insightBassClaimAt(highlights, n.step),
           ghost: noteIsGhost(n) || claimGhost,
@@ -1970,13 +2043,14 @@
         if (!h || !Number.isFinite(h.step)) continue;
         if (insightHighlightDrumKind(h) || String(h.kind || "").toLowerCase() === "chord") continue;
         const st = h.step | 0;
-        if (st < step0 || st >= step0 + totalSteps) continue;
+        const shown = eventStep(st);
+        if (shown == null) continue;
         const m = Number.isFinite(h.midi) ? h.midi : null;
         if (m == null) continue;
-        const key = st + ":" + m;
+        const key = shown + ":" + m;
         if (seen.has(key)) continue;
         seen.add(key);
-        out.bass.push({ step: st, midi: m, lit: true, ghost: noteIsGhost(h) });
+        out.bass.push({ step: shown, midi: m, lit: true, ghost: noteIsGhost(h) });
       }
       out.bass.sort((a, b) => a.step - b.step);
     }
@@ -2000,14 +2074,16 @@
         seen.add(key);
         out.drums.push({ step, kind, lit: Boolean(lit), ghost: Boolean(ghost) });
       }
-      for (let bar = 0; bar < nBars; bar++) {
-        const base = step0 + bar * 16;
+      for (let bar = 0; bar < claimBars.length; bar++) {
+        const base = claimBars[bar] * 16;
         ["kick", "snare", "hat"].forEach((kind) => {
           const offs = INSIGHT_DRUM_GRID[kind];
           for (let i = 0; i < offs.length; i++) {
             const st = base + offs[i];
+            const shown = eventStep(st);
+            if (shown == null) continue;
             const claim = highlights.find((h) => h && Number.isFinite(h.step) && (h.step | 0) === st && insightHighlightDrumKind(h) === kind);
-            pushDrum(st, kind, Boolean(claim), Boolean(claim && noteIsGhost(claim)));
+            pushDrum(shown, kind, Boolean(claim), Boolean(claim && noteIsGhost(claim)));
           }
         });
       }
@@ -2018,15 +2094,16 @@
         const ghost = noteIsGhost(h);
         if (ghost) {
           const off = (h.step | 0) % 16;
-          for (let bar = 0; bar < nBars; bar++) {
-            const st = step0 + bar * 16 + off;
-            if (st < step0 || st >= step0 + totalSteps) continue;
-            pushDrum(st, kind, true, true);
+          for (let bar = 0; bar < claimBars.length; bar++) {
+            const st = claimBars[bar] * 16 + off;
+            const shown = eventStep(st);
+            if (shown == null) continue;
+            pushDrum(shown, kind, true, true);
           }
         } else {
-          const st = h.step | 0;
-          if (st < step0 || st >= step0 + totalSteps) continue;
-          pushDrum(st, kind, true, false);
+          const shown = eventStep(h.step | 0);
+          if (shown == null) continue;
+          pushDrum(shown, kind, true, false);
         }
       }
       out.drums.sort((a, b) => a.step - b.step || String(a.kind).localeCompare(String(b.kind)));
@@ -5280,6 +5357,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     midiToName,
     resolveInsightPattern,
     makeCardInsight,
+    litClaimBars,
+    fitClaimBarRange,
     resolveHarmonyChips,
     buildInsightMidiEvents,
     bassNoteGainScale,
