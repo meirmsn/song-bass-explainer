@@ -7670,7 +7670,7 @@
           "title": "Intro pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7688,44 +7688,44 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on A\u2013G\u2013C. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are A \u00b7 A \u00b7 G (A+G). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "intro_bass",
-          "title": "A\u2013G\u2013C line",
+          "title": "A+G",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 6,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 7,
               "midi": 31,
-              "text": "line"
+              "text": "G"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
         "insight": {
           "layer": "harmony",
           "patternId": "intro_bass",
           "title": "Am7 (= main row)",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7733,13 +7733,6 @@
               "kind": "chord",
               "chord": "Am7",
               "text": "Am7 = i7",
-              "midi": 33
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "Am7",
-              "text": "still Am7",
               "midi": 33
             }
           ]
@@ -7754,7 +7747,7 @@
           "title": "Pocket discipline",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7781,7 +7774,7 @@
           "title": "Groove A pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7799,44 +7792,44 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on A\u2013G\u2013C. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are A \u00b7 A \u00b7 G (A+G). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "a1_bass",
-          "title": "A\u2013G\u2013C line",
+          "title": "A+G",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 6,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 7,
               "midi": 31,
-              "text": "line"
+              "text": "G"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
         "insight": {
           "layer": "harmony",
           "patternId": "a1_bass",
           "title": "Am7 (= main row)",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7844,13 +7837,6 @@
               "kind": "chord",
               "chord": "Am7",
               "text": "Am7 = i7",
-              "midi": 33
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "Am7",
-              "text": "still Am7",
               "midi": 33
             }
           ]
@@ -7865,7 +7851,7 @@
           "title": "Pocket discipline",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7892,7 +7878,7 @@
           "title": "Groove back pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7910,44 +7896,44 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on A\u2013G\u2013C. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are A \u00b7 A \u00b7 G (A+G). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "a3_bass",
-          "title": "A\u2013G\u2013C line",
+          "title": "A+G",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 6,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 7,
               "midi": 31,
-              "text": "line"
+              "text": "G"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
         "insight": {
           "layer": "harmony",
           "patternId": "a3_bass",
           "title": "Am7 (= main row)",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -7955,13 +7941,6 @@
               "kind": "chord",
               "chord": "Am7",
               "text": "Am7 = i7",
-              "midi": 33
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "Am7",
-              "text": "still Am7",
               "midi": 33
             }
           ]
@@ -7976,7 +7955,7 @@
           "title": "Pocket discipline",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8003,7 +7982,7 @@
           "title": "Groove A\u2032 pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8034,44 +8013,44 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on A\u2013C\u2013E. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are A \u00b7 A \u00b7 A (A). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "a2_bass",
-          "title": "A\u2013C\u2013E line",
+          "title": "A",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 3,
               "midi": 45,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 6,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
         "insight": {
           "layer": "harmony",
           "patternId": "a2_bass",
           "title": "Am7 (= main row)",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8079,13 +8058,6 @@
               "kind": "chord",
               "chord": "Am7",
               "text": "Am7 = i7",
-              "midi": 33
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "Am7",
-              "text": "still Am7",
               "midi": 33
             }
           ]
@@ -8100,7 +8072,7 @@
           "title": "Pocket discipline",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8127,7 +8099,7 @@
           "title": "Lift pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8145,30 +8117,30 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on D\u2013F#\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are D \u00b7 F# \u00b7 D (D+F#). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "b1_bass",
-          "title": "D\u2013F#\u2013A line",
+          "title": "D+F#",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 38,
-              "text": "line"
+              "text": "D"
             },
             {
               "step": 4,
               "midi": 42,
-              "text": "line"
+              "text": "F#"
             },
             {
               "step": 6,
               "midi": 38,
-              "text": "line"
+              "text": "D"
             }
           ]
         }
@@ -8182,7 +8154,7 @@
           "title": "D7 (= main row)",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8190,13 +8162,6 @@
               "kind": "chord",
               "chord": "D7",
               "text": "D7 = IV7",
-              "midi": 38
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "D7",
-              "text": "still D7",
               "midi": 38
             }
           ]
@@ -8211,7 +8176,7 @@
           "title": "Pocket discipline",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8238,7 +8203,7 @@
           "title": "Lift pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8256,30 +8221,30 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on D\u2013F#\u2013A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are D \u00b7 F# \u00b7 D (D+F#). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "b1_bass",
-          "title": "D\u2013F#\u2013A line",
+          "title": "D+F#",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 38,
-              "text": "line"
+              "text": "D"
             },
             {
               "step": 4,
               "midi": 42,
-              "text": "line"
+              "text": "F#"
             },
             {
               "step": 6,
               "midi": 38,
-              "text": "line"
+              "text": "D"
             }
           ]
         }
@@ -8293,7 +8258,7 @@
           "title": "D7 (= main row)",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8301,13 +8266,6 @@
               "kind": "chord",
               "chord": "D7",
               "text": "D7 = IV7",
-              "midi": 38
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "D7",
-              "text": "still D7",
               "midi": 38
             }
           ]
@@ -8322,7 +8280,7 @@
           "title": "Pocket discipline",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8349,7 +8307,7 @@
           "title": "Groove back pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8367,44 +8325,44 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on A\u2013G\u2013C. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are A \u00b7 A \u00b7 G (A+G). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "a3_bass",
-          "title": "A\u2013G\u2013C line",
+          "title": "A+G",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 6,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 7,
               "midi": 31,
-              "text": "line"
+              "text": "G"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
         "insight": {
           "layer": "harmony",
           "patternId": "a3_bass",
           "title": "Am7 (= main row)",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8412,13 +8370,6 @@
               "kind": "chord",
               "chord": "Am7",
               "text": "Am7 = i7",
-              "midi": 33
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "Am7",
-              "text": "still Am7",
               "midi": 33
             }
           ]
@@ -8433,7 +8384,7 @@
           "title": "Pocket discipline",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8460,7 +8411,7 @@
           "title": "Break pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8478,30 +8429,30 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are A \u00b7 A \u00b7 A (A). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
-          "title": "A line",
+          "title": "A",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 8,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 12,
               "midi": 45,
-              "text": "line"
+              "text": "A"
             }
           ]
         }
@@ -8515,7 +8466,7 @@
           "title": "E7 (= main row)",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8523,13 +8474,6 @@
               "kind": "chord",
               "chord": "E7",
               "text": "E7 = V7",
-              "midi": 33
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "E7",
-              "text": "still E7",
               "midi": 33
             }
           ]
@@ -8544,7 +8488,7 @@
           "title": "Pocket discipline",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8571,7 +8515,7 @@
           "title": "Break pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8589,30 +8533,30 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are A \u00b7 A \u00b7 A (A). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
-          "title": "A line",
+          "title": "A",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 8,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 12,
               "midi": 45,
-              "text": "line"
+              "text": "A"
             }
           ]
         }
@@ -8626,7 +8570,7 @@
           "title": "E7 (= main row)",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8634,13 +8578,6 @@
               "kind": "chord",
               "chord": "E7",
               "text": "E7 = V7",
-              "midi": 33
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "E7",
-              "text": "still E7",
               "midi": 33
             }
           ]
@@ -8655,7 +8592,7 @@
           "title": "Pocket discipline",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8682,7 +8619,7 @@
           "title": "Outro pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8700,44 +8637,44 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are A \u00b7 A \u00b7 A (A). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "out_bass",
-          "title": "A line",
+          "title": "A",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 8,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 14,
               "midi": 45,
-              "text": "line"
+              "text": "A"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
         "insight": {
           "layer": "harmony",
           "patternId": "out_bass",
           "title": "Am7 (= main row)",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8745,13 +8682,6 @@
               "kind": "chord",
               "chord": "Am7",
               "text": "Am7 = i7",
-              "midi": 33
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "Am7",
-              "text": "still Am7",
               "midi": 33
             }
           ]
@@ -8766,7 +8696,7 @@
           "title": "Pocket discipline",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8793,7 +8723,7 @@
           "title": "Outro pocket",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8811,44 +8741,44 @@
       },
       {
         "label": "Figure",
-        "body": "Bass line centers on A. Trace the MIDI-authored line \u2014 hits match the stem 1:1.",
+        "body": "Lit pitches are A \u00b7 A \u00b7 A (A). They match the MIDI stem.",
         "insight": {
           "layer": "figure",
           "patternId": "out_bass",
-          "title": "A line",
+          "title": "A",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
               "step": 0,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 8,
               "midi": 33,
-              "text": "line"
+              "text": "A"
             },
             {
               "step": 14,
               "midi": 45,
-              "text": "line"
+              "text": "A"
             }
           ]
         }
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
         "insight": {
           "layer": "harmony",
           "patternId": "out_bass",
           "title": "Am7 (= main row)",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -8856,13 +8786,6 @@
               "kind": "chord",
               "chord": "Am7",
               "text": "Am7 = i7",
-              "midi": 33
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "Am7",
-              "text": "still Am7",
               "midi": 33
             }
           ]
@@ -8877,7 +8800,7 @@
           "title": "Pocket discipline",
           "barRange": [
             0,
-            1
+            0
           ],
           "highlights": [
             {
@@ -9165,8 +9088,7 @@
     "drumsSchema": "bass.drums.v1",
     "drumHitCount": 539,
     "bassHitCount": 258,
-    "midiAuthoritative": true,
-    "harmonyHonest": "chord-row-matched-2026-10-28"
+    "midiAuthoritative": true
   },
   "semantic": {
     "schema": "bass.semantic.v1",

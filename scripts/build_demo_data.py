@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import shutil
-from collections import Counter, defaultdict
 from pathlib import Path
 
 NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
@@ -16,6 +15,16 @@ def midi_name(m):
 
 def clamp_hits(hits, nbars):
     return [h for h in hits if 0 <= h["bar"] < nbars]
+
+
+def rel_note(h, step):
+    """Pattern note from a hit. Keeps ghost/vel so Groove A′ stays soft."""
+    note = {"step": step, "midi": h["midi"], "dur": h.get("dur", 1)}
+    if h.get("ghost"):
+        note["ghost"] = True
+    if "vel" in h:
+        note["vel"] = h["vel"]
+    return note
 
 
 def pattern_from_hits(hits, sec, pattern_id, name, max_notes=24):
@@ -33,7 +42,7 @@ def pattern_from_hits(hits, sec, pattern_id, name, max_notes=24):
             best_bars = (start, end - 1)
     notes = []
     for h in best:
-        notes.append({"step": (h["bar"] - best_bars[0]) * 16 + h["step"], "midi": h["midi"], "dur": h.get("dur", 1)})
+        notes.append(rel_note(h, (h["bar"] - best_bars[0]) * 16 + h["step"]))
     notes = notes[:max_notes]
     return {
         "id": pattern_id,
@@ -41,22 +50,100 @@ def pattern_from_hits(hits, sec, pattern_id, name, max_notes=24):
         "notes": notes,
         "midi": True,
         "sectionNotes": [
-            {"step": (h["bar"] - lo) * 16 + h["step"], "midi": h["midi"], "dur": h.get("dur", 1)}
+            rel_note(h, (h["bar"] - lo) * 16 + h["step"])
             for h in sec_hits[:80]
         ],
         "sectionBars": [best_bars[0], best_bars[1]],
     }
 
 
-def figure_label(hits):
-    if not hits:
-        return "sparse"
-    cnt = Counter(midi_name(h["midi"]) for h in hits)
-    top = [n for n, _ in cnt.most_common(3)]
-    return "–".join(top)
+def claim_bar_range(highlights):
+    """Bars that contain a highlight step. No dim-only padding bar.
+
+    Steps are pattern-relative (16 per bar). A claim that only touches bar 0
+    is one bar.
+    """
+    bars = []
+    for h in highlights or []:
+        step = h.get("step")
+        if not isinstance(step, int):
+            continue
+        bars.append(step // 16)
+    if not bars:
+        return [0, 0]
+    return [min(bars), max(bars)]
 
 
-def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar=None):
+def figure_highlights(pat_notes, sec_hits, limit=3):
+    """Light the opening attacks and name those pitches.
+
+    Intro's first three bass attacks are A, A, G (midi 33, 33, 31).
+    C at step 10 (midi 36) is a later hit and stays unlit — do not pull it
+    into the claim, and do not label a bubble "line".
+    """
+    notes = [n for n in (pat_notes or []) if isinstance(n.get("step"), int)]
+    bar0 = [n for n in notes if n["step"] // 16 == 0]
+    pool = bar0 or notes
+    chosen = []
+    seen = set()
+    for n in pool:
+        if n["step"] in seen:
+            continue
+        seen.add(n["step"])
+        chosen.append(n)
+        if len(chosen) >= limit:
+            break
+    if not chosen:
+        for h in sec_hits or []:
+            step = h.get("step")
+            if not isinstance(step, int) or step in seen:
+                continue
+            seen.add(step)
+            chosen.append({"step": step, "midi": h["midi"]})
+            if len(chosen) >= limit:
+                break
+    out = [
+        {"step": n["step"], "midi": n["midi"], "text": midi_name(n["midi"])}
+        for n in chosen
+    ]
+    return out or [{"step": 0, "midi": 33, "text": "A"}]
+
+
+def figure_claim_name(highlights):
+    """Distinct lit pitches in attack order. A, A, G → A+G. Never an unlit pitch."""
+    names = []
+    for h in highlights or []:
+        name = h.get("text") or ""
+        if name and name not in names:
+            names.append(name)
+    return "+".join(names) if names else "figure"
+
+
+def figure_body(highlights):
+    lit = " · ".join(h.get("text") or midi_name(h["midi"]) for h in highlights)
+    claim = figure_claim_name(highlights)
+    return f"Lit pitches are {lit} ({claim}). They match the MIDI stem."
+
+
+def pocket_highlights(pat_notes, home, has_drums):
+    kick = "kick/bass 1" if has_drums else "LH 1"
+    back = "backbeat pocket" if has_drums else "LH 3"
+    ghosts = [n for n in (pat_notes or []) if n.get("ghost") and 0 <= n["step"] < 16]
+    if ghosts and has_drums:
+        bass_g = next((n for n in ghosts if n["step"] == 10), ghosts[0])
+        return [
+            {"step": 0, "midi": home, "text": kick},
+            {"step": 3, "kind": "snare", "text": "ghost", "ghost": True},
+            {"step": bass_g["step"], "midi": bass_g["midi"], "text": "bass ghost", "ghost": True},
+            {"step": 11, "kind": "snare", "text": "ghost", "ghost": True},
+        ]
+    return [
+        {"step": 0, "midi": home, "text": kick},
+        {"step": 8, "midi": home, "text": back},
+    ]
+
+
+def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar=None, patterns=None):
     """Lean-B cards. Harmony chips must match the main chord-name row (no invented Bb)."""
     cards = {}
 
@@ -84,8 +171,7 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
             return (
                 f"Pedal {ch}"
                 + (f" ({rn})" if rn else "")
-                + " — same as the main chord-name row. Bass outlines A–C–E–G color tones; "
-                "there is no Bb (or other foreign chord) in what’s heard."
+                + " — same as the main chord-name row. Bass outlines A–C–E–G color tones."
             )
         if ch == "D7":
             return (
@@ -105,18 +191,14 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
     for sec in secs:
         lo, hi = sec["first"], sec["end"]
         sec_hits = [h for h in bass_hits if lo <= h["bar"] < hi]
-        fig = figure_label(sec_hits)
         home = sec_hits[0]["midi"] if sec_hits else 33
-        highlights_fig = []
-        for h in sec_hits[:3]:
-            highlights_fig.append({"step": (h["bar"] - lo) * 16 + h["step"] if h["bar"] >= lo else h["step"], "midi": h["midi"], "text": "line"})
-        # Prefer claim-local steps 0.. from densest pattern window — keep simple step from hit
-        highlights_fig = []
-        for h in sec_hits[:3]:
-            highlights_fig.append({"step": h["step"], "midi": h["midi"], "text": "line"})
-        while len(highlights_fig) < 3 and sec_hits:
-            highlights_fig.append({"step": sec_hits[0]["step"], "midi": home, "text": "home"})
-            break
+        pat_notes = []
+        if patterns:
+            bucket = patterns.get(sec["id"]) or []
+            if bucket:
+                pat_notes = bucket[0].get("notes") or []
+        highlights_fig = figure_highlights(pat_notes, sec_hits)
+        pocket_hi = pocket_highlights(pat_notes, home, has_drums)
         pocket_body = pocket_bodies.get(sec["id"]) or pocket_bodies.get(sec["kind"]) or (
             "Lock with the kit; sit behind the kick a hair." if has_drums else
             "No kit — feel the LH stride pulse: bass on 1 & 3, chord on 2 & 4."
@@ -124,6 +206,15 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
         pattern_id = f"{sec['id']}_bass"
         ch = section_chord(sec)
         rn = roman_for_chord(ch, key)
+        # One chord for the section: one chip. A second "still Am7" at step 16
+        # only existed to fill a padded bar the claim never needed.
+        harm_hi = [
+            {"step": 0, "kind": "chord", "chord": ch, "text": f"{ch} = {rn}" if rn else ch, "midi": home},
+        ]
+        miss_hi = [
+            {"step": 8, "midi": home, "text": "don’t chase"},
+            {"step": 12, "midi": home, "text": "don’t chase"},
+        ]
         cards[sec["id"]] = [
             {
                 "label": "Pocket",
@@ -132,22 +223,19 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
                     "layer": "pocket",
                     "patternId": pattern_id,
                     "title": f"{sec['name']} pocket",
-                    "barRange": [0, 1],  # claim-local (pattern steps are relative); NOT song bars
-                    "highlights": [
-                        {"step": 0, "midi": home, "text": "kick/bass 1" if has_drums else "LH 1"},
-                        {"step": 8, "midi": home, "text": "backbeat pocket" if has_drums else "LH 3"},
-                    ],
+                    "barRange": claim_bar_range(pocket_hi),
+                    "highlights": pocket_hi,
                 },
             },
             {
                 "label": "Figure",
-                "body": f"Bass line centers on {fig}. Trace the MIDI-authored line — hits match the stem 1:1.",
+                "body": figure_body(highlights_fig),
                 "insight": {
                     "layer": "figure",
                     "patternId": pattern_id,
-                    "title": f"{fig} line",
-                    "barRange": [0, 1],  # claim-local (pattern steps are relative); NOT song bars
-                    "highlights": highlights_fig[:3] or [{"step": 0, "midi": home, "text": "home"}],
+                    "title": figure_claim_name(highlights_fig),
+                    "barRange": claim_bar_range(highlights_fig),
+                    "highlights": highlights_fig,
                 },
             },
             {
@@ -157,11 +245,8 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
                     "layer": "harmony",
                     "patternId": pattern_id,
                     "title": f"{ch} (= main row)",
-                    "barRange": [0, 1],  # claim-local
-                    "highlights": [
-                        {"step": 0, "kind": "chord", "chord": ch, "text": f"{ch} = {rn}" if rn else ch, "midi": home},
-                        {"step": 16, "kind": "chord", "chord": ch, "text": "still " + ch, "midi": home},
-                    ],
+                    "barRange": claim_bar_range(harm_hi),
+                    "highlights": harm_hi,
                 },
             },
             {
@@ -171,11 +256,8 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
                     "layer": "missable",
                     "patternId": pattern_id,
                     "title": "Pocket discipline",
-                    "barRange": [0, 1],  # claim-local (pattern steps are relative); NOT song bars
-                    "highlights": [
-                        {"step": 8, "midi": home, "text": "don’t chase"},
-                        {"step": 12, "midi": home, "text": "don’t chase"},
-                    ],
+                    "barRange": claim_bar_range(miss_hi),
+                    "highlights": miss_hi,
                 },
             },
         ]
@@ -243,14 +325,52 @@ def write_demo(out_dir: Path, demo: dict, beat: dict, midi_hits: dict, extra_fil
     print(f"wrote {demo_path} bass={len(demo['bassHits'])} drums={len(demo['drumHits'])} bars={demo['nbars']}")
 
 
+def apply_pocket_funk_ghosts(bass, drums):
+    """Groove A′ (bars 12–19): flag the soft bass 16ths and add the quiet snare ghosts.
+
+    Bass notes at steps 10/11/14 are in the MIDI (vel 90/88/92). Snare ghosts on
+    the e of 1 and the e of 3 (steps 3 and 11, vel 42) are the study's ghost
+    layer ahead of the backbeat — already shipped, not a new harmony.
+    Copies hits so the raw midi_hits document stays velocity-free.
+    """
+    bass_vel = {10: 90, 11: 88, 14: 92}
+    bass_out = []
+    for h in bass:
+        row = dict(h)
+        if 12 <= row["bar"] <= 19 and row["step"] in bass_vel:
+            row["ghost"] = True
+            row["vel"] = bass_vel[row["step"]]
+        bass_out.append(row)
+    drums_out = [dict(h) for h in drums]
+    have = {(h["bar"], h["step"], h["kind"]) for h in drums_out}
+    for bar in range(12, 20):
+        for step in (3, 11):
+            if (bar, step, "snare") in have:
+                continue
+            drums_out.append({
+                "bar": bar, "step": step, "kind": "snare", "midi": 38,
+                "ghost": True, "vel": 42,
+            })
+    drums_out.sort(key=lambda h: (h["bar"], h["step"], h["kind"]))
+    return bass_out, drums_out
+
+
 def build_pocket_funk():
-    root = Path("/workspace/bass-midi-ship/pocket-funk")
+    repo = Path(__file__).resolve().parents[1]
+    candidates = [
+        Path("/workspace/bass-midi-ship/pocket-funk"),
+        repo / "work" / "demo-pocket-funk",
+    ]
+    root = next((p for p in candidates if (p / "analysis" / "midi_hits.json").is_file()), None)
+    if root is None:
+        raise SystemExit("pocket-funk analysis/midi_hits.json not found")
     hits = json.loads((root / "analysis" / "midi_hits.json").read_text())
     nbars = 40
     bpm = 96.0
     duration = 100.0
     bass = clamp_hits(hits["bassHits"], nbars)
     drums = clamp_hits(hits["drumHits"], nbars)
+    bass, drums = apply_pocket_funk_ghosts(bass, drums)
 
     secs = [
         {"id": "intro", "name": "Intro", "first": 0, "end": 4, "kind": "intro", "ci": 0},
@@ -290,7 +410,7 @@ def build_pocket_funk():
         "bridge": "Sparse break pocket.",
         "tag": "Outro pocket.",
     }
-    cards = build_cards(secs, bass, key="Am", has_drums=True, pocket_bodies=pocket_bodies, chord_for_bar=chord_for_bar)
+    cards = build_cards(secs, bass, key="Am", has_drums=True, pocket_bodies=pocket_bodies, chord_for_bar=chord_for_bar, patterns=patterns)
     beat = build_beat(bpm, nbars, duration)
     slug = "pocket-funk"
     demo = {
@@ -375,8 +495,9 @@ def build_pocket_funk():
 - Replaces Make Funk as public default/hero (Make Funk demoted to private/regression)
 """
     license_txt = Path("/tmp/sbe-ship/work/demo-make-funk/LICENSE-CC0.txt").read_text() if Path("/tmp/sbe-ship/work/demo-make-funk/LICENSE-CC0.txt").exists() else "CC0 1.0 Universal\n"
+    out = Path("/tmp/sbe-ship/work/demo-pocket-funk")
     write_demo(
-        Path("/tmp/sbe-ship/work/demo-pocket-funk"),
+        out,
         demo,
         beat,
         hits,
@@ -389,14 +510,35 @@ def build_pocket_funk():
             "source/download_date.txt": "2026-10-27 America/Los_Angeles\n",
         },
     )
-    # copy midi into source
-    src = Path("/tmp/sbe-ship/work/demo-pocket-funk/source")
-    shutil.copy(root / "midi" / "pocket-funk.mid", src / "pocket-funk.mid")
-    # stems dir (gitignored) — copy for local/R2 upload
-    stems = Path("/tmp/sbe-ship/work/demo-pocket-funk/stems")
-    if stems.exists():
-        shutil.rmtree(stems)
-    shutil.copytree(root / "stems", stems)
+    midi_src = None
+    for cand in (root / "midi" / "pocket-funk.mid", root / "source" / "pocket-funk.mid"):
+        if cand.is_file():
+            midi_src = cand
+            break
+    if midi_src:
+        src = out / "source"
+        src.mkdir(parents=True, exist_ok=True)
+        shutil.copy(midi_src, src / "pocket-funk.mid")
+    stems_src = root / "stems"
+    if stems_src.is_dir():
+        stems = out / "stems"
+        if stems.exists():
+            shutil.rmtree(stems)
+        shutil.copytree(stems_src, stems)
+    # Player ships work/demo-pocket-funk. Don't clobber SHIP.md / attribution.
+    published = repo / "work" / "demo-pocket-funk"
+    if published.is_dir() and published.resolve() != out.resolve():
+        text = json.dumps(demo, indent=2) + "\n"
+        (published / "demo-data.json").write_text(text)
+        (published / "study" / "resource.json").write_text(text)
+        for name in ("bass_hits.json", "drum_hits.json"):
+            src_f = out / "analysis" / name
+            if not src_f.is_file():
+                continue
+            data = src_f.read_text()
+            if not data.endswith("\n"):
+                data += "\n"
+            (published / "analysis" / name).write_text(data)
     return demo
 
 
@@ -448,7 +590,7 @@ def build_maple():
         "tag": "Coda — ride the LH stride out.",
     }
     # override pattern ids in cards for _lh
-    cards = build_cards(secs, bass, key="Ab", has_drums=False, pocket_bodies=pocket_bodies)
+    cards = build_cards(secs, bass, key="Ab", has_drums=False, pocket_bodies=pocket_bodies, patterns=patterns)
     for sec in secs:
         for c in cards[sec["id"]]:
             c["insight"]["patternId"] = f"{sec['id']}_lh"
@@ -587,18 +729,12 @@ def apply_style_insights(demo, song):
 
         first = notes[0] if notes else {"step": 0, "midi": home}
         beat3 = at(8) or (notes[min(2, len(notes) - 1)] if notes else first)
-        fig = []
-        seen = set()
-        for n in notes:
-            key = (n["step"], n["midi"])
-            if key in seen:
-                continue
-            seen.add(key)
-            fig.append({"step": n["step"], "midi": n["midi"], "text": "line"})
-            if len(fig) == 3:
-                break
+        fig = figure_highlights(notes, [
+            h for h in demo.get("bassHits") or []
+            if sec["first"] <= h["bar"] < sec["end"]
+        ])
         if not fig:
-            fig = [{"step": 0, "midi": home, "text": "home"}]
+            fig = [{"step": 0, "midi": home, "text": midi_name(home)}]
 
         seq = _progression(song, sec, chord_for)
         romans = [roman(song, ch) for ch in seq]
@@ -617,31 +753,35 @@ def apply_style_insights(demo, song):
 
         cards = demo["cards"][sec["id"]]
         by_label = {c["label"]: c for c in cards}
-        by_label["Pocket"]["insight"]["barRange"] = [0, 1]
-        by_label["Pocket"]["insight"]["highlights"] = [
+        pocket_hi = [
             {"step": first["step"], "midi": first["midi"], "text": "with the kick"},
             {"step": beat3["step"], "midi": beat3["midi"], "text": "backbeat"},
         ]
-        by_label["Figure"]["insight"]["barRange"] = [0, 1]
+        by_label["Pocket"]["insight"]["highlights"] = pocket_hi
+        by_label["Pocket"]["insight"]["barRange"] = claim_bar_range(pocket_hi)
         by_label["Figure"]["insight"]["highlights"] = fig
-        by_label["Figure"]["insight"]["title"] = f"{sec['name']} line"
+        by_label["Figure"]["insight"]["barRange"] = claim_bar_range(fig)
+        by_label["Figure"]["insight"]["title"] = figure_claim_name(fig)
+        by_label["Figure"]["body"] = figure_body(fig)
         by_label["Harmony"]["body"] = (
             f"{sec['name']} is {labeled} — the same symbols as the main chord-name row. "
             "Bass roots those changes; no extra chords are implied."
         )
-        by_label["Harmony"]["insight"]["barRange"] = [0, 1]
-        by_label["Harmony"]["insight"]["title"] = " – ".join(seq) if seq else sec["name"]
-        by_label["Harmony"]["insight"]["highlights"] = harm_highlights or [
+        harm_hi = harm_highlights or [
             {"step": 0, "kind": "chord", "chord": seq[0] if seq else song["key"], "text": "chord", "midi": home}
         ]
-        by_label["Missable"]["insight"]["barRange"] = [0, 1]
+        by_label["Harmony"]["insight"]["title"] = " – ".join(seq) if seq else sec["name"]
+        by_label["Harmony"]["insight"]["highlights"] = harm_hi
+        by_label["Harmony"]["insight"]["barRange"] = claim_bar_range(harm_hi)
         # Light a real pattern note so the schematic is not an empty claim.
         miss = notes[-1] if notes else first
         earlier = notes[max(0, len(notes) // 2)] if notes else first
-        by_label["Missable"]["insight"]["highlights"] = [
+        miss_hi = [
             {"step": earlier["step"], "midi": earlier["midi"], "text": "hold the line"},
             {"step": miss["step"], "midi": miss["midi"], "text": "don’t chase"},
         ]
+        by_label["Missable"]["insight"]["highlights"] = miss_hi
+        by_label["Missable"]["insight"]["barRange"] = claim_bar_range(miss_hi)
         by_label["Missable"]["body"] = (
             f"Easy miss in {sec['name']} (bars {sec['first']}–{sec['end'] - 1}): "
             "ornamenting past the written line. Play the MIDI pocket before adding notes."
@@ -690,6 +830,7 @@ def build_style_demo(slug: str):
     cards = build_cards(
         secs, bass, key=song["key"], has_drums=True,
         pocket_bodies=song["pocket_bodies"], chord_for_bar=chord_for,
+        patterns=patterns,
     )
     beat = build_beat(bpm, nbars, duration)
     player = f"https://bass.meirmsn.dev/?song={slug}"
@@ -796,9 +937,13 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     if not args:
         pf = build_pocket_funk()
-        ml = build_maple()
         print("PF insightCount", pf["meta"]["insightCount"], "cards sections", len(pf["secs"]))
-        print("ML insightCount", ml["meta"]["insightCount"], "bass", len(ml["bassHits"]))
+        maple_hits = Path("/workspace/bass-midi-ship/maple-leaf-rag/analysis/midi_hits.json")
+        if maple_hits.is_file():
+            ml = build_maple()
+            print("ML insightCount", ml["meta"]["insightCount"], "bass", len(ml["bassHits"]))
+        else:
+            print("maple source missing; skipped")
     else:
         for slug in args:
             demo = build_style_demo(slug)

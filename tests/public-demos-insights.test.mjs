@@ -64,6 +64,75 @@ describe("Pocket Funk public demo artifacts (MIDI-authored hero)", () => {
     const pat = demo.patterns.a2[0];
     expect(pat.notes.filter((n) => n.ghost).map((n) => n.step).sort((a, b) => a - b)).toEqual([10, 11, 14, 26, 27, 30]);
   });
+
+  const PITCH = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+  function highlightSpan(insight) {
+    const steps = (insight.highlights || []).map((h) => h.step).filter((n) => Number.isFinite(n));
+    return [Math.floor(Math.min(...steps) / 16), Math.floor(Math.max(...steps) / 16)];
+  }
+
+  it("each card window is exactly the bars its highlights land in", () => {
+    for (const sec of demo.secs) {
+      for (const c of demo.cards[sec.id]) {
+        expect(c.insight.barRange, `${sec.id}/${c.label}`).toEqual(highlightSpan(c.insight));
+      }
+    }
+  });
+
+  it("Intro Figure lights A A G and leaves C unlit", () => {
+    const pocket = demo.cards.intro.find((c) => c.label === "Pocket");
+    const figure = demo.cards.intro.find((c) => c.label === "Figure");
+    const entered = demo.bassHits.filter((h) => h.bar === 2).sort((a, b) => a.step - b.step);
+    expect(entered.slice(0, 3).map((h) => [h.step, h.midi])).toEqual([[0, 33], [6, 33], [7, 31]]);
+    expect(entered.find((h) => h.step === 10).midi).toBe(36);
+    expect(pocket.insight.barRange).toEqual([0, 0]);
+    expect(pocket.insight.highlights.map((h) => h.step)).toEqual([0, 8]);
+    expect(figure.insight.barRange).toEqual([0, 0]);
+    expect(figure.insight.title).toBe("A+G");
+    expect(figure.insight.title).not.toMatch(/C|line/i);
+    expect(figure.body).not.toMatch(/\bline\b/i);
+    expect(figure.body).not.toMatch(/\bC\b/);
+    expect(figure.insight.highlights.map((h) => [h.step, h.midi, h.text])).toEqual([
+      [0, 33, "A"],
+      [6, 33, "A"],
+      [7, 31, "G"],
+    ]);
+    const notes = new Set(demo.patterns.intro[0].notes.map((n) => `${n.step}:${n.midi}`));
+    expect(notes.has("10:36")).toBe(true);
+    for (const h of figure.insight.highlights) {
+      expect(notes.has(`${h.step}:${h.midi}`)).toBe(true);
+      expect(h.text).toBe(PITCH[h.midi % 12]);
+      expect(h.text).not.toBe("line");
+      expect(h.midi).not.toBe(36);
+    }
+  });
+
+  it("figure bubbles name lit pitches and Am7 harmony does not deny a Bb", () => {
+    for (const sec of demo.secs) {
+      const fig = demo.cards[sec.id].find((c) => c.label === "Figure");
+      const notes = new Set(demo.patterns[sec.id][0].notes.map((n) => `${n.step}:${n.midi}`));
+      const lit = new Set();
+      for (const h of fig.insight.highlights) {
+        expect(h.text, sec.id).toBe(PITCH[h.midi % 12]);
+        expect(h.text, sec.id).not.toBe("line");
+        expect(notes.has(`${h.step}:${h.midi}`)).toBe(true);
+        lit.add(h.text);
+      }
+      expect(fig.insight.title, sec.id).toBe([...lit].join("+") || fig.insight.title);
+      expect(fig.body, sec.id).not.toMatch(/\bline\b/i);
+      for (const name of fig.insight.title.split("+")) {
+        expect(lit.has(name), `${sec.id} title ${fig.insight.title}`).toBe(true);
+      }
+      const harm = demo.cards[sec.id].find((c) => c.label === "Harmony");
+      expect(harm.body, sec.id).not.toMatch(/foreign chord/);
+      expect(harm.body, sec.id).not.toMatch(/\bBb\b/);
+      if (/^Pedal Am7/.test(harm.body)) {
+        expect(harm.body).toMatch(/main chord-name row/);
+        expect(harm.body).toMatch(/A–C–E–G/);
+      }
+    }
+  });
 });
 
 function expectMidiKitDemo(demo, { title, key, sevenths }) {

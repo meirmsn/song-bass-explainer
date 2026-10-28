@@ -3770,6 +3770,90 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(paused.visualT).toBeCloseTo(paused.t, 5);
   });
 
+  it("claim window drops a dim second bar when highlights stay in bar 0", async () => {
+    await bootPlayer();
+    const N = window.__BASS_NOTATION__;
+    expect(N.fitClaimBarRange([0, 1], [
+      { step: 0, midi: 33, text: "kick/bass 1" },
+      { step: 8, midi: 33, text: "backbeat pocket" },
+    ])).toEqual([0, 0]);
+    expect(N.fitClaimBarRange([0, 1], [
+      { step: 0, midi: 33, text: "A" },
+      { step: 6, midi: 33, text: "A" },
+      { step: 7, midi: 31, text: "G" },
+    ])).toEqual([0, 0]);
+    expect(N.litClaimBars([0, 2], [
+      { step: 0, midi: 33, text: "A" },
+      { step: 32, midi: 33, text: "A" },
+    ])).toEqual([0, 2]);
+    expect(N.fitClaimBarRange([0, 1], [
+      { step: 0, midi: 33, text: "A" },
+      { step: 16, midi: 33, text: "A" },
+    ])).toEqual([0, 1]);
+    // Ghosts are stored once and tiled, so an authored two-bar window stays.
+    expect(N.fitClaimBarRange([0, 1], [
+      { step: 3, kind: "snare", text: "ghost", ghost: true },
+    ])).toEqual([0, 1]);
+
+    const node = N.makeCardInsight({
+      layer: "pocket",
+      title: "Intro pocket",
+      barRange: [0, 1],
+      highlights: [
+        { step: 0, midi: 33, text: "kick/bass 1" },
+        { step: 8, midi: 33, text: "backbeat pocket" },
+      ],
+    }, {
+      id: "intro_bass",
+      notes: [
+        { step: 0, midi: 33 },
+        { step: 8, midi: 33 },
+        { step: 16, midi: 33 },
+        { step: 24, midi: 33 },
+      ],
+    });
+    document.body.appendChild(node);
+    expect(node.querySelector(".card-insight-svg").getAttribute("data-insight-bars")).toBe("1");
+    expect(node.querySelectorAll('[data-insight-kind="hat"]').length).toBe(8);
+    const steps = [...node.querySelectorAll("[data-insight-step]")].map((n) => Number(n.getAttribute("data-insight-step")));
+    expect(Math.max(...steps)).toBeLessThan(16);
+    const labels = [...node.querySelectorAll("[data-insight-label]")].map((n) => n.getAttribute("data-insight-label"));
+    expect(labels).toEqual(["kick/bass 1", "backbeat pocket"]);
+
+    const pf = JSON.parse(readFileSync(join(root, "../work/demo-pocket-funk/demo-data.json"), "utf8"));
+    const fig = pf.cards.intro.find((c) => c.label === "Figure").insight;
+    const figNode = N.makeCardInsight(fig, pf.patterns.intro[0]);
+    document.body.appendChild(figNode);
+    expect(figNode.querySelector(".card-insight-svg").getAttribute("data-insight-bars")).toBe("1");
+    expect([...figNode.querySelectorAll("[data-insight-label]")].map((n) => n.getAttribute("data-insight-label"))).toEqual(["A", "A", "G"]);
+    expect([...figNode.querySelectorAll('[data-insight-staff="bass"][data-insight-lit="1"]')].map((n) => n.getAttribute("data-insight-step"))).toEqual(["0", "6", "7"]);
+    expect(figNode.querySelector('[data-insight-staff="bass"][data-insight-step="10"][data-insight-lit="1"]')).toBeNull();
+    const hole = N.makeCardInsight({
+      layer: "figure",
+      title: "Hole",
+      barRange: [0, 2],
+      highlights: [
+        { step: 0, midi: 33, text: "A" },
+        { step: 32, midi: 33, text: "A" },
+      ],
+    }, {
+      id: "hole",
+      notes: [
+        { step: 0, midi: 33 },
+        { step: 16, midi: 36 },
+        { step: 32, midi: 33 },
+      ],
+    });
+    document.body.appendChild(hole);
+    expect(hole.querySelector(".card-insight-svg").getAttribute("data-insight-bars")).toBe("2");
+    expect(hole.querySelector('[data-insight-step="16"]')).toBeNull();
+    expect([...hole.querySelectorAll('[data-insight-staff="bass"]')].map((n) => n.getAttribute("data-insight-step"))).toEqual(["0", "32"]);
+    const harm = pf.cards.intro.find((c) => c.label === "Harmony");
+    expect(harm.body).toMatch(/Pedal Am7 \(i7\)/);
+    expect(harm.body).toMatch(/A–C–E–G/);
+    expect(harm.body).not.toMatch(/Bb|foreign chord/);
+  });
+
   it("ghost notes play quieter than accents and insight hats stay on the grid", async () => {
     const api = await bootPlayer({
       privateMode: true,
