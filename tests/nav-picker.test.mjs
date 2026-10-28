@@ -36,7 +36,7 @@ describe("public has no Private link + private song typeahead (source)", () => {
 
 describe("public DEMO catalog drops Komiku", () => {
   it("Komiku absent from public DEMO picker; Pocket Funk is default hero", () => {
-    expect(playerSrc).toContain("PUBLIC_SONG_RE = /^(pocket-funk)$/");
+    expect(playerSrc).toContain("PUBLIC_SONG_RE = /^(pocket-funk|radio-pop|backbeat-rock)$/");
     expect(playerSrc).toMatch(/PUBLIC_DEFAULT_SONG = "pocket-funk"/);
     const pubFallback = playerSrc.match(/const PUBLIC_DEMO_FALLBACK = \[([\s\S]*?)\];/);
     expect(pubFallback).toBeTruthy();
@@ -44,6 +44,8 @@ describe("public DEMO catalog drops Komiku", () => {
     expect(pubFallback[1]).not.toMatch(/make-funk/);
     expect(pubFallback[1]).not.toMatch(/maple-leaf-rag/);
     expect(pubFallback[1]).toMatch(/pocket-funk/);
+    expect(pubFallback[1]).toMatch(/radio-pop/);
+    expect(pubFallback[1]).toMatch(/backbeat-rock/);
     expect(workerSrc).toMatch(/PRIVATE_ONLY_DEMOS/);
     expect(workerSrc).toMatch(/DEMO_ASSET_SLUGS/);
     const pubDemos = workerSrc.match(/const PUBLIC_DEMOS = \{([\s\S]*?)\n\};/);
@@ -52,6 +54,8 @@ describe("public DEMO catalog drops Komiku", () => {
     expect(pubDemos[1]).not.toMatch(/["']make-funk["']/);
     expect(pubDemos[1]).not.toMatch(/maple-leaf-rag/);
     expect(pubDemos[1]).toMatch(/pocket-funk/);
+    expect(pubDemos[1]).toMatch(/radio-pop/);
+    expect(pubDemos[1]).toMatch(/backbeat-rock/);
     expect(workerSrc).toMatch(/PRIVATE_ONLY_DEMOS = \{[\s\S]*maple-leaf-rag/);
   });
 });

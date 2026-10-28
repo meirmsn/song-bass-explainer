@@ -2176,19 +2176,23 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     const privateMode = Boolean(window.__BASS_PRIVATE__) || location.pathname.startsWith("/private/");
     let demo;
     // Multi-song: ?song= / ?id=. Public allowlist only. Private: demos + processed (LAP/jobs). (Tempo/WSOLA path untouched.)
-    const PUBLIC_SONG_RE = /^(pocket-funk)$/;
+    const PUBLIC_SONG_RE = /^(pocket-funk|radio-pop|backbeat-rock)$/;
     // Private/regression demos still load via /api/demo/:slug (not listed on public picker).
-    const PRIVATE_DEMO_SONG_RE = /^(a-good-bass-for-gambling|make-funk|pocket-funk|maple-leaf-rag)$/;
+    const PRIVATE_DEMO_SONG_RE = /^(a-good-bass-for-gambling|make-funk|pocket-funk|maple-leaf-rag|radio-pop|backbeat-rock)$/;
     const PUBLIC_DEFAULT_SONG = "pocket-funk";
     // Share/tab title. Song name stays in the player header, never in document.title.
     const PUBLIC_PAGE_TITLE = "Song Bass Explainer - Understand Bass Lines in Songs";
     const PUBLIC_DEMO_FALLBACK = [
       { id: "pocket-funk", title: "Pocket Funk", artist: "Song Bass Explainer", group: "demo" },
+      { id: "radio-pop", title: "Radio Pop", artist: "Song Bass Explainer", group: "demo" },
+      { id: "backbeat-rock", title: "Backbeat Rock", artist: "Song Bass Explainer", group: "demo" },
     ];
     const PRIVATE_DEMO_FALLBACK = [
       { id: "a-good-bass-for-gambling", title: "A good bass for gambling", artist: "Komiku", group: "demo" },
       { id: "make-funk", title: "Make Funk", artist: "HoliznaCC0", group: "demo" },
       { id: "pocket-funk", title: "Pocket Funk", artist: "Song Bass Explainer", group: "demo" },
+      { id: "radio-pop", title: "Radio Pop", artist: "Song Bass Explainer", group: "demo" },
+      { id: "backbeat-rock", title: "Backbeat Rock", artist: "Song Bass Explainer", group: "demo" },
       { id: "maple-leaf-rag", title: "Maple Leaf Rag", artist: "Scott Joplin", group: "demo" },
     ];
     function allowlistedPublicDemos(list) {
@@ -2234,7 +2238,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           const songs = Array.isArray(data && data.songs) ? data.songs : [];
           songCatalog = { demos: allowlistedPublicDemos(songs), processed: [] };
         }
-      } catch (_) { /* offline — picker falls back to Pocket Funk */ }
+      } catch (_) { /* offline — picker falls back to the public MIDI demos */ }
       if (!songCatalog.demos?.length) {
         songCatalog = { demos: allowlistedPublicDemos([]), processed: [] };
       }
@@ -2267,7 +2271,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     // Public pages: allow CC0/public stems only. Never enable licensed/private stems on the public player.
     if (!privateMode) {
       const access = String(demo.stems.access || "");
-      const publicOk = access === "public" || (demo.stems.available && /\/api\/demo\/pocket-funk\//.test(String(demo.stems.bass || "")));
+      const publicOk = access === "public" || (demo.stems.available && /\/api\/demo\/(pocket-funk|radio-pop|backbeat-rock)\//.test(String(demo.stems.bass || "")));
       if (!publicOk) {
         demo.stems = { available: false, muteBassSupported: false, access: "blocked" };
       }

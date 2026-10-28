@@ -66,6 +66,64 @@ describe("Pocket Funk public demo artifacts (MIDI-authored hero)", () => {
   });
 });
 
+function expectMidiKitDemo(demo, { title, key, sevenths }) {
+  expect(demo.title).toMatch(title);
+  expect(demo.keys).toBe(key);
+  expect(demo.meta.license).toMatch(/CC0/);
+  expect(demo.meta.insightRequired).toBe(true);
+  expect(demo.meta.midiAuthoritative).toBe(true);
+  expect(demo.bassHits.length).toBeGreaterThan(50);
+  expect(demo.drumHits.length).toBeGreaterThan(100);
+  expect(demo.meta.drumHitCount).toBe(demo.drumHits.length);
+  expect(demo.meta.bassHitCount).toBe(demo.bassHits.length);
+  const kinds = new Set(demo.drumHits.map((h) => h.kind));
+  expect(kinds.has("kick")).toBe(true);
+  expect(kinds.has("snare")).toBe(true);
+  expect(kinds.has("hat")).toBe(true);
+  const cards = allCards(demo);
+  expect(cards.length).toBe(demo.meta.insightCount);
+  expect(cards.every((c) => c.insight?.layer && Array.isArray(c.insight.barRange))).toBe(true);
+  expect(cards.every((c) => c.insight.barRange[0] === 0 && c.insight.barRange[1] === 1)).toBe(true);
+  const layers = new Set(cards.map((c) => c.insight.layer));
+  for (const layer of ["pocket", "figure", "harmony", "missable"]) {
+    expect(layers.has(layer)).toBe(true);
+  }
+  const rawChords = new Set(demo.raw.map((r) => r[2]).filter(Boolean));
+  for (const sec of demo.secs) {
+    const harm = (demo.cards[sec.id] || []).find((c) => c.insight.layer === "harmony");
+    const chips = (harm.insight.highlights || []).map((h) => h.chord).filter(Boolean);
+    expect(chips.length).toBeGreaterThan(0);
+    for (const ch of chips) expect(rawChords.has(ch)).toBe(true);
+    const notes = new Set((demo.patterns[sec.id]?.[0]?.notes || []).map((n) => `${n.step}:${n.midi}`));
+    expect(notes.size).toBeGreaterThan(0);
+    const fig = (demo.cards[sec.id] || []).find((c) => c.insight.layer === "figure");
+    for (const h of fig.insight.highlights) {
+      expect(notes.has(`${h.step}:${h.midi}`)).toBe(true);
+    }
+  }
+  const chords = [...rawChords];
+  expect(chords.some((c) => sevenths.test(c))).toBe(true);
+}
+
+describe("Radio Pop public demo artifacts (MIDI-authored)", () => {
+  const demo = load("radio-pop");
+  it("is a CC0 pop kit study with claim-local insights", () => {
+    expectMidiKitDemo(demo, { title: /Radio Pop/i, key: "C", sevenths: /7/ });
+    const verseKick = demo.drumHits.filter((h) => h.bar === 6 && h.kind === "kick").map((h) => h.step);
+    expect(verseKick).toEqual([0, 4, 8, 12]);
+  });
+});
+
+describe("Backbeat Rock public demo artifacts (MIDI-authored)", () => {
+  const demo = load("backbeat-rock");
+  it("is a CC0 rock kit study with claim-local insights", () => {
+    expectMidiKitDemo(demo, { title: /Backbeat Rock/i, key: "Em", sevenths: /7/ });
+    const verseKick = demo.drumHits.filter((h) => h.bar === 6 && h.kind === "kick").map((h) => h.step);
+    expect(verseKick).toEqual([0, 8]);
+    expect(demo.drumHits.some((h) => h.kind === "ride")).toBe(true);
+  });
+});
+
 describe("Maple Leaf Rag study artifact (kept in repo, not a public demo)", () => {
   const demo = load("maple-leaf-rag");
   it("has Public Domain license + Mutopia/MIDI realization credit", () => {

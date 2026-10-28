@@ -61,9 +61,9 @@ describe("public demo APIs — CC0 open, LAP gated", () => {
     expect(JSON.stringify(data)).not.toMatch(/like.?a.?prayer/i);
     expect(data.songs.some((s) => s.id === "a-good-bass-for-gambling")).toBe(false);
     expect(data.songs.some((s) => s.id === "make-funk")).toBe(false);
-    expect(data.songs.some((s) => s.id === "pocket-funk")).toBe(true);
+    expect(data.songs.map((s) => s.id)).toEqual(["pocket-funk", "radio-pop", "backbeat-rock"]);
     expect(data.songs.some((s) => s.id === "maple-leaf-rag")).toBe(false);
-    expect(data.songs.length).toBe(1);
+    expect(data.songs.length).toBe(3);
     expect(data.songs.every((s) => s.id !== "a-good-bass-for-gambling")).toBe(true);
   });
 
@@ -111,6 +111,52 @@ describe("public demo APIs — CC0 open, LAP gated", () => {
     const { status, res } = await fetchRaw("/api/demo/pocket-funk/stems/bass.m4a");
     expect(status).toBe(200);
     expect(res.headers.get("content-type")).toMatch(/audio|octet/);
+  });
+
+  it("GET /api/demo/radio-pop → study JSON with bass and kit", async () => {
+    const { status, text } = await fetchRaw("/api/demo/radio-pop");
+    expect(status).toBe(200);
+    const data = JSON.parse(text);
+    expect(data.title).toMatch(/Radio Pop/i);
+    expect(data.keys).toBe("C");
+    expect(data.meta?.midiAuthoritative).toBe(true);
+    expect(data.bassHits.length).toBeGreaterThan(50);
+    const kinds = new Set((data.drumHits || []).map((h) => h.kind));
+    expect(kinds.has("kick") && kinds.has("snare") && kinds.has("hat")).toBe(true);
+    const cards = Object.values(data.cards || {}).flat();
+    expect(cards.length).toBeGreaterThan(0);
+    expect(cards.every((c) => c.insight && c.insight.layer)).toBe(true);
+    expect(data.stems?.bass).toMatch(/\/api\/demo\/radio-pop\/stems\/bass\.(m4a|wav)/);
+    expect(data.stems?.access).toBe("public");
+  });
+
+  it("public Radio Pop stem path serves audio", async () => {
+    const { status, res } = await fetchRaw("/api/demo/radio-pop/stems/bass.m4a");
+    expect([200, 206]).toContain(status);
+    expect(res.headers.get("content-type") || "").toMatch(/audio|mp4|mpeg|octet/i);
+    expect(Number(res.headers.get("content-length") || 0)).toBeGreaterThan(1000);
+  });
+
+  it("GET /api/demo/backbeat-rock → study JSON with bass and kit", async () => {
+    const { status, text } = await fetchRaw("/api/demo/backbeat-rock");
+    expect(status).toBe(200);
+    const data = JSON.parse(text);
+    expect(data.title).toMatch(/Backbeat Rock/i);
+    expect(data.keys).toBe("Em");
+    expect(data.meta?.midiAuthoritative).toBe(true);
+    expect(data.bassHits.length).toBeGreaterThan(50);
+    const kinds = new Set((data.drumHits || []).map((h) => h.kind));
+    expect(kinds.has("kick") && kinds.has("snare") && kinds.has("hat")).toBe(true);
+    const cards = Object.values(data.cards || {}).flat();
+    expect(cards.every((c) => c.insight && c.insight.layer)).toBe(true);
+    expect(data.stems?.drums).toMatch(/\/api\/demo\/backbeat-rock\/stems\/drums\.(m4a|wav)/);
+    expect(data.stems?.access).toBe("public");
+  });
+
+  it("public Backbeat Rock stem path serves audio", async () => {
+    const { status, res } = await fetchRaw("/api/demo/backbeat-rock/stems/bass.m4a");
+    expect([200, 206]).toContain(status);
+    expect(Number(res.headers.get("content-length") || 0)).toBeGreaterThan(1000);
   });
 
   it("GET /api/demo/make-funk → study JSON", async () => {
