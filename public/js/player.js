@@ -1238,6 +1238,60 @@
    * insight: { layer, patternId?, title?, barRange?, highlights:[{step,text,kind?,midi?,chord?}] }
    * Layers: pocket | figure | harmony | missable (plus legacy drums/bass/feel).
    */
+
+  /**
+   * Resolve harmony chord chips from insight highlights — never invent a
+   * placeholder progression (the old F/C/Bb/Dm fallback lied against Am7 grooves).
+   * Accepts kind:"chord"/chord field, or a highlight whose text is itself a
+   * chord symbol (e.g. "Am7", "D7 = V").
+   */
+  function resolveHarmonyChips(highlights) {
+    const raw = Array.isArray(highlights) ? highlights : [];
+    const chips = [];
+    const seen = new Set();
+    for (let i = 0; i < raw.length; i++) {
+      const h = raw[i];
+      if (!h) continue;
+      let chord = null;
+      let fn = "";
+      if (h.kind === "chord" || h.chord) {
+        chord = String(h.chord || "").trim();
+        fn = String(h.text || "").trim();
+        // text like "F = I" → prefer chord field; strip "F = " from fn if duplicated
+        if (fn && chord && fn.indexOf(chord) === 0) {
+          const eq = fn.indexOf("=");
+          if (eq >= 0) fn = fn.slice(eq + 1).trim();
+        }
+      } else if (typeof h.text === "string" && h.text.trim()) {
+        const t = h.text.trim();
+        // "Am7", "D7 = V/iv", "Am = i"
+        const m = t.match(/^([A-G](?:#|b)?(?:maj7|min7|m7|dim7|maj|min|m|dim|aug|sus4|sus2|7|9|6)?)\s*(?:=\s*(.+))?$/i);
+        if (m) {
+          chord = m[1];
+          fn = (m[2] || "").trim();
+        }
+      }
+      if (!chord) continue;
+      const key = chord + "|" + (Number.isFinite(h.step) ? (h.step | 0) : i);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      chips.push({
+        chord: chord,
+        text: fn || chord,
+        step: Number.isFinite(h.step) ? (h.step | 0) : i * 16,
+        lit: true,
+      });
+    }
+    // De-dupe consecutive identical chord names (e.g. Am, Am → one Am7 chip)
+    const collapsed = [];
+    for (let i = 0; i < chips.length; i++) {
+      const c = chips[i];
+      if (collapsed.length && collapsed[collapsed.length - 1].chord === c.chord) continue;
+      collapsed.push(c);
+    }
+    return collapsed;
+  }
+
   function makeCardInsight(insight, pattern) {
     if (!insight || typeof insight !== "object") return null;
     const layer = insight.layer || "figure";
@@ -1307,28 +1361,50 @@
     wrap.appendChild(head);
 
     if (isHarmony) {
-      const row = el("div", { className: "card-insight-chords" });
-      const chords = highlights.filter((h) => h && (h.kind === "chord" || h.chord));
-      const list = chords.length ? chords : [
-        { chord: "F", text: "I" }, { chord: "C", text: "V" },
-        { chord: "Bb", text: "IV" }, { chord: "Dm", text: "vi" },
-      ];
-      list.forEach((h, i) => {
-        const chip = el("div", { className: "card-insight-chord" + (h.text ? " lit" : "") });
-        chip.appendChild(el("div", { className: "card-insight-chord-name" }, [h.chord || "?"]));
-        chip.appendChild(el("div", { className: "card-insight-chord-fn" }, [h.text || ""]));
-        chip.setAttribute("data-insight-step", String(h.step != null ? h.step : i * 16));
-        row.appendChild(chip);
-      });
+      const row = el("div", { className: "card-insight-chords", "data-insight-harmony": "1" });
+      const list = resolveHarmonyChips(highlightsAll);
+      if (!list.length) {
+        row.appendChild(el("div", {
+          className: "card-insight-chord-empty",
+          "data-insight-harmony-empty": "1",
+        }, ["No chord claim for this window — match the main chord row."]));
+      } else {
+        list.forEach((h, i) => {
+          const chip = el("div", {
+            className: "card-insight-chord" + (h.lit ? " lit" : ""),
+            "data-insight-chord": h.chord || "",
+          });
+          chip.appendChild(el("div", { className: "card-insight-chord-name" }, [h.chord || "?"]));
+          chip.appendChild(el("div", { className: "card-insight-chord-fn" }, [h.text || ""]));
+          chip.setAttribute("data-insight-step", String(h.step != null ? h.step : i * 16));
+          row.appendChild(chip);
+        });
+      }
+      // Playhead track for harmony chips (left→right while claim window plays)
+      const track = el("div", { className: "card-insight-playhead-track", "data-insight-playhead-track": "1" });
+      track.appendChild(el("div", {
+        className: "card-insight-playhead-line",
+        "data-insight-playhead": "1",
+        style: { left: "0%" },
+      }));
       wrap.appendChild(row);
+      wrap.appendChild(track);
+      wrap.appendChild(el("div", {
+        className: "card-insight-map",
+        "data-insight-map": "1",
+      }, [
+        list.length
+          ? ("Heard / shown: " + list.map((c) => c.chord).join(" → ") + " — same as the main chord-name row for this section.")
+          : "Harmony card has no chord chips; trust the main chord-name row.",
+      ]));
       return wrap;
     }
 
     const VW = 320;
-    const VH = 168;
-    const gx0 = 28, gw = VW - 40;
-    const bassY = 52;   // center of bass staff band
-    const drumY = 118;  // center of drums staff band
+    const VH = 186;
+    const gx0 = 36, gw = VW - 48;
+    const bassY = 58;   // center of bass staff band (staff notation)
+    const drumY = 132;  // center of drums staff band
     const svg = svgEl("svg", {
       viewBox: "0 0 " + VW + " " + VH,
       width: "100%",
@@ -1364,8 +1440,21 @@
       }, [document.createTextNode(label)]));
     }
 
-    drawStaffBand(bassY - 22, 44, "Bass");
+    // Drums keep K/S schematic; bass uses staff notation below.
     drawStaffBand(drumY - 22, 44, "Drums");
+    // Very light quarter guides on drum band
+    for (let s = 0; s <= totalSteps; s++) {
+      if (s % 4 !== 0) continue;
+      const x = gx0 + (s / totalSteps) * gw;
+      const barline = s % 16 === 0;
+      svg.appendChild(svgEl("line", {
+        x1: x, x2: x, y1: drumY - 22, y2: drumY + 22,
+        stroke: barline ? "#4b5563" : "#1f2937",
+        "stroke-width": barline ? 1.1 : 0.55,
+        opacity: barline ? 0.5 : 0.25,
+        "data-insight-subdiv": barline ? "bar" : "quarter",
+      }));
+    }
 
     // Beat numbers under drums
     for (let s = 0; s < totalSteps; s += 4) {
@@ -1395,84 +1484,125 @@
 
     const patternEmpty = insight.patternId === "empty" || (pattern && pattern.id === "empty");
 
-    // --- Bass staff (top) ---
-    if (patternEmpty) {
-      for (let bar = 0; bar < nBars; bar++) {
-        const cx = gx0 + ((bar + 0.5) / nBars) * gw;
-        svg.appendChild(svgEl("text", {
-          x: cx, y: bassY + 4, "text-anchor": "middle",
-          "font-size": 11, "font-weight": 700, fill: "#9ca3af",
-          "data-insight-kind": "empty",
-          "data-insight-staff": "bass",
-        }, [document.createTextNode("rest")]));
+    // --- Bass staff (top) — familiar notation ---
+    {
+      const staffTop = bassY - 26;
+      const lineGap = 5.2;
+      svg.appendChild(svgEl("rect", {
+        x: gx0 - 8, y: staffTop - 6, width: gw + 16, height: 48,
+        fill: "#0f172a", rx: 4, "data-insight-staff-bg": "bass",
+      }));
+      for (let s = 0; s <= totalSteps; s++) {
+        if (s % 4 !== 0) continue;
+        const x = gx0 + (s / totalSteps) * gw;
+        const barline = s % 16 === 0;
+        svg.appendChild(svgEl("line", {
+          x1: x, x2: x, y1: staffTop - 4, y2: staffTop + 40,
+          stroke: barline ? "#4b5563" : "#1f2937",
+          "stroke-width": barline ? 1.1 : 0.55,
+          opacity: barline ? 0.5 : 0.25,
+          "data-insight-subdiv": barline ? "bar" : "quarter",
+        }));
       }
-    } else {
-      const inRange = patNotes.filter((n) => n.step >= step0 && n.step < step0 + totalSteps);
-      // Also include bass-kind highlights not already in pattern
-      const midis = inRange.map((n) => n.midi);
-      highlights.forEach((h) => {
-        if (h && (h.kind === "bass" || h.kind === "note" || (!h.kind && Number.isFinite(h.midi))) && Number.isFinite(h.midi)) {
-          midis.push(h.midi);
-        }
-      });
-      const loM = midis.length ? Math.min.apply(null, midis) : 28;
-      const hiM = midis.length ? Math.max.apply(null, midis) : 48;
-      const py = (m) => {
-        if (hiM === loM) return bassY;
-        return bassY + 10 - ((m - loM) / (hiM - loM)) * 28;
-      };
-      inRange.forEach((n) => {
-        const arr = hiByStep.get(n.step) || [];
-        const bassHi = arr.find((h) => h.kind === "bass");
-        const litBass = arr.some((h) => {
-          if (h.kind === "kick" || h.kind === "snare" || h.kind === "hat" || h.kind === "chord") return false;
-          return true; // bass / note / untyped highlight
-        });
-        const isLit = Boolean(litBass);
-        if (isLit) litCount++; else dimCount++;
-        const kind = bassHi ? "bass" : "note";
-        svg.appendChild(svgEl("circle", {
-          cx: sx(n.step), cy: py(n.midi), r: isLit ? 6 : 3.2,
-          fill: isLit ? "#3b82f6" : "#4b5563",
-          stroke: isLit ? "#93c5fd" : "none",
-          "stroke-width": isLit ? 1.5 : 0,
-          "data-insight-step": String(n.step),
-          "data-insight-kind": kind,
-          "data-insight-midi": String(n.midi),
-          "data-insight-lit": isLit ? "1" : "0",
-          "data-insight-staff": "bass",
+      const yyB = (pos) => staffTop + 26 - pos * (lineGap / 2);
+      for (let p = 0; p <= 8; p += 2) {
+        svg.appendChild(svgEl("line", {
+          x1: gx0, x2: gx0 + gw, y1: yyB(p), y2: yyB(p),
+          stroke: "#6b7280", "stroke-width": 1, "data-insight-staff-line": "1",
         }));
-      });
-      // Bass highlights that aren't pattern notes (e.g. pocket bass overlay)
-      highlights.forEach((h) => {
-        if (!h || !Number.isFinite(h.step)) return;
-        if (h.kind === "kick" || h.kind === "snare" || h.kind === "hat" || h.kind === "chord") return;
-        const st = h.step | 0;
-        if (st < step0 || st >= step0 + totalSteps) return;
-        if (inRange.some((n) => n.step === st)) return;
-        const m = Number.isFinite(h.midi) ? h.midi : loM;
-        litCount++;
-        const kind = h.kind === "bass" ? "bass" : (h.kind || "note");
-        svg.appendChild(svgEl("circle", {
-          cx: sx(st), cy: py(m), r: 5.5,
-          fill: "#3b82f6", stroke: "#93c5fd", "stroke-width": 1.5,
-          "data-insight-step": String(st),
-          "data-insight-kind": kind,
-          "data-insight-midi": String(m),
-          "data-insight-lit": "1",
-          "data-insight-staff": "bass",
-        }));
-      });
-      if (!inRange.length && !highlights.some((h) => h && h.kind === "bass")) {
-        // No bass material — rest
+      }
+      const f = yyB(6);
+      svg.appendChild(svgEl("circle", { cx: gx0 - 14, cy: f, r: 2.4, fill: "#9ca3af", "data-insight-clef": "bass" }));
+      svg.appendChild(svgEl("path", {
+        d: "M" + (gx0 - 14) + " " + f + " C " + (gx0 - 14) + " " + (f - 8) + ", " + (gx0 - 4) + " " + (f - 5) + ", " + (gx0 - 4) + " " + (f + 4) + " C " + (gx0 - 4) + " " + (f + 12) + ", " + (gx0 - 10) + " " + (f + 16) + ", " + (gx0 - 18) + " " + (f + 20),
+        fill: "none", stroke: "#9ca3af", "stroke-width": 1.4,
+      }));
+      svg.appendChild(svgEl("text", {
+        x: 2, y: bassY + 3, "font-size": 8, "font-weight": 700, fill: "#9ca3af",
+      }, [document.createTextNode("Bass")]));
+
+      if (patternEmpty) {
         for (let bar = 0; bar < nBars; bar++) {
           const cx = gx0 + ((bar + 0.5) / nBars) * gw;
           svg.appendChild(svgEl("text", {
-            x: cx, y: bassY + 4, "text-anchor": "middle",
+            x: cx, y: yyB(4) + 3, "text-anchor": "middle",
             "font-size": 11, "font-weight": 700, fill: "#9ca3af",
-            "data-insight-kind": "empty",
-            "data-insight-staff": "bass",
+            "data-insight-kind": "empty", "data-insight-staff": "bass",
           }, [document.createTextNode("rest")]));
+        }
+      } else {
+        const inRange = patNotes.filter((n) => n.step >= step0 && n.step < step0 + totalSteps);
+        inRange.forEach((n) => {
+          const arr = hiByStep.get(n.step) || [];
+          const litBass = arr.some((h) => {
+            if (h.kind === "kick" || h.kind === "snare" || h.kind === "hat" || h.kind === "chord") return false;
+            return true;
+          });
+          const bassHi = arr.find((h) => h.kind === "bass");
+          const isLit = Boolean(litBass);
+          if (isLit) litCount++; else dimCount++;
+          const kind = bassHi ? "bass" : "note";
+          const sp = staffPos(n.midi);
+          const cy = yyB(sp.pos);
+          const cx = sx(n.step);
+          if (sp.pos < 0) {
+            for (let p = -2; p >= sp.pos; p -= 2) {
+              svg.appendChild(svgEl("line", { x1: cx - 6, x2: cx + 6, y1: yyB(p), y2: yyB(p), stroke: "#6b7280", "stroke-width": 1 }));
+            }
+          } else if (sp.pos > 8) {
+            for (let p = 10; p <= sp.pos; p += 2) {
+              svg.appendChild(svgEl("line", { x1: cx - 6, x2: cx + 6, y1: yyB(p), y2: yyB(p), stroke: "#6b7280", "stroke-width": 1 }));
+            }
+          }
+          svg.appendChild(svgEl("ellipse", {
+            cx: cx, cy: cy, rx: isLit ? 5.2 : 3.6, ry: isLit ? 3.8 : 2.6,
+            fill: isLit ? "#3b82f6" : "#4b5563",
+            stroke: isLit ? "#93c5fd" : "none",
+            "stroke-width": isLit ? 1.2 : 0,
+            transform: "rotate(-18 " + cx + " " + cy + ")",
+            "data-insight-step": String(n.step),
+            "data-insight-kind": kind,
+            "data-insight-midi": String(n.midi),
+            "data-insight-lit": isLit ? "1" : "0",
+            "data-insight-staff": "bass",
+          }));
+          if (sp.flat) {
+            svg.appendChild(svgEl("text", {
+              x: cx - 9, y: cy + 3, "font-size": 9, fill: isLit ? "#93c5fd" : "#6b7280",
+            }, [document.createTextNode("♭")]));
+          }
+        });
+        highlights.forEach((h) => {
+          if (!h || !Number.isFinite(h.step)) return;
+          if (h.kind === "kick" || h.kind === "snare" || h.kind === "hat" || h.kind === "chord") return;
+          const st = h.step | 0;
+          if (st < step0 || st >= step0 + totalSteps) return;
+          if (inRange.some((n) => n.step === st)) return;
+          const m = Number.isFinite(h.midi) ? h.midi : 33;
+          const sp = staffPos(m);
+          const cy = yyB(sp.pos);
+          const cx = sx(st);
+          litCount++;
+          svg.appendChild(svgEl("ellipse", {
+            cx: cx, cy: cy, rx: 5, ry: 3.6,
+            fill: "#3b82f6", stroke: "#93c5fd", "stroke-width": 1.2,
+            transform: "rotate(-18 " + cx + " " + cy + ")",
+            "data-insight-step": String(st),
+            "data-insight-kind": h.kind || "note",
+            "data-insight-midi": String(m),
+            "data-insight-lit": "1",
+            "data-insight-staff": "bass",
+          }));
+        });
+        if (!inRange.length && !highlights.some((h) => h && h.kind !== "kick" && h.kind !== "snare" && h.kind !== "hat" && h.kind !== "chord" && (h.kind === "bass" || h.kind === "note" || !h.kind))) {
+          for (let bar = 0; bar < nBars; bar++) {
+            const cx = gx0 + ((bar + 0.5) / nBars) * gw;
+            svg.appendChild(svgEl("text", {
+              x: cx, y: yyB(4) + 3, "text-anchor": "middle",
+              "font-size": 11, "font-weight": 700, fill: "#9ca3af",
+              "data-insight-kind": "empty", "data-insight-staff": "bass",
+            }, [document.createTextNode("rest")]));
+          }
         }
       }
     }
@@ -1555,7 +1685,29 @@
       }, [document.createTextNode(label)]));
     });
 
+    // Moving playhead (updated live while claim-window MIDI plays)
+    svg.appendChild(svgEl("line", {
+      x1: gx0, x2: gx0, y1: 4, y2: VH - 4,
+      stroke: NEG, "stroke-width": 2,
+      "pointer-events": "none",
+      "data-insight-playhead": "1",
+      opacity: "0",
+    }));
+
     wrap.appendChild(svg);
+
+    // Explicit text↔staff map so body claims point at lit marks
+    const mapBits = labelSlots.map((h) => h.text).filter(Boolean);
+    if (mapBits.length) {
+      const map = el("div", { className: "card-insight-map", "data-insight-map": "1" });
+      map.appendChild(document.createTextNode("Lit on the staff (= this card’s point): "));
+      mapBits.forEach((t, i) => {
+        if (i) map.appendChild(document.createTextNode(" · "));
+        map.appendChild(el("span", { className: "card-insight-map-hit", "data-insight-map-hit": t }, [t]));
+      });
+      wrap.appendChild(map);
+    }
+
     if (dimCount > 0 && litCount > 0) {
       wrap.appendChild(el("div", {
         className: "card-insight-legend",
@@ -1745,6 +1897,13 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 .card-insight-chord.lit { border-color:#3b82f6; background:#1e3a5f; }
 .card-insight-chord-name { font-size:16px; font-weight:800; color:#e5e7eb; }
 .card-insight-chord-fn { font-size:10px; font-weight:700; color:#93c5fd; margin-top:2px; }
+.card-insight-map { margin-top:4px; font-size:11px; line-height:1.35; color:#cbd5e1; }
+.card-insight-map-hit { color:#93c5fd; font-weight:700; }
+.card-insight-playhead-track { position:relative; height:3px; margin:4px 2px 0; background:#1f2937; border-radius:2px; overflow:hidden; }
+.card-insight-playhead-line { position:absolute; top:0; bottom:0; width:2px; background:#ef4444; left:0; }
+.card-insight-chord.hot { outline:1px solid #f87171; outline-offset:1px; }
+.card-insight-chord-empty { font-size:12px; color:#9ca3af; padding:6px 4px; }
+.card-insight-svg [data-insight-playhead] { transition: none; }
 .card-insight-legend { flex:0 0 auto; font-size:9px; line-height:1.25; color:#6b7280; padding:0 2px 2px; }
 .card-actions { display:flex; align-items:center; gap:8px; flex:0 0 auto; }
 .btn { min-height:36px; min-width:100px; padding:0 12px; cursor:pointer; border-radius:8px; border:1px solid #374151; background:#111827; color:#e5e7eb; font-size:13px; font-weight:600; }
@@ -2074,6 +2233,11 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     let insightMidiBassOn = true;
     let insightMidiDrumsOn = true;
     let insightMidiChordsOn = true;
+    let insightMidiPassWhen0 = 0;
+    let insightMidiWindowDur = 0;
+    let insightMidiGx0 = 36;
+    let insightMidiGw = 272;
+    let insightPlayheadTimer = null;
     let insightBassGain = null, insightDrumsGain = null, insightChordsGain = null;
     let audioReady = false;
     let stemLoading = false;
@@ -2329,13 +2493,84 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         insightDrumsGain.connect(audioCtx.destination);
         insightChordsGain.connect(audioCtx.destination);
       }
+      applyInsightVoiceGains();
       return audioCtx;
+    }
+    function applyInsightVoiceGains() {
+      if (insightBassGain) insightBassGain.gain.value = insightMidiBassOn ? 1 : 0;
+      if (insightDrumsGain) insightDrumsGain.gain.value = insightMidiDrumsOn ? 1 : 0;
+      if (insightChordsGain) insightChordsGain.gain.value = insightMidiChordsOn ? 1 : 0;
+    }
+    function stopInsightPlayheadTick() {
+      if (insightPlayheadTimer) {
+        clearInterval(insightPlayheadTimer);
+        insightPlayheadTimer = null;
+      }
+    }
+    function updateInsightPlayheadDom() {
+      if (!insightMidiPlaying || !audioCtx || insightMidiWindowDur <= 0) return;
+      const elapsed = audioCtx.currentTime - insightMidiPassWhen0;
+      let frac = elapsed / insightMidiWindowDur;
+      if (frac < 0) frac = 0;
+      // Loop visually within the window
+      frac = frac - Math.floor(frac);
+      const nodes = document.querySelectorAll("[data-insight-playhead]");
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (n.tagName === "line" || n.tagName === "LINE") {
+          const svg = n.ownerSVGElement;
+          // Prefer live geometry from the schematic
+          let gx0 = insightMidiGx0, gw = insightMidiGw;
+          const bg = svg && svg.querySelector("[data-insight-staff-bg='bass']");
+          if (bg) {
+            const x = Number(bg.getAttribute("x"));
+            const w = Number(bg.getAttribute("width"));
+            if (Number.isFinite(x) && Number.isFinite(w) && w > 16) {
+              gx0 = x + 8;
+              gw = w - 16;
+            }
+          }
+          const x = gx0 + frac * gw;
+          n.setAttribute("x1", String(x));
+          n.setAttribute("x2", String(x));
+          n.setAttribute("opacity", "1");
+        } else {
+          n.style.left = (frac * 100).toFixed(2) + "%";
+          n.style.opacity = "1";
+        }
+      }
+      // Highlight active harmony chip by step fraction
+      const chips = document.querySelectorAll(".card-insight-chord[data-insight-step]");
+      if (chips.length) {
+        const steps = insightMidiWindowDur > 0 ? 16 : 16; // claim window steps approx from barRange; chips carry step
+        // Use max step span among chips
+        let maxStep = 16;
+        for (let i = 0; i < chips.length; i++) {
+          const st = Number(chips[i].getAttribute("data-insight-step")) || 0;
+          if (st + 16 > maxStep) maxStep = st + 16;
+        }
+        const curStep = frac * maxStep;
+        let best = null, bestDist = 1e9;
+        for (let i = 0; i < chips.length; i++) {
+          const st = Number(chips[i].getAttribute("data-insight-step")) || 0;
+          const dist = curStep - st;
+          chips[i].classList.toggle("hot", false);
+          if (dist >= -0.01 && dist < bestDist) { bestDist = dist; best = chips[i]; }
+        }
+        if (best) best.classList.add("hot");
+      }
+    }
+    function startInsightPlayheadTick() {
+      stopInsightPlayheadTick();
+      updateInsightPlayheadDom();
+      insightPlayheadTimer = setInterval(updateInsightPlayheadDom, 40);
     }
     function cancelInsightMidi() {
       if (insightMidiLoopTimer) {
         clearTimeout(insightMidiLoopTimer);
         insightMidiLoopTimer = null;
       }
+      stopInsightPlayheadTick();
       for (let i = 0; i < insightMidiNodes.length; i++) {
         const n = insightMidiNodes[i];
         try { if (n.stop) n.stop(0); } catch (e) {}
@@ -2344,6 +2579,8 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       insightMidiNodes = [];
       insightMidiVoice = null;
       insightMidiPlaying = false;
+      insightMidiPassWhen0 = 0;
+      insightMidiWindowDur = 0;
     }
     function insightVoiceFromToggles(layer) {
       if (layer === "harmony") return insightMidiChordsOn ? "chords" : null;
@@ -2493,8 +2730,14 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       const pats = Array.isArray(patsRaw) ? patsRaw : [patsRaw];
       const secPat = pats[0] || PEDAL;
       const pat = resolveInsightPattern(insight, PATS_EFF) || secPat;
-      const which = voice || insightVoiceFromToggles(insight.layer || "figure");
-      if (!which) return { ok: false, reason: "no-voice" };
+      const layer = insight.layer || "figure";
+      // Schedule the full claim-window content; Bass/Drums/Chords toggles mute via gain
+      // so toggling mid-loop does NOT restart from the top.
+      const which = voice || (layer === "harmony" ? "chords" : "all");
+      if (!voice) {
+        const gated = insightVoiceFromToggles(layer);
+        if (!gated) return { ok: false, reason: "no-voice" };
+      }
       const events = buildInsightMidiEvents(insight, pat, which);
       // Card Play must stop/pause the main player if it is running.
       if (playing) onPause();
@@ -2504,20 +2747,24 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       insightMidiVoice = which;
       insightMidiPlaying = true;
       ensureInsightMidiGraph();
+      applyInsightVoiceGains();
       if (audioCtx.state === "suspended" && audioCtx.resume) audioCtx.resume();
       const bpm = Number(demo.bpm) > 0 ? Number(demo.bpm) : 120;
       const secPerBar = (60 / bpm) * 4; // 4/4 claim window
       const secPerStep = secPerBar / 16;
       const windowDur = Math.max(0.25, (events.totalSteps || 16) * secPerStep);
+      insightMidiWindowDur = windowDur;
       function armPass() {
         if (myGen !== insightMidiGen || !insightMidiPlaying) return;
         stopInsightMidiNodesOnly();
         const when0 = audioCtx.currentTime + 0.04;
+        insightMidiPassWhen0 = when0;
         scheduleInsightMidiPass(events, which, when0, secPerStep);
         if (insightMidiLoopTimer) clearTimeout(insightMidiLoopTimer);
         insightMidiLoopTimer = setTimeout(armPass, Math.round(windowDur * 1000));
       }
       armPass();
+      startInsightPlayheadTick();
       render();
       return {
         ok: true,
@@ -2528,6 +2775,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         empty: events.empty,
         looping: true,
         playing: true,
+        restarted: true,
         gen: insightMidiGen,
         nodeCount: insightMidiNodes.length,
         windowDur,
@@ -2547,15 +2795,32 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       else if (v === "drums") insightMidiDrumsOn = !insightMidiDrumsOn;
       else if (v === "chords" || v === "chord") insightMidiChordsOn = !insightMidiChordsOn;
       else return { ok: false, reason: "bad-voice" };
+      applyInsightVoiceGains();
       if (insightMidiPlaying) {
-        const r = playInsightMidi();
-        return Object.assign({ toggled: v }, r);
+        // Continue from current claim-window position — do not cancel/reschedule.
+        render();
+        return {
+          ok: true,
+          toggled: v,
+          playing: true,
+          looping: true,
+          restarted: false,
+          voice: insightMidiVoice,
+          bass: -1,
+          drums: -1,
+          chords: -1,
+          bassOn: insightMidiBassOn,
+          drumsOn: insightMidiDrumsOn,
+          chordsOn: insightMidiChordsOn,
+          gen: insightMidiGen,
+        };
       }
       render();
       return {
         ok: true,
         toggled: v,
         playing: false,
+        restarted: false,
         bassOn: insightMidiBassOn,
         drumsOn: insightMidiDrumsOn,
         chordsOn: insightMidiChordsOn,
@@ -4644,6 +4909,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     midiToName,
     resolveInsightPattern,
     makeCardInsight,
+    resolveHarmonyChips,
     buildInsightMidiEvents,
     CARDS,
     PATS,

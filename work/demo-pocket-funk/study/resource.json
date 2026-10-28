@@ -7482,11 +7482,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Key Am. Section follows the written groove changes; prefer function over chroma mirages.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
         "insight": {
           "layer": "harmony",
           "patternId": "intro_bass",
-          "title": "Am center",
+          "title": "Am7 (= main row)",
           "barRange": [
             0,
             1
@@ -7494,13 +7494,17 @@
           "highlights": [
             {
               "step": 0,
-              "midi": 33,
-              "text": "Am"
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "Am7 = i7",
+              "midi": 33
             },
             {
-              "step": 4,
-              "midi": 33,
-              "text": "Am"
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "still Am7",
+              "midi": 33
             }
           ]
         }
@@ -7589,11 +7593,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Key Am. Section follows the written groove changes; prefer function over chroma mirages.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
         "insight": {
           "layer": "harmony",
           "patternId": "a1_bass",
-          "title": "Am center",
+          "title": "Am7 (= main row)",
           "barRange": [
             0,
             1
@@ -7601,13 +7605,17 @@
           "highlights": [
             {
               "step": 0,
-              "midi": 33,
-              "text": "Am"
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "Am7 = i7",
+              "midi": 33
             },
             {
-              "step": 4,
-              "midi": 33,
-              "text": "Am"
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "still Am7",
+              "midi": 33
             }
           ]
         }
@@ -7696,11 +7704,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Key Am. Section follows the written groove changes; prefer function over chroma mirages.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
         "insight": {
           "layer": "harmony",
           "patternId": "a3_bass",
-          "title": "Am center",
+          "title": "Am7 (= main row)",
           "barRange": [
             0,
             1
@@ -7708,13 +7716,17 @@
           "highlights": [
             {
               "step": 0,
-              "midi": 33,
-              "text": "Am"
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "Am7 = i7",
+              "midi": 33
             },
             {
-              "step": 4,
-              "midi": 33,
-              "text": "Am"
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "still Am7",
+              "midi": 33
             }
           ]
         }
@@ -7803,11 +7815,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Key Am. Section follows the written groove changes; prefer function over chroma mirages.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
         "insight": {
           "layer": "harmony",
           "patternId": "a2_bass",
-          "title": "Am center",
+          "title": "Am7 (= main row)",
           "barRange": [
             0,
             1
@@ -7815,13 +7827,17 @@
           "highlights": [
             {
               "step": 0,
-              "midi": 33,
-              "text": "Am"
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "Am7 = i7",
+              "midi": 33
             },
             {
-              "step": 4,
-              "midi": 33,
-              "text": "Am"
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "still Am7",
+              "midi": 33
             }
           ]
         }
@@ -7910,11 +7926,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Key Am. Section follows the written groove changes; prefer function over chroma mirages.",
+        "body": "Lift sits on D7 (IV7 in Am) \u2014 matches the main chord row. Bass roots on D; this is a real change from the Am7 groove, not a mirage.",
         "insight": {
           "layer": "harmony",
           "patternId": "b1_bass",
-          "title": "Am center",
+          "title": "D7 (= main row)",
           "barRange": [
             0,
             1
@@ -7922,13 +7938,17 @@
           "highlights": [
             {
               "step": 0,
-              "midi": 38,
-              "text": "Am"
+              "kind": "chord",
+              "chord": "D7",
+              "text": "D7 = IV7",
+              "midi": 38
             },
             {
-              "step": 4,
-              "midi": 38,
-              "text": "Am"
+              "step": 16,
+              "kind": "chord",
+              "chord": "D7",
+              "text": "still D7",
+              "midi": 38
             }
           ]
         }
@@ -8017,11 +8037,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Key Am. Section follows the written groove changes; prefer function over chroma mirages.",
+        "body": "Lift sits on D7 (IV7 in Am) \u2014 matches the main chord row. Bass roots on D; this is a real change from the Am7 groove, not a mirage.",
         "insight": {
           "layer": "harmony",
           "patternId": "b1_bass",
-          "title": "Am center",
+          "title": "D7 (= main row)",
           "barRange": [
             0,
             1
@@ -8029,13 +8049,17 @@
           "highlights": [
             {
               "step": 0,
-              "midi": 38,
-              "text": "Am"
+              "kind": "chord",
+              "chord": "D7",
+              "text": "D7 = IV7",
+              "midi": 38
             },
             {
-              "step": 4,
-              "midi": 38,
-              "text": "Am"
+              "step": 16,
+              "kind": "chord",
+              "chord": "D7",
+              "text": "still D7",
+              "midi": 38
             }
           ]
         }
@@ -8124,11 +8148,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Key Am. Section follows the written groove changes; prefer function over chroma mirages.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
         "insight": {
           "layer": "harmony",
           "patternId": "a3_bass",
-          "title": "Am center",
+          "title": "Am7 (= main row)",
           "barRange": [
             0,
             1
@@ -8136,13 +8160,17 @@
           "highlights": [
             {
               "step": 0,
-              "midi": 33,
-              "text": "Am"
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "Am7 = i7",
+              "midi": 33
             },
             {
-              "step": 4,
-              "midi": 33,
-              "text": "Am"
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "still Am7",
+              "midi": 33
             }
           ]
         }
@@ -8231,11 +8259,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Key Am. Section follows the written groove changes; prefer function over chroma mirages.",
+        "body": "Break on E7 (V7) \u2014 matches the main chord row. Sparse bass; dominant tension before the return.",
         "insight": {
           "layer": "harmony",
           "patternId": "br_bass",
-          "title": "Am center",
+          "title": "E7 (= main row)",
           "barRange": [
             0,
             1
@@ -8243,13 +8271,17 @@
           "highlights": [
             {
               "step": 0,
-              "midi": 33,
-              "text": "Am"
+              "kind": "chord",
+              "chord": "E7",
+              "text": "E7 = V7",
+              "midi": 33
             },
             {
-              "step": 4,
-              "midi": 33,
-              "text": "Am"
+              "step": 16,
+              "kind": "chord",
+              "chord": "E7",
+              "text": "still E7",
+              "midi": 33
             }
           ]
         }
@@ -8338,11 +8370,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Key Am. Section follows the written groove changes; prefer function over chroma mirages.",
+        "body": "Break on E7 (V7) \u2014 matches the main chord row. Sparse bass; dominant tension before the return.",
         "insight": {
           "layer": "harmony",
           "patternId": "br_bass",
-          "title": "Am center",
+          "title": "E7 (= main row)",
           "barRange": [
             0,
             1
@@ -8350,13 +8382,17 @@
           "highlights": [
             {
               "step": 0,
-              "midi": 33,
-              "text": "Am"
+              "kind": "chord",
+              "chord": "E7",
+              "text": "E7 = V7",
+              "midi": 33
             },
             {
-              "step": 4,
-              "midi": 33,
-              "text": "Am"
+              "step": 16,
+              "kind": "chord",
+              "chord": "E7",
+              "text": "still E7",
+              "midi": 33
             }
           ]
         }
@@ -8445,11 +8481,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Key Am. Section follows the written groove changes; prefer function over chroma mirages.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
         "insight": {
           "layer": "harmony",
           "patternId": "out_bass",
-          "title": "Am center",
+          "title": "Am7 (= main row)",
           "barRange": [
             0,
             1
@@ -8457,13 +8493,17 @@
           "highlights": [
             {
               "step": 0,
-              "midi": 33,
-              "text": "Am"
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "Am7 = i7",
+              "midi": 33
             },
             {
-              "step": 4,
-              "midi": 33,
-              "text": "Am"
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "still Am7",
+              "midi": 33
             }
           ]
         }
@@ -8552,11 +8592,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Key Am. Section follows the written groove changes; prefer function over chroma mirages.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones; there is no Bb (or other foreign chord) in what\u2019s heard.",
         "insight": {
           "layer": "harmony",
           "patternId": "out_bass",
-          "title": "Am center",
+          "title": "Am7 (= main row)",
           "barRange": [
             0,
             1
@@ -8564,13 +8604,17 @@
           "highlights": [
             {
               "step": 0,
-              "midi": 33,
-              "text": "Am"
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "Am7 = i7",
+              "midi": 33
             },
             {
-              "step": 4,
-              "midi": 33,
-              "text": "Am"
+              "step": 16,
+              "kind": "chord",
+              "chord": "Am7",
+              "text": "still Am7",
+              "midi": 33
             }
           ]
         }
@@ -8872,7 +8916,8 @@
     "drumsSchema": "bass.drums.v1",
     "drumHitCount": 523,
     "bassHitCount": 258,
-    "midiAuthoritative": true
+    "midiAuthoritative": true,
+    "harmonyHonest": "chord-row-matched-2026-10-28"
   },
   "semantic": {
     "schema": "bass.semantic.v1",

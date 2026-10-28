@@ -1459,7 +1459,7 @@ describe("flashcard insight panel", () => {
     const labels = [...document.querySelectorAll("[data-insight-label]")].map((n) => n.getAttribute("data-insight-label"));
     expect(labels).toEqual(expect.arrayContaining(["this note here", "this pattern"]));
 
-    const lit = document.querySelectorAll('circle[data-insight-kind="note"]');
+    const lit = document.querySelectorAll('ellipse[data-insight-kind="note"], circle[data-insight-kind="note"]');
     expect(lit.length).toBeGreaterThan(0);
     // Dim hits remain in the claim window with a one-line legend (lean B).
     expect(document.querySelector("[data-insight-legend]")).toBeTruthy();
@@ -1478,7 +1478,7 @@ describe("flashcard insight panel", () => {
     expect(document.querySelector(".card-insight")?.getAttribute("data-insight-layer")).toBe("pocket");
     const labels = [...document.querySelectorAll("[data-insight-label]")].map((n) => n.getAttribute("data-insight-label"));
     expect(labels.join(" ")).toMatch(/bass note against that drum hit/i);
-    expect(document.querySelector('circle[data-insight-kind="bass"]')).toBeTruthy();
+    expect(document.querySelector('ellipse[data-insight-kind="bass"], circle[data-insight-kind="bass"]')).toBeTruthy();
     expect(document.querySelector('circle[data-insight-kind="kick"]')).toBeTruthy();
   });
 
@@ -1490,7 +1490,7 @@ describe("flashcard insight panel", () => {
     const svg = document.querySelector(".card-insight-svg");
     expect(svg).toBeTruthy();
     const cy = (kind) => {
-      const nodes = [...svg.querySelectorAll(`circle[data-insight-kind="${kind}"]`)];
+      const nodes = [...svg.querySelectorAll(`ellipse[data-insight-kind="${kind}"], circle[data-insight-kind="${kind}"]`)];
       expect(nodes.length).toBeGreaterThan(0);
       return nodes.map((n) => Number(n.getAttribute("cy")));
     };
@@ -1590,6 +1590,48 @@ describe("flashcard insight panel", () => {
     expect(names).toEqual(["F", "C", "Bb", "Dm"]);
     expect(node.querySelectorAll(".card-insight-chord.lit").length).toBe(4);
   });
+
+  it("harmony insight never invents F/C/Bb/Dm when highlights lack chord fields", async () => {
+    await bootPlayer();
+    const N = window.__BASS_NOTATION__;
+    // Pocket-Funk-shaped highlights: text only, no chord/kind — old bug invented Bb.
+    const node = N.makeCardInsight({
+      layer: "harmony",
+      title: "Am center",
+      highlights: [
+        { step: 0, midi: 33, text: "Am7" },
+        { step: 4, midi: 33, text: "Am7" },
+      ],
+    }, null);
+    document.body.appendChild(node);
+    const names = [...node.querySelectorAll(".card-insight-chord-name")].map((n) => n.textContent);
+    expect(names).toEqual(["Am7"]);
+    expect(names).not.toContain("Bb");
+    expect(node.querySelector("[data-insight-harmony-empty]")).toBeNull();
+  });
+
+  it("insight schematic draws bass staff lines + playhead hook + text map", async () => {
+    await bootPlayer();
+    const N = window.__BASS_NOTATION__;
+    const node = N.makeCardInsight({
+      layer: "figure",
+      patternId: "walk",
+      title: "A–C–D walk",
+      barRange: [0, 0],
+      highlights: [
+        { step: 0, midi: 33, text: "A root" },
+        { step: 6, midi: 36, text: "C" },
+        { step: 8, midi: 38, text: "D" },
+      ],
+    }, N.WALK);
+    document.body.appendChild(node);
+    expect(node.querySelectorAll("[data-insight-staff-line]").length).toBeGreaterThanOrEqual(5);
+    expect(node.querySelector("[data-insight-clef='bass'], [data-insight-clef=\"bass\"]")).toBeTruthy();
+    expect(node.querySelector("[data-insight-playhead]")).toBeTruthy();
+    expect(node.querySelector("[data-insight-map]")?.textContent).toMatch(/Lit on the staff/i);
+    expect(node.querySelectorAll("ellipse[data-insight-staff='bass']").length).toBeGreaterThan(0);
+  });
+
 
   it("panel order is label → body → insight → mini-grid → Prev/Next", async () => {
     const api = await bootPlayer();
@@ -3421,14 +3463,15 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(document.querySelectorAll("[data-chord-tones]").length).toBe(0);
     expect(document.querySelectorAll('svg[aria-label="Bass staff"] [data-chord-tone]').length).toBe(0);
 
-    // Toggle drums off while looping → reschedule bass-only from the remaining toggle.
+    // Toggle drums off while looping → MUST NOT restart the claim-window loop.
+    const genWhile = api.getState().insightMidiGen;
     const bassR = api.toggleInsightMidiVoice("drums");
     expect(api.getState().insightMidiDrumsOn).toBe(false);
-    expect(bassR.insightMidiResult.voice).toBe("bass");
-    expect(bassR.insightMidiResult.bass).toBeGreaterThan(0);
-    expect(bassR.insightMidiResult.drums).toBe(0);
+    expect(api.getState().insightMidiBassOn).toBe(true);
+    expect(bassR.insightMidiResult.restarted).toBe(false);
     expect(bassR.insightMidiResult.looping).toBe(true);
     expect(api.getState().insightMidiPlaying).toBe(true);
+    expect(api.getState().insightMidiGen).toBe(genWhile); // same pass / no cancel
 
     const drumsR = api.playInsightMidi("drums");
     expect(drumsR.insightMidiResult.ok).toBe(true);
