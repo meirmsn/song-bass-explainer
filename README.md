@@ -15,8 +15,8 @@ This was built by talking to Grok Bot, to learn how personal desktop agent work 
 - Stem mute and solo so bass, drums, or both can be heard against the rest of the mix, plus soft MIDI for the bass and drums.
 - Pitch-preserving tempo at 100%, 90%, 75%, 50%, and 25%, and a section timeline that auto-advances.
 - Keyboard shortcuts for transport controls and looping, and drag to select a subsection to loop.
-- Insight flashcards (Pocket, Figure, Harmony, Missable) with a bass-drum schematic to see core bass-against-drums patterns. Playable on loop; Bass and Drums toggles choose what you hear.
-- Public demos: Komiku — A good bass for gambling (CC0), HoliznaCC0 — Make Funk (CC0), and Maple Leaf Rag (Public Domain Mark). Private Access holds processed personal tracks.
+- Insight flashcards (Pocket, Figure, Harmony, Missable) with a bass-drum schematic. Play loops the claim window. Figure and pocket cards have Bass, Drums, and Highlights toggles; Harmony cards are Play only and always sound the chord pads.
+- Public demo: Pocket Funk (CC0, MIDI-authored). Make Funk, Komiku, and Maple Leaf Rag stay off the public picker. Private Access holds processed personal tracks.
 
 ## How it works
 
@@ -50,6 +50,7 @@ No CI. A Cloudflare deploy token ships this personal tool. To harden a personal 
 - 2026-10-26 — slowing playback was shifting the pitch → WSOLA time-stretch. The drum staff was showing made-up lines when the drums were quiet in a section.
 - 2026-10-26 — one demo was a narrow practice set → Make Funk and Maple Leaf Rag joined the catalog.
 - 2026-10-26 — chords and cards were hard to hear and see → bass key and time signatures (drums keep time only), bass-drum claim-window schematics, and card Play with Bass, Drums, and Chords icons.
+- 2026-10-28 — Harmony cards are Play only. Non-harmony cards can mute everything that isn’t lit. Insight drum rows always show hi-hat, and the main drum staff is labeled K / S / H. Maple Leaf Rag left the public picker. Pocket Funk ghost notes in Groove A′ play quieter.
 
 ## Known limitations
 - There is no current way for a non-host to upload and process a custom track.

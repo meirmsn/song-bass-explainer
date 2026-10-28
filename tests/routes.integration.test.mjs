@@ -62,8 +62,8 @@ describe("public demo APIs — CC0 open, LAP gated", () => {
     expect(data.songs.some((s) => s.id === "a-good-bass-for-gambling")).toBe(false);
     expect(data.songs.some((s) => s.id === "make-funk")).toBe(false);
     expect(data.songs.some((s) => s.id === "pocket-funk")).toBe(true);
-    expect(data.songs.some((s) => s.id === "maple-leaf-rag")).toBe(true);
-    expect(data.songs.length).toBe(2);
+    expect(data.songs.some((s) => s.id === "maple-leaf-rag")).toBe(false);
+    expect(data.songs.length).toBe(1);
     expect(data.songs.every((s) => s.id !== "a-good-bass-for-gambling")).toBe(true);
   });
 
