@@ -280,7 +280,7 @@ def build_pocket_funk():
     pocket_bodies = {
         "intro": "Hats roll in; bass waits two bars then drops into the A pocket.",
         "a1": "Four-feel kit under an A-center funk line. Sit behind the kick; hats mark the 8ths.",
-        "a2": "Same pocket with denser octave pops — don’t rush the ghost notes.",
+        "a2": "Same pocket with denser octave pops — don’t rush the ghost notes: quiet snares into the backbeat, and the soft bass 16ths.",
         "b1": "Lift to D7; keep the kick 1 + syncopation while the root moves.",
         "a3": "Back to Am7 pocket — lock the written syncopations.",
         "br": "Break: sparse kicks. Leave space.",

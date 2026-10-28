@@ -20,17 +20,6 @@ const PUBLIC_DEMOS = {
     api: "/api/demo/pocket-funk",
     player: "/?song=pocket-funk",
   },
-  "maple-leaf-rag": {
-    id: "maple-leaf-rag",
-    title: "Maple Leaf Rag",
-    artist: "Scott Joplin",
-    license: "Public Domain",
-    album: "MIDI demos",
-    source: "Mutopia Project MIDI + FluidSynth render",
-    sourceUrl: "https://www.mutopiaproject.org/ftp/JoplinS/maple/maple.mid",
-    api: "/api/demo/maple-leaf-rag",
-    player: "/?song=maple-leaf-rag",
-  },
 };
 
 /** Private/regression DEMO tracks — kept off the public catalog/picker. */
@@ -57,6 +46,17 @@ const PRIVATE_ONLY_DEMOS = {
     sourceUrl: "https://freemusicarchive.org/music/holiznacc0/bassic/make-funk/",
     api: "/api/demo/make-funk",
     player: "/private/player/?song=make-funk",
+  },
+  "maple-leaf-rag": {
+    id: "maple-leaf-rag",
+    title: "Maple Leaf Rag",
+    artist: "Scott Joplin",
+    license: "Public Domain",
+    album: "MIDI demos",
+    source: "Mutopia Project MIDI + FluidSynth render",
+    sourceUrl: "https://www.mutopiaproject.org/ftp/JoplinS/maple/maple.mid",
+    api: "/api/demo/maple-leaf-rag",
+    player: "/private/player/?song=maple-leaf-rag",
   },
 };
 

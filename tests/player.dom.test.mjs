@@ -1134,7 +1134,7 @@ describe("drum staff real rhythm", () => {
     expect(staff.querySelectorAll("g[data-drum='kick']").length).toBeGreaterThan(0);
   });
 
-  it("kick is always below snare on the drum staff (HH above SD above BD)", async () => {
+  it("kick is always below snare on the drum staff (H above S above K)", async () => {
     const api = await bootPlayer({
       mutatePayload: (payload) => {
         const hits = [];
@@ -1166,9 +1166,9 @@ describe("drum staff real rhythm", () => {
     expect(hatLineYs.length).toBeGreaterThan(0);
     expect(Math.max(...hatLineYs)).toBeLessThan(Math.min(...snare));
     const labelY = (kind) => Number(staff.querySelector(`[data-drum-label="${kind}"]`).getAttribute("y"));
-    expect(staff.querySelector('[data-drum-label="hat"]').textContent).toBe("HH");
-    expect(staff.querySelector('[data-drum-label="snare"]').textContent).toBe("SD");
-    expect(staff.querySelector('[data-drum-label="kick"]').textContent).toBe("BD");
+    expect(staff.querySelector('[data-drum-label="hat"]').textContent).toBe("H");
+    expect(staff.querySelector('[data-drum-label="snare"]').textContent).toBe("S");
+    expect(staff.querySelector('[data-drum-label="kick"]').textContent).toBe("K");
     expect(labelY("kick")).toBeGreaterThan(labelY("snare"));
     expect(labelY("snare")).toBeGreaterThan(labelY("hat"));
 
@@ -1499,7 +1499,11 @@ describe("flashcard insight panel", () => {
     const s = svg.querySelector('[data-drum-label="snare"]');
     expect(k.textContent).toBe("K");
     expect(s.textContent).toBe("S");
+    const hLabel = svg.querySelector('[data-drum-label="hat"]');
+    expect(hLabel.textContent).toBe("H");
     expect(Number(k.getAttribute("y"))).toBeGreaterThan(Number(s.getAttribute("y")));
+    expect(Number(s.getAttribute("y"))).toBeGreaterThan(Number(hLabel.getAttribute("y")));
+    expect(svg.querySelectorAll('[data-insight-kind="hat"]').length).toBe(8);
 
     // Direct schematic (same renderer) with both voices highlighted.
     const N = window.__BASS_NOTATION__;
@@ -1518,8 +1522,12 @@ describe("flashcard insight panel", () => {
     const kickCy = Number(card.querySelector('circle[data-insight-kind="kick"]').getAttribute("cy"));
     const snareCy = Number(card.querySelector('circle[data-insight-kind="snare"]').getAttribute("cy"));
     expect(kickCy).toBeGreaterThan(snareCy);
+    const hatCy = Number(card.querySelector('circle[data-insight-kind="hat"]').getAttribute("cy"));
+    expect(snareCy).toBeGreaterThan(hatCy);
     expect(Number(card.querySelector('[data-drum-label="kick"]').getAttribute("y")))
       .toBeGreaterThan(Number(card.querySelector('[data-drum-label="snare"]').getAttribute("y")));
+    expect(card.querySelector('[data-drum-label="hat"]').textContent).toBe("H");
+    expect(card.querySelectorAll('[data-insight-kind="hat"]').length).toBe(8);
   });
 
   it("cards without insight leave the panel out (intro)", async () => {
@@ -2299,7 +2307,7 @@ describe("midi-section-advance: auto section change while playing", () => {
     payload.cards = demo.cards || payload.cards;
   }
 
-  it("public demos: Make Funk and Maple Leaf Rag auto-advance reschedule new pattern MIDI", async () => {
+  it("Make Funk and Maple Leaf study JSON auto-advance reschedules pattern MIDI", async () => {
     const cases = [
       {
         file: "../work/demo-make-funk/demo-data.json",
@@ -2926,10 +2934,8 @@ describe("public has no Private link + private song typeahead", () => {
     expect(list.textContent).not.toMatch(/\bProcessed\b/);
 
     const demoIds = [...demoGroup.querySelectorAll("[data-song-id]")].map((o) => o.getAttribute("data-song-id"));
-    expect(demoIds).toEqual([
-      "pocket-funk",
-      "maple-leaf-rag",
-    ]);
+    expect(demoIds).toEqual(["pocket-funk"]);
+    expect(demoIds).not.toContain("maple-leaf-rag");
     expect(list.querySelector('[data-song-id="like-a-prayer"]')).toBeNull();
 
     const api = window.__BASS_PLAYER__;
@@ -2956,23 +2962,21 @@ describe("public has no Private link + private song typeahead", () => {
     input.focus();
     input.dispatchEvent(new Event("focus", { bubbles: true }));
     const demoIds = [...document.querySelectorAll('[data-group="demo"] [data-song-id]')].map((o) => o.getAttribute("data-song-id"));
-    expect(demoIds).toEqual([
-      "pocket-funk",
-      "maple-leaf-rag",
-    ]);
+    expect(demoIds).toEqual(["pocket-funk"]);
   });
 
-  it("explicit ?song=maple-leaf-rag loads that demo; unknown/Komiku falls back to Pocket Funk", async () => {
+  it("explicit ?song=maple-leaf-rag falls back to Pocket Funk; unknown/Komiku does too", async () => {
     window.history.replaceState({}, "", "/?song=maple-leaf-rag");
     const api = await bootPlayer({ privateMode: false, withStems: true });
     const urls = vi.mocked(fetch).mock.calls.map((c) => String(c[0]));
     const songFetches = urls.filter((u) => /\/api\/demo\/(pocket-funk|make-funk|a-good-bass-for-gambling|maple-leaf-rag)(\?|$|\/)/.test(u));
-    expect(songFetches[0]).toContain("/api/demo/maple-leaf-rag");
+    expect(songFetches[0]).toContain("/api/demo/pocket-funk");
+    expect(songFetches.some((u) => u.includes("maple-leaf-rag"))).toBe(false);
     expect(api.getState().loopOn).toBe(false);
     expect(api.getState().secIdx).toBe(0);
     expect(api.getState().lo).toBe(0);
     expect(api.getState().hi).toBe(demo.nbars - 1);
-    expect(document.querySelector("[data-song-typeahead-input]").value).toMatch(/Maple Leaf/i);
+    expect(document.querySelector("[data-song-typeahead-input]").value).toMatch(/Pocket Funk/i);
 
     // Komiku dropped from public allowlist → default Pocket Funk
     window.history.replaceState({}, "", "/?song=a-good-bass-for-gambling");
@@ -3026,19 +3030,23 @@ describe("public has no Private link + private song typeahead", () => {
       const input = document.querySelector("[data-song-typeahead-input]");
       expect(input).toBeTruthy();
       input.focus();
-      input.value = "maple";
+      input.value = "pocket";
       input.dispatchEvent(new Event("input", { bubbles: true }));
       const list = document.querySelector("[data-song-listbox]");
       const opts = [...list.querySelectorAll('[role="option"]')];
-      expect(opts.map((o) => o.getAttribute("data-song-id"))).toEqual(["maple-leaf-rag"]);
+      expect(opts.map((o) => o.getAttribute("data-song-id"))).toEqual(["pocket-funk"]);
+      expect(list.textContent).not.toMatch(/Maple Leaf/i);
       expect(list.querySelector('[data-group-label="demo"]').textContent).toBe("Demo");
       expect(list.querySelector('[data-group="processed"]')).toBeNull();
       expect(list.textContent).not.toMatch(/\bPublic\b/);
 
+      // Pocket Funk is already loaded, so Enter stays put.
       input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
-      expect(assigns.length).toBe(1);
-      expect(assigns[0].id).toBe("maple-leaf-rag");
-      expect(assigns[0].url).toMatch(/[?&]song=maple-leaf-rag/);
+      expect(assigns.length).toBe(0);
+      input.value = "maple";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      expect(list.querySelectorAll('[role="option"]').length).toBe(0);
+      expect(list.textContent).toMatch(/No matches/i);
       expect(document.title).toBe("Song Bass Explainer - Understand Bass Lines in Songs");
     } finally {
       delete window.__BASS_SONG_NAV__;
@@ -3370,7 +3378,15 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(document.querySelector('button[data-insight-voice="all"]')).toBeNull();
     expect(api.getState().insightMidiBassOn).toBe(true);
     expect(api.getState().insightMidiDrumsOn).toBe(true);
-    expect(api.getState().insightMidiChordsOn).toBe(true);
+    expect(api.getState().insightMidiHighlightsOnly).toBe(false);
+    const hiBtn = document.querySelector("button[data-insight-highlights]");
+    expect(hiBtn).toBeTruthy();
+    expect(hiBtn.textContent).toBe("Highlights");
+    expect(hiBtn.getAttribute("aria-label")).toBe("Highlights only");
+    expect(hiBtn.classList.contains("on")).toBe(false);
+    expect(hiBtn.getAttribute("aria-pressed")).toBe("false");
+    expect(document.querySelectorAll('[data-insight-kind="hat"]').length).toBe(8);
+    expect(document.querySelector('[data-drum-label="hat"]').textContent).toBe("H");
 
     drumsBtn.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
     expect(api.getState().insightMidiDrumsOn).toBe(false);
@@ -3384,13 +3400,13 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(drumsOff.querySelector('svg[data-lucide="drum"]')).toBeTruthy();
     expect(bassStill.querySelector('svg[data-lucide="guitar-electric"]')).toBeTruthy();
 
-    api.setCard(2); // Harmony — Play + Chords, chords toggle ON
+    api.setCard(2); // Harmony — Play only
     const harmBtns = [...document.querySelectorAll("[data-insight-midi-strip] button")];
-    expect(harmBtns.map((b) => b.querySelector("svg")?.getAttribute("data-icon"))).toEqual(["play", "chords"]);
+    expect(harmBtns.map((b) => b.querySelector("svg")?.getAttribute("data-icon"))).toEqual(["play"]);
     expect(harmBtns[0].querySelector('svg[data-icon="play"] polygon')).toBeTruthy();
-    expect(harmBtns[1].textContent).toBe("Chords");
-    expect(harmBtns[1].querySelectorAll('svg[data-icon="chords"] rect').length).toBe(3);
-    expect(document.querySelector('button[data-insight-voice="chords"].on')).toBeTruthy();
+    expect(document.querySelector('button[data-insight-voice="chords"]')).toBeNull();
+    expect(document.querySelector("[data-insight-highlights]")).toBeNull();
+    expect(document.querySelector('button[data-insight-voice="bass"]')).toBeNull();
     expect(document.querySelector("button[data-insight-play]")).toBeTruthy();
   });
 
@@ -3406,7 +3422,11 @@ describe("insight-card MIDI + two-staff schematic", () => {
     const ev = N.buildInsightMidiEvents(fig, N.SYNC_OCT, "all");
     expect(ev.bass.length).toBeGreaterThan(0);
     expect(ev.bass.every((n) => n.step >= 0 && n.step < 16)).toBe(true);
-    expect(ev.drums.map((d) => d.step + ":" + d.kind)).toEqual(["0:kick", "4:snare", "8:kick", "12:snare"]);
+    expect(ev.drums.filter((d) => d.kind === "kick").map((d) => d.step)).toEqual([0, 8]);
+    expect(ev.drums.filter((d) => d.kind === "snare").map((d) => d.step)).toEqual([4, 12]);
+    expect(ev.drums.filter((d) => d.kind === "hat").map((d) => d.step)).toEqual([0, 2, 4, 6, 8, 10, 12, 14]);
+    expect(ev.bass.filter((n) => n.lit).map((n) => n.step).sort((a, b) => a - b)).toEqual([0, 4]);
+    expect(ev.bass.some((n) => !n.lit)).toBe(true);
     expect(ev.empty).toBe(false);
 
     const emptyEv = N.buildInsightMidiEvents({
@@ -3421,7 +3441,8 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(bassOnly.drums).toEqual([]);
 
     const drumsOnly = N.buildInsightMidiEvents(fig, N.SYNC_OCT, "drums");
-    expect(drumsOnly.drums.length).toBe(4);
+    expect(drumsOnly.drums.filter((d) => d.kind !== "hat").length).toBe(4);
+    expect(drumsOnly.drums.filter((d) => d.kind === "hat").length).toBe(8);
     expect(drumsOnly.bass).toEqual([]);
 
     const harm = N.buildInsightMidiEvents({
@@ -3495,17 +3516,120 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(playIdle.getAttribute("aria-label")).toMatch(/Play/i);
     expect(ctx._oscillators.slice(0, oscBefore).every((o) => o._stopped)).toBe(true);
 
-    api.setCard(2); // Harmony — card change cancels; Chords toggle stays ON
+    api.setCard(2); // Harmony — card change cancels; Play only, pads still sound
     expect(api.getState().insightMidiPlaying).toBe(false);
-    expect(document.querySelector('button[data-insight-voice="chords"].on')).toBeTruthy();
-    const chordR = api.playInsightMidi("chords");
+    expect(document.querySelector('button[data-insight-voice="chords"]')).toBeNull();
+    expect(document.querySelectorAll("[data-insight-midi-strip] button").length).toBe(1);
+    const chordR = api.playInsightMidi();
     expect(chordR.insightMidiResult.ok).toBe(true);
+    expect(chordR.insightMidiResult.voice).toBe("chords");
     expect(chordR.insightMidiResult.chords).toBeGreaterThan(0);
     expect(chordR.insightMidiResult.looping).toBe(true);
-    expect(document.querySelector('button[data-insight-voice="chords"]').classList.contains("on")).toBe(true);
+    expect(chordR.insightMidiResult.nodeCount).toBeGreaterThan(0);
     api.cancelInsightMidi();
     expect(api.getState().insightMidiPlaying).toBe(false);
     expect(api.getState().insightMidiVoice).toBeNull();
+  });
+
+  it("Highlights only mutes non-lit bass and drums without restarting", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: false });
+    api.pickSection(2);
+    api.setCard(1);
+    await api.ensureAudio();
+    document.querySelector("button[data-insight-play]").dispatchEvent(
+      new MouseEvent("pointerup", { bubbles: true, cancelable: true }),
+    );
+    await api.waitTick(30);
+    const gen = api.getState().insightMidiGen;
+    const nodes = api.getState().insightMidiNodeCount;
+    expect(nodes).toBeGreaterThan(0);
+    expect(api.getState().insightBassDimGain).toBe(1);
+    expect(api.getState().insightDrumsDimGain).toBe(1);
+
+    document.querySelector("button[data-insight-highlights]").dispatchEvent(
+      new MouseEvent("pointerup", { bubbles: true, cancelable: true }),
+    );
+    await api.waitTick(20);
+    expect(api.getState().insightMidiHighlightsOnly).toBe(true);
+    expect(api.getState().insightMidiGen).toBe(gen);
+    expect(api.getState().insightMidiPlaying).toBe(true);
+    expect(api.getState().insightMidiNodeCount).toBe(nodes);
+    expect(api.getState().insightBassDimGain).toBe(0);
+    expect(api.getState().insightDrumsDimGain).toBe(0);
+    expect(api.getState().insightBassLitGain).toBe(1);
+    expect(api.getState().insightDrumsLitGain).toBe(1);
+    const hiBtn = document.querySelector("button[data-insight-highlights]");
+    expect(hiBtn.classList.contains("on")).toBe(true);
+    expect(hiBtn.getAttribute("aria-pressed")).toBe("true");
+    api.cancelInsightMidi();
+  });
+
+  it("ghost notes play quieter than accents and insight hats stay on the grid", async () => {
+    const api = await bootPlayer({
+      privateMode: true,
+      withStems: false,
+      mutatePayload: (p) => {
+        p.patterns.chorus.push({
+          id: "ghost_line",
+          name: "Ghost line",
+          notes: [
+            { step: 0, midi: 41 },
+            { step: 4, midi: 36, ghost: true },
+          ],
+        });
+        const fig = p.cards.chorus[1].insight;
+        fig.patternId = "ghost_line";
+        fig.barRange = [0, 0];
+        fig.highlights = [
+          { step: 0, midi: 41, text: "accent" },
+          { step: 4, midi: 36, text: "ghost", ghost: true },
+        ];
+      },
+    });
+    const N = window.__BASS_NOTATION__;
+    expect(N.bassNoteGainScale({ ghost: true })).toBe(N.GHOST_NOTE_GAIN);
+    expect(N.bassNoteGainScale({ midi: 33 })).toBe(1);
+    expect(N.GHOST_NOTE_GAIN).toBeLessThan(0.5);
+    const node = N.makeCardInsight({
+      layer: "pocket",
+      title: "Ghosts",
+      barRange: [0, 1],
+      highlights: [
+        { step: 3, kind: "snare", text: "ghost", ghost: true },
+        { step: 11, kind: "snare", text: "ghost", ghost: true },
+      ],
+    }, N.PEDAL);
+    document.body.appendChild(node);
+    expect(node.querySelectorAll('[data-insight-kind="hat"]').length).toBe(16);
+    const ghost = node.querySelector('circle[data-insight-kind="snare"][data-insight-step="3"]');
+    expect(ghost.getAttribute("data-insight-ghost")).toBe("1");
+    expect(ghost.getAttribute("data-insight-lit")).toBe("1");
+    expect(node.querySelector('circle[data-insight-kind="snare"][data-insight-step="19"]').getAttribute("data-insight-ghost")).toBe("1");
+    const ev = N.buildInsightMidiEvents({
+      layer: "pocket",
+      barRange: [0, 0],
+      highlights: [
+        { step: 3, kind: "snare", text: "ghost", ghost: true },
+        { step: 10, midi: 38, text: "bass ghost", ghost: true },
+      ],
+    }, N.PEDAL, "all");
+    expect(ev.drums.find((d) => d.kind === "snare" && d.step === 3).ghost).toBe(true);
+    expect(ev.drums.find((d) => d.kind === "snare" && d.step === 4).ghost).toBe(false);
+    expect(ev.bass.find((n) => n.step === 10).ghost).toBe(true);
+    api.pickSection(2);
+    api.setCard(1);
+    await api.ensureAudio();
+    const played = api.playInsightMidi("bass");
+    expect(played.insightMidiResult.ok).toBe(true);
+    const ctx = window.__LAST_AUDIO_CTX__;
+    const f36 = N.midiToFreq(36);
+    const f41 = N.midiToFreq(41);
+    const peakAt = (f) => ctx._oscillators
+      .filter((o) => Math.abs(o.frequency.value - f) < 0.05)
+      .map((o) => o.__peak);
+    expect(peakAt(f36).length).toBeGreaterThan(0);
+    expect(Math.max(...peakAt(f36))).toBeLessThan(Math.min(...peakAt(f41)));
+    expect(Math.max(...peakAt(f36))).toBeCloseTo(N.BASS_MIDI_VOICE.peakGain * N.GHOST_NOTE_GAIN, 5);
   });
 
   it("chord names layer is tall enough that SVG is not vertically crushed", async () => {

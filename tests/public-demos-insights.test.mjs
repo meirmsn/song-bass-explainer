@@ -48,9 +48,25 @@ describe("Pocket Funk public demo artifacts (MIDI-authored hero)", () => {
     const chords = demo.raw.map((r) => r[2]).filter(Boolean);
     expect(chords.some((c) => /7/.test(c))).toBe(true);
   });
+  it("Groove A′ ghost notes are in the bass and drum hits", () => {
+    const bassGhosts = demo.bassHits.filter((h) => h.ghost);
+    expect(bassGhosts.length).toBe(24);
+    expect(bassGhosts.every((h) => h.bar >= 12 && h.bar < 20)).toBe(true);
+    expect(new Set(bassGhosts.map((h) => h.step))).toEqual(new Set([10, 11, 14]));
+    const snareGhosts = demo.drumHits.filter((h) => h.ghost && h.kind === "snare");
+    expect(snareGhosts.length).toBe(16);
+    expect(new Set(snareGhosts.map((h) => h.step))).toEqual(new Set([3, 11]));
+    expect(demo.meta.drumHitCount).toBe(demo.drumHits.length);
+    const pocket = demo.cards.a2.find((c) => c.label === "Pocket");
+    expect(pocket.body).toMatch(/ghost/i);
+    expect(pocket.insight.highlights.some((h) => h.ghost && h.kind === "snare")).toBe(true);
+    expect(pocket.insight.highlights.some((h) => h.ghost && h.midi === 36)).toBe(true);
+    const pat = demo.patterns.a2[0];
+    expect(pat.notes.filter((n) => n.ghost).map((n) => n.step).sort((a, b) => a - b)).toEqual([10, 11, 14, 26, 27, 30]);
+  });
 });
 
-describe("Maple Leaf Rag public demo artifacts (Mutopia MIDI)", () => {
+describe("Maple Leaf Rag study artifact (kept in repo, not a public demo)", () => {
   const demo = load("maple-leaf-rag");
   it("has Public Domain license + Mutopia/MIDI realization credit", () => {
     expect(demo.title).toMatch(/Maple Leaf/i);
