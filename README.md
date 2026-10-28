@@ -15,7 +15,7 @@ This was built by talking to Grok Bot, to learn how personal desktop agent work 
 - Stem mute and solo so bass, drums, or both can be heard against the rest of the mix, plus soft MIDI for the bass and drums.
 - Pitch-preserving tempo at 100%, 90%, 75%, 50%, and 25%, and a section timeline that auto-advances.
 - Keyboard shortcuts for transport controls and looping, and drag to select a subsection to loop.
-- Insight flashcards (Pocket, Figure, Harmony, Missable) with a bass-drum schematic. Play loops the claim window. Figure and pocket cards each have a Bass control and a Drums control that cycle on (full line), highlights (lit notes only), and off. Harmony cards are Play only and always sound the chord pads.
+- Insight flashcards (Pocket, Figure, Harmony, Missable) with a bass-drum schematic. Play loops the claim window. Figure and pocket cards each have an icon-only Bass control and Drums control: blue is the full line, yellow is highlights only (and rings that voice’s claim notes in yellow), gray is off. Harmony cards are Play only and always sound the chord pads.
 - Public demo: Pocket Funk (CC0, MIDI-authored). Make Funk, Komiku, and Maple Leaf Rag stay off the public picker. Private Access holds processed personal tracks.
 
 ## How it works
