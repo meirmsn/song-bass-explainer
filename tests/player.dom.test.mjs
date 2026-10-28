@@ -3380,12 +3380,13 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(play.getAttribute("data-transport")).toBe("insight-midi-play");
     const bassBtn = document.querySelector('button[data-insight-voice="bass"]');
     const drumsBtn = document.querySelector('button[data-insight-voice="drums"]');
-    expect(bassBtn.textContent.trim()).toBe("");
-    expect(drumsBtn.textContent.trim()).toBe("");
-    expect(bassBtn.querySelector(".card-insight-midi-label")).toBeNull();
-    expect(drumsBtn.querySelector(".card-insight-midi-label")).toBeNull();
-    expect(bassBtn.getAttribute("aria-label")).toBe("Bass");
-    expect(drumsBtn.getAttribute("aria-label")).toBe("Drums");
+    expect(bassBtn.querySelector(".card-insight-midi-label").textContent).toBe("On");
+    expect(drumsBtn.querySelector(".card-insight-midi-label").textContent).toBe("On");
+    expect(bassBtn.getAttribute("data-insight-voice-state")).toBe("on");
+    expect(drumsBtn.getAttribute("data-insight-voice-state")).toBe("on");
+    expect(bassBtn.getAttribute("aria-label")).toBe("Bass on, full line");
+    expect(drumsBtn.getAttribute("aria-label")).toBe("Drums on, full line");
+    expect(bassBtn.getAttribute("aria-pressed")).toBe("true");
     expect(bassBtn.getAttribute("title")).toMatch(/^Bass/);
     expect(drumsBtn.getAttribute("title")).toMatch(/^Drums/);
     const bassIcon = bassBtn.querySelector('svg[data-icon="electric-guitar"]');
@@ -3396,33 +3397,46 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(bassIcon?.querySelector("ellipse")).toBeNull();
     expect(drumsIcon?.querySelector("ellipse")?.getAttribute("cx")).toBe("12");
     expect(drumsIcon?.querySelectorAll("path").length).toBe(6);
-    // Bass/Drums toggles ON by default (not a Bass/Drums/Both radio).
-    expect(document.querySelector('button[data-insight-voice="bass"].on')).toBeTruthy();
-    expect(document.querySelector('button[data-insight-voice="drums"].on')).toBeTruthy();
+    // Bass/Drums default to On (full), not highlights, and there is no separate Highlights control.
+    expect(document.querySelector('button[data-insight-voice="bass"].voice-on')).toBeTruthy();
+    expect(document.querySelector('button[data-insight-voice="drums"].voice-on')).toBeTruthy();
     expect(document.querySelector('button[data-insight-voice="all"]')).toBeNull();
+    expect(document.querySelector("[data-insight-highlights]")).toBeNull();
+    expect(api.getState().insightMidiBassState).toBe("on");
+    expect(api.getState().insightMidiDrumsState).toBe("on");
     expect(api.getState().insightMidiBassOn).toBe(true);
     expect(api.getState().insightMidiDrumsOn).toBe(true);
-    expect(api.getState().insightMidiHighlightsOnly).toBe(false);
-    const hiBtn = document.querySelector("button[data-insight-highlights]");
-    expect(hiBtn).toBeTruthy();
-    expect(hiBtn.textContent).toBe("Highlights");
-    expect(hiBtn.getAttribute("aria-label")).toBe("Highlights only");
-    expect(hiBtn.classList.contains("on")).toBe(false);
-    expect(hiBtn.getAttribute("aria-pressed")).toBe("false");
     expect(document.querySelectorAll('[data-insight-kind="hat"]').length).toBe(8);
     expect(document.querySelector('[data-drum-label="hat"]').textContent).toBe("H");
 
     drumsBtn.dispatchEvent(new MouseEvent("pointerup", { bubbles: true, cancelable: true }));
+    expect(api.getState().insightMidiDrumsState).toBe("highlights");
+    expect(api.getState().insightMidiDrumsOn).toBe(true);
+    expect(api.getState().insightMidiBassState).toBe("on");
+    const drumsLit = document.querySelector('button[data-insight-voice="drums"]');
+    const bassStill = document.querySelector('button[data-insight-voice="bass"]');
+    expect(drumsLit.classList.contains("voice-lit")).toBe(true);
+    expect(drumsLit.classList.contains("on")).toBe(false);
+    expect(drumsLit.getAttribute("data-insight-voice-state")).toBe("highlights");
+    expect(drumsLit.getAttribute("aria-pressed")).toBe("mixed");
+    expect(drumsLit.querySelector(".card-insight-midi-label").textContent).toBe("Lit");
+    expect(bassStill.classList.contains("voice-on")).toBe(true);
+    expect(bassStill.getAttribute("aria-label")).toBe("Bass on, full line");
+    expect(drumsLit.querySelector('svg[data-lucide="drum"]')).toBeTruthy();
+    expect(bassStill.querySelector('svg[data-lucide="guitar-electric"]')).toBeTruthy();
+
+    await api.waitTick(90);
+    document.querySelector('button[data-insight-voice="drums"]').dispatchEvent(
+      new MouseEvent("pointerup", { bubbles: true, cancelable: true }),
+    );
+    const drumsOff = document.querySelector('button[data-insight-voice="drums"]');
+    expect(api.getState().insightMidiDrumsState).toBe("off");
     expect(api.getState().insightMidiDrumsOn).toBe(false);
     expect(api.getState().insightMidiBassOn).toBe(true);
-    const drumsOff = document.querySelector('button[data-insight-voice="drums"]');
-    const bassStill = document.querySelector('button[data-insight-voice="bass"]');
-    expect(drumsOff.classList.contains("on")).toBe(false);
-    expect(bassStill.classList.contains("on")).toBe(true);
-    expect(drumsOff.getAttribute("aria-label")).toBe("Drums");
-    expect(drumsOff.textContent.trim()).toBe("");
-    expect(drumsOff.querySelector('svg[data-lucide="drum"]')).toBeTruthy();
-    expect(bassStill.querySelector('svg[data-lucide="guitar-electric"]')).toBeTruthy();
+    expect(drumsOff.classList.contains("voice-off")).toBe(true);
+    expect(drumsOff.getAttribute("aria-pressed")).toBe("false");
+    expect(drumsOff.querySelector(".card-insight-midi-label").textContent).toBe("Off");
+    expect(document.querySelector('button[data-insight-voice="bass"]').classList.contains("voice-on")).toBe(true);
 
     api.setCard(2); // Harmony — Play only
     const harmBtns = [...document.querySelectorAll("[data-insight-midi-strip] button")];
@@ -3508,9 +3522,17 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(document.querySelectorAll("[data-chord-tones]").length).toBe(0);
     expect(document.querySelectorAll('svg[aria-label="Bass staff"] [data-chord-tone]').length).toBe(0);
 
-    // Toggle drums off while looping → MUST NOT restart the claim-window loop.
+    // Cycle drums through highlights then off while looping → MUST NOT restart.
     const genWhile = api.getState().insightMidiGen;
+    const nodesWhile = api.getState().insightMidiNodeCount;
+    const litR = api.toggleInsightMidiVoice("drums");
+    expect(api.getState().insightMidiDrumsState).toBe("highlights");
+    expect(litR.insightMidiResult.restarted).toBe(false);
+    expect(litR.insightMidiResult.looping).toBe(true);
+    expect(api.getState().insightMidiGen).toBe(genWhile);
+    expect(api.getState().insightMidiNodeCount).toBe(nodesWhile);
     const bassR = api.toggleInsightMidiVoice("drums");
+    expect(api.getState().insightMidiDrumsState).toBe("off");
     expect(api.getState().insightMidiDrumsOn).toBe(false);
     expect(api.getState().insightMidiBassOn).toBe(true);
     expect(bassR.insightMidiResult.restarted).toBe(false);
@@ -3555,8 +3577,30 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(api.getState().insightMidiVoice).toBeNull();
   });
 
-  it("Highlights only mutes non-lit bass and drums without restarting", async () => {
+  it("each voice cycles on, highlights, and off independently without restarting", async () => {
     const api = await bootPlayer({ privateMode: true, withStems: false });
+    const N = window.__BASS_NOTATION__;
+    expect(N.INSIGHT_VOICE_STATES).toEqual(["on", "highlights", "off"]);
+    expect(N.cycleInsightVoiceState("on")).toBe("highlights");
+    expect(N.cycleInsightVoiceState("highlights")).toBe("off");
+    expect(N.cycleInsightVoiceState("off")).toBe("on");
+    expect(N.cycleInsightVoiceState("nope")).toBe("highlights");
+    expect(N.insightVoiceGains("on")).toEqual({ master: 1, lit: 1, dim: 1 });
+    expect(N.insightVoiceGains("highlights")).toEqual({ master: 1, lit: 1, dim: 0 });
+    expect(N.insightVoiceGains("off")).toEqual({ master: 0, lit: 1, dim: 0 });
+    expect(N.insightVoiceAudible("highlights")).toBe(true);
+    expect(N.insightVoiceAudible("off")).toBe(false);
+    expect(N.insightVoiceStateLabel("on")).toBe("On");
+    expect(N.insightVoiceStateLabel("highlights")).toBe("Lit");
+    expect(N.insightVoiceStateLabel("off")).toBe("Off");
+    expect(N.playheadHeardLagSec({ outputLatency: 0.04, baseLatency: 0.02 })).toBeCloseTo(0.04, 5);
+    expect(N.playheadHeardLagSec({ baseLatency: 0.012 })).toBeCloseTo(0.012, 5);
+    expect(N.playheadHeardLagSec({})).toBe(N.PLAYHEAD_SYNC_FALLBACK_S);
+    expect(N.playheadHeardLagSec({ outputLatency: 2 })).toBe(N.PLAYHEAD_SYNC_MAX_S);
+    expect(N.visualSongTime(1.5, 0.08, 1)).toBeCloseTo(1.42, 5);
+    expect(N.visualSongTime(0.02, 0.08, 1)).toBe(0);
+    expect(N.visualSongTime(3, 0.1, 0.5)).toBeCloseTo(2.95, 5);
+
     api.pickSection(2);
     api.setCard(1);
     await api.ensureAudio();
@@ -3567,25 +3611,99 @@ describe("insight-card MIDI + two-staff schematic", () => {
     const gen = api.getState().insightMidiGen;
     const nodes = api.getState().insightMidiNodeCount;
     expect(nodes).toBeGreaterThan(0);
+    expect(api.getState().insightBassGain).toBe(1);
+    expect(api.getState().insightDrumsGain).toBe(1);
     expect(api.getState().insightBassDimGain).toBe(1);
     expect(api.getState().insightDrumsDimGain).toBe(1);
 
-    document.querySelector("button[data-insight-highlights]").dispatchEvent(
+    document.querySelector('button[data-insight-voice="bass"]').dispatchEvent(
       new MouseEvent("pointerup", { bubbles: true, cancelable: true }),
     );
     await api.waitTick(20);
-    expect(api.getState().insightMidiHighlightsOnly).toBe(true);
+    expect(api.getState().insightMidiBassState).toBe("highlights");
+    expect(api.getState().insightMidiDrumsState).toBe("on");
     expect(api.getState().insightMidiGen).toBe(gen);
     expect(api.getState().insightMidiPlaying).toBe(true);
     expect(api.getState().insightMidiNodeCount).toBe(nodes);
+    expect(api.getState().insightBassGain).toBe(1);
     expect(api.getState().insightBassDimGain).toBe(0);
-    expect(api.getState().insightDrumsDimGain).toBe(0);
     expect(api.getState().insightBassLitGain).toBe(1);
-    expect(api.getState().insightDrumsLitGain).toBe(1);
-    const hiBtn = document.querySelector("button[data-insight-highlights]");
-    expect(hiBtn.classList.contains("on")).toBe(true);
-    expect(hiBtn.getAttribute("aria-pressed")).toBe("true");
+    expect(api.getState().insightDrumsDimGain).toBe(1);
+    expect(api.getState().insightDrumsGain).toBe(1);
+    const bassLit = document.querySelector('button[data-insight-voice="bass"]');
+    expect(bassLit.classList.contains("voice-lit")).toBe(true);
+    expect(bassLit.getAttribute("aria-pressed")).toBe("mixed");
+    expect(document.querySelector('button[data-insight-voice="drums"]').classList.contains("voice-on")).toBe(true);
+
+    document.querySelector('button[data-insight-voice="drums"]').dispatchEvent(
+      new MouseEvent("pointerup", { bubbles: true, cancelable: true }),
+    );
+    expect(api.getState().insightMidiDrumsState).toBe("highlights");
+    expect(api.getState().insightMidiBassState).toBe("highlights");
+    expect(api.getState().insightDrumsDimGain).toBe(0);
+    expect(api.getState().insightBassDimGain).toBe(0);
+    expect(api.getState().insightMidiGen).toBe(gen);
+    expect(api.getState().insightMidiNodeCount).toBe(nodes);
+
+    await api.waitTick(90);
+    document.querySelector('button[data-insight-voice="bass"]').dispatchEvent(
+      new MouseEvent("pointerup", { bubbles: true, cancelable: true }),
+    );
+    expect(api.getState().insightMidiBassState).toBe("off");
+    expect(api.getState().insightBassGain).toBe(0);
+    expect(api.getState().insightDrumsGain).toBe(1);
+    expect(api.getState().insightDrumsDimGain).toBe(0);
+    expect(api.getState().insightMidiGen).toBe(gen);
+    expect(api.getState().insightMidiPlaying).toBe(true);
+    expect(document.querySelector("[data-insight-highlights]")).toBeNull();
     api.cancelInsightMidi();
+  });
+
+  it("insight playhead trails output latency on the claim-window epoch", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: false });
+    api.pickSection(2);
+    api.setCard(1);
+    api.playInsightMidi();
+    const ctx = window.__LAST_AUDIO_CTX__;
+    ctx.outputLatency = 0.05;
+    ctx.baseLatency = 0.01;
+    const s0 = api.getState();
+    expect(s0.insightMidiPassWhen0).toBeCloseTo(0.04, 5);
+    expect(s0.insightMidiWindowDur).toBeCloseTo(2, 5);
+    expect(s0.playheadLagSec).toBe(0);
+    const line = () => document.querySelector(".card-insight-svg [data-insight-playhead]");
+    ctx.currentTime = s0.insightMidiPassWhen0 + 0.05;
+    api.syncInsightPlayhead();
+    expect(Number(line().getAttribute("x1"))).toBeCloseTo(36, 1);
+    ctx.currentTime = s0.insightMidiPassWhen0 + 0.05 + 1;
+    api.syncInsightPlayhead();
+    expect(Number(line().getAttribute("x1"))).toBeCloseTo(172, 1);
+    api.cancelInsightMidi();
+  });
+
+  it("main timeline playhead trails output latency while stems play", async () => {
+    const api = await bootPlayer({ privateMode: true, withStems: true });
+    await api.ensureAudio();
+    api.seek(2);
+    api.play();
+    await api.waitTick(80);
+    const ctx = window.__LAST_AUDIO_CTX__;
+    ctx.outputLatency = 0.08;
+    ctx.baseLatency = 0.01;
+    ctx.currentTime = (ctx.currentTime || 0) + 1;
+    await api.waitTick(70);
+    const s = api.getState();
+    expect(s.playing).toBe(true);
+    expect(s.usingAudio).toBe(true);
+    expect(s.playheadLagSec).toBeCloseTo(0.08, 5);
+    expect(s.t - s.visualT).toBeCloseTo(0.08, 2);
+    const line = document.querySelector("[data-timeline-playhead]");
+    const xp = (Math.min(s.visualT, s.duration) / s.duration) * 1000;
+    expect(Number(line.getAttribute("x1"))).toBeCloseTo(xp, 1);
+    api.pause();
+    const paused = api.getState();
+    expect(paused.playheadLagSec).toBe(0);
+    expect(paused.visualT).toBeCloseTo(paused.t, 5);
   });
 
   it("ghost notes play quieter than accents and insight hats stay on the grid", async () => {
