@@ -152,7 +152,17 @@ function expectMidiKitDemo(demo, { title, key, sevenths }) {
   const cards = allCards(demo);
   expect(cards.length).toBe(demo.meta.insightCount);
   expect(cards.every((c) => c.insight?.layer && Array.isArray(c.insight.barRange))).toBe(true);
-  expect(cards.every((c) => c.insight.barRange[0] === 0 && c.insight.barRange[1] === 1)).toBe(true);
+  for (const c of cards) {
+    const bars = new Set(
+      (c.insight.highlights || [])
+        .filter((h) => Number.isFinite(h.step))
+        .map((h) => Math.floor(h.step / 16)),
+    );
+    const [lo, hi] = c.insight.barRange;
+    for (let bar = lo; bar <= hi; bar++) {
+      expect(bars.has(bar), `${c.label} bar ${bar}`).toBe(true);
+    }
+  }
   const layers = new Set(cards.map((c) => c.insight.layer));
   for (const layer of ["pocket", "figure", "harmony", "missable"]) {
     expect(layers.has(layer)).toBe(true);

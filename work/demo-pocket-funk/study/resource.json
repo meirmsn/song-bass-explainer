@@ -7757,7 +7757,7 @@
             },
             {
               "step": 12,
-              "midi": 33,
+              "midi": 28,
               "text": "don\u2019t chase"
             }
           ]
@@ -7861,7 +7861,7 @@
             },
             {
               "step": 12,
-              "midi": 33,
+              "midi": 28,
               "text": "don\u2019t chase"
             }
           ]
@@ -7965,7 +7965,7 @@
             },
             {
               "step": 12,
-              "midi": 33,
+              "midi": 28,
               "text": "don\u2019t chase"
             }
           ]
@@ -8147,7 +8147,7 @@
       },
       {
         "label": "Harmony",
-        "body": "Lift sits on D7 (IV7 in Am) \u2014 matches the main chord row. Bass roots on D; this is a real change from the Am7 groove, not a mirage.",
+        "body": "Lift sits on D7 (IV7 in Am) \u2014 matches the main chord row. Bass roots on D.",
         "insight": {
           "layer": "harmony",
           "patternId": "b1_bass",
@@ -8251,7 +8251,7 @@
       },
       {
         "label": "Harmony",
-        "body": "Lift sits on D7 (IV7 in Am) \u2014 matches the main chord row. Bass roots on D; this is a real change from the Am7 groove, not a mirage.",
+        "body": "Lift sits on D7 (IV7 in Am) \u2014 matches the main chord row. Bass roots on D.",
         "insight": {
           "layer": "harmony",
           "patternId": "b1_bass",
@@ -8394,7 +8394,7 @@
             },
             {
               "step": 12,
-              "midi": 33,
+              "midi": 28,
               "text": "don\u2019t chase"
             }
           ]
@@ -8498,7 +8498,7 @@
             },
             {
               "step": 12,
-              "midi": 33,
+              "midi": 45,
               "text": "don\u2019t chase"
             }
           ]
@@ -8602,7 +8602,7 @@
             },
             {
               "step": 12,
-              "midi": 33,
+              "midi": 45,
               "text": "don\u2019t chase"
             }
           ]
@@ -8705,7 +8705,7 @@
               "text": "don\u2019t chase"
             },
             {
-              "step": 12,
+              "step": 0,
               "midi": 33,
               "text": "don\u2019t chase"
             }
@@ -8809,7 +8809,7 @@
               "text": "don\u2019t chase"
             },
             {
-              "step": 12,
+              "step": 0,
               "midi": 33,
               "text": "don\u2019t chase"
             }
