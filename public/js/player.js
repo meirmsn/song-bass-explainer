@@ -1142,11 +1142,12 @@
     if (s === "highlights") return { master: 1, lit: 1, dim: 0 };
     return { master: 1, lit: 1, dim: 1 };
   }
-  function insightVoiceStateLabel(state) {
+  /** Screen-reader name for a voice state. Not shown on the button. */
+  function insightVoiceAriaLabel(voiceName, state) {
     const s = normalizeInsightVoiceState(state);
-    if (s === "highlights") return "Lit";
-    if (s === "off") return "Off";
-    return "On";
+    if (s === "highlights") return voiceName + ": highlights only";
+    if (s === "off") return voiceName + ": off";
+    return voiceName + ": full line";
   }
   function insightVoiceAudible(state) {
     return normalizeInsightVoiceState(state) !== "off";
@@ -1409,7 +1410,7 @@
     return collapsed;
   }
 
-  function makeCardInsight(insight, pattern) {
+  function makeCardInsight(insight, pattern, voiceModes) {
     if (!insight || typeof insight !== "object") return null;
     const layer = insight.layer || "figure";
     const isPocket = layer === "pocket" || layer === "drums";
@@ -1429,9 +1430,12 @@
     const midiStrip = el("div", { className: "card-insight-midi-strip", "data-insight-midi-strip": "1" });
     // Play is the primary affordance. Harmony cards are Play only (chord pads always sound).
     // Other cards add one Bass control and one Drums control. Each cycles
-    // on (full) → highlights (lit claim notes) → off. Play stays triangle / stop square.
-    // Bass and Drums use Lucide glyphs (guitar-electric and drum, lucide-static 1.61.0, ISC)
-    // plus a short state label so the three states are visible without a second button.
+    // on (full, blue) → highlights (yellow) → off (gray). Icons only — state is color.
+    // Bass and Drums use Lucide glyphs (guitar-electric and drum, lucide-static 1.61.0, ISC).
+    const voiceMode = voiceModes || {};
+    const bassClaimRing = voiceMode.bass === "highlights";
+    const drumsClaimRing = voiceMode.drums === "highlights";
+    const CLAIM_RING = "#facc15";
     const ICON_PLAY = '<svg class="card-insight-icon" data-icon="play" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><polygon points="2.5,1 10.5,6 2.5,11" fill="currentColor"/></svg>';
     const ICON_STOP = '<svg class="card-insight-icon" data-icon="stop" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" rx="1" fill="currentColor"/></svg>';
     const ICON_BASS = '<svg class="card-insight-icon lucide lucide-guitar-electric" data-icon="electric-guitar" data-lucide="guitar-electric" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.172 11.828 4.242-4.242"/><path d="M16.414 7.586A2 2 0 0017 6.172V5a2 2 0 011.177-1.823L20.59 2.09a1 1 0 011.32 1.32l-1.088 2.412A2 2 0 0119 7h-1a2 2 0 00-1.586.586"/><path d="m6 16 2 2"/><path d="M8.23 9.85a3 3 0 011.28-1.454 1 1 0 011.496.815 4 4 0 003.783 3.783 1 1 0 01.815 1.496 3 3 0 01-1.454 1.28l-.92.38A2 2 0 0012 18a4 4 0 01-4 4 6 6 0 01-6-6 4 4 0 014-4 2 2 0 001.85-1.23z"/></svg>';
@@ -1454,23 +1458,23 @@
     midiStrip.appendChild(playBtn0);
     if (!isHarmony) {
       midiStrip.appendChild(insightIconBtn({
-        className: "ch-btn card-insight-midi voice-btn voice-on on",
+        className: "ch-btn card-insight-midi icon-only voice-btn voice-on on",
         "data-transport": "insight-midi-tog",
         "data-insight-voice": "bass",
         "data-insight-voice-state": "on",
-        "aria-label": "Bass on, full line",
+        "aria-label": insightVoiceAriaLabel("Bass", "on"),
         "aria-pressed": "true",
-        title: "Bass — on, full line. Click for highlights only.",
-      }, ICON_BASS, "On"));
+        title: "Bass: full line. Click for highlights only.",
+      }, ICON_BASS, null));
       midiStrip.appendChild(insightIconBtn({
-        className: "ch-btn card-insight-midi voice-btn voice-on on",
+        className: "ch-btn card-insight-midi icon-only voice-btn voice-on on",
         "data-transport": "insight-midi-tog",
         "data-insight-voice": "drums",
         "data-insight-voice-state": "on",
-        "aria-label": "Drums on, full line",
+        "aria-label": insightVoiceAriaLabel("Drums", "on"),
         "aria-pressed": "true",
-        title: "Drums — on, full line. Click for highlights only.",
-      }, ICON_DRUMS, "On"));
+        title: "Drums: full line. Click for highlights only.",
+      }, ICON_DRUMS, null));
     }
     head.appendChild(midiStrip);
     wrap.appendChild(head);
@@ -1670,8 +1674,20 @@
               svg.appendChild(svgEl("line", { x1: cx - 6, x2: cx + 6, y1: yyB(p), y2: yyB(p), stroke: "#6b7280", "stroke-width": 1 }));
             }
           }
+          const bassRx = isLit ? 5.2 : 3.6;
+          const bassRy = isLit ? 3.8 : 2.6;
+          if (isLit && bassClaimRing) {
+            svg.appendChild(svgEl("ellipse", {
+              cx: cx, cy: cy, rx: bassRx + 2.4, ry: bassRy + 2.2,
+              fill: "none", stroke: CLAIM_RING, "stroke-width": 1.5,
+              transform: "rotate(-18 " + cx + " " + cy + ")",
+              "data-insight-claim-ring": "bass",
+              "data-insight-step": String(n.step),
+              "pointer-events": "none",
+            }));
+          }
           svg.appendChild(svgEl("ellipse", {
-            cx: cx, cy: cy, rx: isLit ? 5.2 : 3.6, ry: isLit ? 3.8 : 2.6,
+            cx: cx, cy: cy, rx: bassRx, ry: bassRy,
             fill: isLit ? "#3b82f6" : "#4b5563",
             stroke: isLit ? "#93c5fd" : "none",
             "stroke-width": isLit ? 1.2 : 0,
@@ -1699,6 +1715,16 @@
           const cy = yyB(sp.pos);
           const cx = sx(st);
           litCount++;
+          if (bassClaimRing) {
+            svg.appendChild(svgEl("ellipse", {
+              cx: cx, cy: cy, rx: 7.4, ry: 5.8,
+              fill: "none", stroke: CLAIM_RING, "stroke-width": 1.5,
+              transform: "rotate(-18 " + cx + " " + cy + ")",
+              "data-insight-claim-ring": "bass",
+              "data-insight-step": String(st),
+              "pointer-events": "none",
+            }));
+          }
           svg.appendChild(svgEl("ellipse", {
             cx: cx, cy: cy, rx: 5, ry: 3.6,
             fill: "#3b82f6", stroke: "#93c5fd", "stroke-width": 1.2,
@@ -1749,10 +1775,24 @@
         const style = drumStyle[kind];
         if (!style) return;
         if (lit) litCount++; else dimCount++;
+        const dotR = lit ? (ghost ? Math.min(style.rLit, 3.4) : style.rLit) : style.rDim;
+        if (lit && drumsClaimRing) {
+          svg.appendChild(svgEl("circle", {
+            cx: sx(st),
+            cy: style.cy,
+            r: dotR + 2.4,
+            fill: "none",
+            stroke: CLAIM_RING,
+            "stroke-width": 1.5,
+            "data-insight-claim-ring": "drums",
+            "data-insight-step": String(st),
+            "pointer-events": "none",
+          }));
+        }
         svg.appendChild(svgEl("circle", {
           cx: sx(st),
           cy: style.cy,
-          r: lit ? (ghost ? Math.min(style.rLit, 3.4) : style.rLit) : style.rDim,
+          r: dotR,
           fill: lit ? style.fill : "#4b5563",
           "data-insight-step": String(st),
           "data-insight-kind": kind,
@@ -2067,10 +2107,10 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
 .card-insight-midi .card-insight-midi-label { line-height:1; pointer-events:none; }
 .card-insight-midi.on { background:#1e3a5f; border-color:#3b82f6; color:#93c5fd; }
 .card-insight-midi.icon-only { width:22px; min-width:22px; height:22px; padding:0; }
-.card-insight-midi.voice-btn { width:auto; min-width:46px; height:22px; padding:0 5px 0 3px; }
-.card-insight-midi.voice-on { background:#1e3a5f; border-color:#3b82f6; color:#93c5fd; }
-.card-insight-midi.voice-lit { background:#422006; border-color:#f59e0b; color:#fcd34d; }
-.card-insight-midi.voice-off { background:#0b0f14; border-color:#374151; color:#6b7280; }
+.card-insight-midi.voice-btn { width:22px; min-width:22px; height:22px; padding:0; }
+.card-insight-midi.voice-on { background:#1e3a5f; border-color:#3b82f6; color:#93c5fd; box-shadow:none; }
+.card-insight-midi.voice-lit { background:#422006; border-color:#facc15; color:#facc15; box-shadow:0 0 0 1px #facc15; }
+.card-insight-midi.voice-off { background:#111827; border-color:#4b5563; color:#6b7280; box-shadow:none; }
 .card-insight-midi.play-btn { min-width:28px; padding:0 7px; background:#14532d; border-color:#22c55e; color:#86efac; }
 .card-insight-midi.play-btn.on { background:#3f1d1d; border-color:#ef4444; color:#fca5a5; }
 .card-insight-svg { flex:1; min-height:0; width:100%; }
@@ -3234,18 +3274,12 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       btn.classList.add(mode === "highlights" ? "voice-lit" : mode === "off" ? "voice-off" : "voice-on");
       if (mode === "on") btn.classList.add("on");
       btn.setAttribute("data-insight-voice-state", mode);
-      const phrase = mode === "highlights" ? "highlights only" : mode === "off" ? "off" : "on, full line";
       const next = mode === "on" ? "highlights only" : mode === "highlights" ? "off" : "the full line";
       btn.setAttribute("aria-pressed", mode === "on" ? "true" : mode === "highlights" ? "mixed" : "false");
-      btn.setAttribute("aria-label", voiceName + " " + phrase);
-      btn.title = voiceName + " — " + phrase + ". Click for " + next + ".";
-      let lab = btn.querySelector(".card-insight-midi-label");
-      if (!lab) {
-        lab = document.createElement("span");
-        lab.className = "card-insight-midi-label";
-        btn.appendChild(lab);
-      }
-      lab.textContent = insightVoiceStateLabel(mode);
+      btn.setAttribute("aria-label", insightVoiceAriaLabel(voiceName, mode));
+      btn.title = insightVoiceAriaLabel(voiceName, mode) + ". Click for " + next + ".";
+      const lab = btn.querySelector(".card-insight-midi-label");
+      if (lab) lab.remove();
     }
     function haltPlayback({ syncTime = false, resetToLoopStart = false } = {}) {
       playGen += 1;
@@ -4934,7 +4968,10 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       cards.appendChild(el("div", { className: "card-label" }, [card.label]));
       cards.appendChild(el("div", { className: "card-body" }, [card.body]));
       const insightPat = resolveInsightPattern(card.insight, PATS_EFF) || pat;
-      const insightView = makeCardInsight(card.insight, insightPat);
+      const insightView = makeCardInsight(card.insight, insightPat, {
+        bass: insightMidiBassState,
+        drums: insightMidiDrumsState,
+      });
       if (insightView) {
         const playBtn = insightView.querySelector("[data-insight-play]");
         if (playBtn) {
@@ -5252,7 +5289,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
     normalizeInsightVoiceState,
     cycleInsightVoiceState,
     insightVoiceGains,
-    insightVoiceStateLabel,
+    insightVoiceAriaLabel,
     insightVoiceAudible,
     PLAYHEAD_SYNC_TRIM_S,
     PLAYHEAD_SYNC_FALLBACK_S,
