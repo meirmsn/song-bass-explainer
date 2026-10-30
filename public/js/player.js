@@ -1792,14 +1792,16 @@
     }
 
     const VW = 320;
-    const VH = 186;
+    const VH = 200;
     const gx0 = 36, gw = VW - 48;
     // Room for bass clef + time signature before the shared grid. Drums use the
     // same origin so kick/snare stay aligned with the bass beats.
     const staffX = gx0 + 16;
     const staffW = gw - 16;
-    const bassY = 58;   // center of bass staff band (staff notation)
-    const drumY = 132;  // center of drums staff band
+    // Staffs sit low enough that a caption can live above each row without
+    // touching the claim pills, the clef, or the other row.
+    const bassY = 78;   // center of bass staff band (staff notation)
+    const drumY = 150;  // center of drums staff band
     const svg = svgEl("svg", {
       viewBox: "0 0 " + VW + " " + VH,
       width: "100%",
@@ -1817,7 +1819,7 @@
       return staffX + ((slot + 0.5) / totalSteps) * staffW;
     };
 
-    function drawStaffBand(y0, h, label) {
+    function drawStaffBand(y0, h) {
       for (let b = 0; b < nBars; b++) {
         const x = staffX + (b / nBars) * staffW;
         svg.appendChild(svgEl("rect", {
@@ -1835,13 +1837,20 @@
           "stroke-width": barline ? 1.4 : 1,
         }));
       }
+    }
+
+    function drawRowCaption(text, y, key) {
       svg.appendChild(svgEl("text", {
-        x: 4, y: y0 + h / 2 + 3, "font-size": 8, "font-weight": 700, fill: "#9ca3af",
-      }, [document.createTextNode(label)]));
+        x: 2, y: y, "font-size": 8, "font-weight": 700, fill: "#9ca3af",
+        "text-anchor": "start",
+        "data-insight-row-label": key,
+      }, [document.createTextNode(text)]));
     }
 
     // Drums keep K/S schematic; bass uses staff notation below.
-    drawStaffBand(drumY - 22, 44, "Drums");
+    // Caption sits above the lane block, clear of H/S/K.
+    drawRowCaption("Drums", drumY - 30, "drums");
+    drawStaffBand(drumY - 22, 44);
     // Very light quarter guides on drum band
     for (let s = 0; s <= totalSteps; s++) {
       if (s % 4 !== 0) continue;
@@ -1925,9 +1934,8 @@
         fill: "none", stroke: "#9ca3af", "stroke-width": 1.3,
       }));
       appendTimeSignature(svg, gx0 + 6, yyB(6) + 3, yyB(2) + 3, parseTimeSig(timeSig), "#d1d5db", 8);
-      svg.appendChild(svgEl("text", {
-        x: 2, y: bassY + 3, "font-size": 8, "font-weight": 700, fill: "#9ca3af",
-      }, [document.createTextNode("Bass")]));
+      // Caption above the staff background, left of the row, clear of the clef and 4/4.
+      drawRowCaption("Bass", staffTop - 10, "bass");
 
       if (patternEmpty) {
         for (let bar = 0; bar < nBars; bar++) {
