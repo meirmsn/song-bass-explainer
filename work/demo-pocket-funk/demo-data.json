@@ -7688,7 +7688,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are A \u00b7 A \u00b7 G (A+G). They match the MIDI stem.",
+        "body": "In the intro, the root on 1, the root again on the and of 2, and down to the minor seventh on the a of 2 \u2014 it anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "intro_bass",
@@ -7718,7 +7718,7 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Intro.",
         "insight": {
           "layer": "harmony",
           "patternId": "intro_bass",
@@ -7740,7 +7740,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss: overplaying fills. Bars 0\u20133 \u2014 hold the written pocket before ornamental notes.",
+        "body": "In Intro, leave the root on 3 and the fifth on 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "intro_bass",
@@ -7792,7 +7792,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are A \u00b7 A \u00b7 G (A+G). They match the MIDI stem.",
+        "body": "In Groove A, the root on 1 locks with the kick, the root again on the and of 2 locks with the kick, and down to the minor seventh on the a of 2 \u2014 it anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "a1_bass",
@@ -7822,7 +7822,7 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Groove A.",
         "insight": {
           "layer": "harmony",
           "patternId": "a1_bass",
@@ -7844,7 +7844,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss: overplaying fills. Bars 4\u201311 \u2014 hold the written pocket before ornamental notes.",
+        "body": "In Groove A, leave the root on 3 and the fifth on 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "a1_bass",
@@ -7896,7 +7896,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are A \u00b7 A \u00b7 G (A+G). They match the MIDI stem.",
+        "body": "When the groove returns, the root on 1 locks with the kick, the root again on the and of 2 locks with the kick, and down to the minor seventh on the a of 2 \u2014 it anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "a3_bass",
@@ -7926,7 +7926,7 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Groove back.",
         "insight": {
           "layer": "harmony",
           "patternId": "a3_bass",
@@ -7948,7 +7948,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss: overplaying fills. Bars 28\u201333 \u2014 hold the written pocket before ornamental notes.",
+        "body": "In Groove back, leave the root on 3 and the fifth on 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "a3_bass",
@@ -8013,7 +8013,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are A \u00b7 A \u00b7 A (A). They match the MIDI stem.",
+        "body": "In Groove A\u2032, the root on 1 locks with the kick, the octave on the a of 1, and the root again on the and of 2 locks with the kick \u2014 it anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "a2_bass",
@@ -8043,7 +8043,7 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Groove A\u2032.",
         "insight": {
           "layer": "harmony",
           "patternId": "a2_bass",
@@ -8065,7 +8065,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss: overplaying fills. Bars 12\u201319 \u2014 hold the written pocket before ornamental notes.",
+        "body": "In Groove A\u2032, leave the root on 3 and the root on 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "a2_bass",
@@ -8117,7 +8117,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are D \u00b7 F# \u00b7 D (D+F#). They match the MIDI stem.",
+        "body": "On the lift, the root on 1 locks with the kick, up to the major third on 2, and the root again on the and of 2 locks with the kick \u2014 an arpeggio of the chord that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "b1_bass",
@@ -8169,7 +8169,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss: overplaying fills. Bars 20\u201327 \u2014 hold the written pocket before ornamental notes.",
+        "body": "In Lift, leave the root on 3 and the root on 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "b1_bass",
@@ -8221,7 +8221,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are D \u00b7 F# \u00b7 D (D+F#). They match the MIDI stem.",
+        "body": "On the lift, the root on 1 locks with the kick, up to the major third on 2, and the root again on the and of 2 locks with the kick \u2014 an arpeggio of the chord that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "b1_bass",
@@ -8273,7 +8273,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss: overplaying fills. Bars 20\u201327 \u2014 hold the written pocket before ornamental notes.",
+        "body": "In Lift, leave the root on 3 and the root on 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "b1_bass",
@@ -8325,7 +8325,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are A \u00b7 A \u00b7 G (A+G). They match the MIDI stem.",
+        "body": "When the groove returns, the root on 1 locks with the kick, the root again on the and of 2 locks with the kick, and down to the minor seventh on the a of 2 \u2014 it anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "a3_bass",
@@ -8355,7 +8355,7 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Groove back.",
         "insight": {
           "layer": "harmony",
           "patternId": "a3_bass",
@@ -8377,7 +8377,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss: overplaying fills. Bars 28\u201333 \u2014 hold the written pocket before ornamental notes.",
+        "body": "In Groove back, leave the root on 3 and the fifth on 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "a3_bass",
@@ -8429,7 +8429,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are A \u00b7 A \u00b7 A (A). They match the MIDI stem.",
+        "body": "In the break, the fourth on 1 locks with the kick, the fourth again on 3 locks with the kick, and the octave on 4 \u2014 a pedal on the fourth of the chord.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
@@ -8481,7 +8481,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss: overplaying fills. Bars 34\u201336 \u2014 hold the written pocket before ornamental notes.",
+        "body": "In Break, leave the fourth on 3 and the octave on 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "br_bass",
@@ -8533,7 +8533,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are A \u00b7 A \u00b7 A (A). They match the MIDI stem.",
+        "body": "In the break, the fourth on 1 locks with the kick, the fourth again on 3 locks with the kick, and the octave on 4 \u2014 a pedal on the fourth of the chord.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
@@ -8585,7 +8585,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss: overplaying fills. Bars 34\u201336 \u2014 hold the written pocket before ornamental notes.",
+        "body": "In Break, leave the fourth on 3 and the octave on 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "br_bass",
@@ -8612,7 +8612,7 @@
     "out": [
       {
         "label": "Pocket",
-        "body": "Ride out on A; don\u2019t invent fills the kit isn\u2019t giving you.",
+        "body": "Ride out on the root; leave space where the kit is sparse.",
         "insight": {
           "layer": "pocket",
           "patternId": "out_bass",
@@ -8637,7 +8637,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are A \u00b7 A \u00b7 A (A). They match the MIDI stem.",
+        "body": "In the outro, the root on 1 locks with the kick, the root again on 3 locks with the kick, and the octave on the and of 4 \u2014 it anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "out_bass",
@@ -8667,7 +8667,7 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Outro.",
         "insight": {
           "layer": "harmony",
           "patternId": "out_bass",
@@ -8689,7 +8689,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss: overplaying fills. Bars 37\u201339 \u2014 hold the written pocket before ornamental notes.",
+        "body": "In Outro, leave the root on 3 and the root on 1 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "out_bass",
@@ -8716,7 +8716,7 @@
     "tag": [
       {
         "label": "Pocket",
-        "body": "Ride out on A; don\u2019t invent fills the kit isn\u2019t giving you.",
+        "body": "Ride out on the root; leave space where the kit is sparse.",
         "insight": {
           "layer": "pocket",
           "patternId": "out_bass",
@@ -8741,7 +8741,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are A \u00b7 A \u00b7 A (A). They match the MIDI stem.",
+        "body": "In the outro, the root on 1 locks with the kick, the root again on 3 locks with the kick, and the octave on the and of 4 \u2014 it anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "out_bass",
@@ -8771,7 +8771,7 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones.",
+        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Outro.",
         "insight": {
           "layer": "harmony",
           "patternId": "out_bass",
@@ -8793,7 +8793,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss: overplaying fills. Bars 37\u201339 \u2014 hold the written pocket before ornamental notes.",
+        "body": "In Outro, leave the root on 3 and the root on 1 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "out_bass",

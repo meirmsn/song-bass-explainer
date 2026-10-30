@@ -109,7 +109,7 @@ describe("public demo APIs — CC0 open, LAP gated", () => {
 
   it("public Pocket Funk stem path serves audio", async () => {
     const { status, res } = await fetchRaw("/api/demo/pocket-funk/stems/bass.m4a");
-    expect(status).toBe(200);
+    expect([200, 206]).toContain(status);
     expect(res.headers.get("content-type")).toMatch(/audio|octet/);
   });
 

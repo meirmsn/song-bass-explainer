@@ -15,11 +15,16 @@ Rules, per insight card:
    A drum-kind highlight must match that drum hit instead.
 2. Highlight text that is a pitch name must match that midi's pitch class.
    Text that is a chord symbol (or "Chord = roman") must be the section's
-   chord row. A Figure title made of pitch names may only name lit pitches.
+   chord row. A Figure title made of pitch names may only name highlighted pitches.
 3. barRange includes only bars that contain at least one highlight step,
    and every highlight step sits inside that range.
-4. Card bodies must not use meta denial ("there is no Bb", "no invented",
-   "not a mirage", "no extra chords are implied", "foreign chord").
+4. Card copy must not use meta or process language: denial ("there is no Bb"),
+   "matches the MIDI", or internal words (lit, claim, window).
+5. Insight quality: each card states a musical job (degree, beat, or function).
+   A card that only lists pitches fails. Figure degree/beat/kick claims must be
+   demonstrated by that card's highlights against bassHits, drumHits, and the
+   chord at that bar. Other cards' degree/beat claims must be true of the MIDI.
+   Two cards may not share the same body.
 
 Default targets: Pocket Funk, Radio Pop, Backbeat Rock.
 """
@@ -46,6 +51,56 @@ DENIAL = (
     re.compile(r"\bnot a mirage\b", re.I),
     re.compile(r"no extra chords are implied", re.I),
 )
+META = (
+    re.compile(r"\blit\b", re.I),
+    re.compile(r"\bclaim\b", re.I),
+    re.compile(r"\bwindow\b", re.I),
+    re.compile(r"\bmatch(?:es|ed|ing)? the MIDI\b", re.I),
+    re.compile(r"\bMIDI stem\b", re.I),
+    re.compile(r"\bverification\b", re.I),
+)
+ROLE = re.compile(
+    r"\b(root|thirds?|fifths?|sevenths?|octaves?|fourths?|leading|approach|anchors?|downbeat|"
+    r"kick|locks?|locked|arpeggio|pedal|syncopat\w*|offbeat|backbeat|pocket|color|tension|"
+    r"walks?|harmony|chord|ghost|snare|hats?|fill|space|hold|ornament\w*|miss)\b",
+    re.I,
+)
+# Longer phrases first so "on the and of 1" is not read as "on 1".
+BEAT_PHRASES = (
+    (re.compile(r"on the and of 1", re.I), 2),
+    (re.compile(r"on the and of 2", re.I), 6),
+    (re.compile(r"on the and of 3", re.I), 10),
+    (re.compile(r"on the and of 4", re.I), 14),
+    (re.compile(r"on the a of 1", re.I), 3),
+    (re.compile(r"on the a of 2", re.I), 7),
+    (re.compile(r"on the a of 3", re.I), 11),
+    (re.compile(r"on the a of 4", re.I), 15),
+    (re.compile(r"on the e of 1", re.I), 1),
+    (re.compile(r"on the e of 2", re.I), 5),
+    (re.compile(r"on the e of 3", re.I), 9),
+    (re.compile(r"on the e of 4", re.I), 13),
+    (re.compile(r"\bon 1\b", re.I), 0),
+    (re.compile(r"\bon 2\b", re.I), 4),
+    (re.compile(r"\bon 3\b", re.I), 8),
+    (re.compile(r"\bon 4\b", re.I), 12),
+)
+DEGREE_PHRASES = (
+    ("minor seventh", {10}),
+    ("major seventh", {11}),
+    ("minor third", {3}),
+    ("major third", {4}),
+    ("seventh", {10, 11}),
+    ("third", {3, 4}),
+    ("octave", None),
+    ("fourth", {5}),
+    ("fifth", {7}),
+    ("root", {0}),
+)
+CHORD_ROOT = {
+    "C": 0, "G": 7, "G7": 7, "Am": 9, "Am7": 9, "F": 5, "Dm": 2, "Dm7": 2,
+    "Em": 4, "E7": 4, "E": 4, "D": 2, "D7": 2, "A": 9, "B7": 11, "Bb": 10,
+    "Ab": 8, "Gm": 7, "C7": 0,
+}
 DEFAULT_SLUGS = ("pocket-funk", "radio-pop", "backbeat-rock")
 
 
@@ -68,6 +123,11 @@ def review_demo(demo: dict, label: str = "demo") -> list[str]:
     drums = demo.get("drumHits") or []
     bass_key = {(h["bar"], h["step"], h["midi"]) for h in bass}
     drum_key = {(h["bar"], h["step"], h.get("kind"), h.get("midi")) for h in drums}
+    chord_at = {}
+    for row in demo.get("raw") or []:
+        if row and len(row) > 2 and row[2]:
+            chord_at[row[0]] = row[2]
+    seen_bodies = {}
 
     def fail(where, msg):
         errors.append(f"{label}: {where}: {msg}")
@@ -85,7 +145,14 @@ def review_demo(demo: dict, label: str = "demo") -> list[str]:
             ins = card.get("insight") or {}
             where = f"{sid}/{card.get('label')}"
             highlights = ins.get("highlights") or []
-            _check_copy(card.get("body") or "", where, fail)
+            body = card.get("body") or ""
+            _check_copy(body, ins.get("title") or "", card.get("label") or "", highlights, where, fail)
+            _check_insight(body, ins, highlights, window, chord_at, bass, drums, where, fail)
+            norm = re.sub(r"\s+", " ", body.strip().lower())
+            if norm and norm in seen_bodies:
+                fail(where, f"duplicates the point of {seen_bodies[norm]}")
+            elif norm:
+                seen_bodies[norm] = where
             _check_window(ins.get("barRange"), highlights, where, fail)
             _check_title(ins, highlights, where, fail)
             for i, h in enumerate(highlights):
@@ -93,10 +160,249 @@ def review_demo(demo: dict, label: str = "demo") -> list[str]:
     return errors
 
 
-def _check_copy(body, where, fail):
-    for pat in DENIAL:
-        if pat.search(body):
-            fail(where, f"denial copy matches {pat.pattern!r}")
+def _check_copy(body, title, card_label, highlights, where, fail):
+    chunks = [body, title, card_label]
+    chunks.extend((h.get("text") or "") for h in highlights if isinstance(h, dict))
+    for chunk in chunks:
+        for pat in DENIAL:
+            if pat.search(chunk):
+                fail(where, f"denial copy matches {pat.pattern!r}")
+        for pat in META:
+            if pat.search(chunk):
+                fail(where, f"meta copy matches {pat.pattern!r}")
+    if not ROLE.search(body or ""):
+        fail(where, "insight only lists notes or pitches and never says what they do")
+
+
+def _chord_root(chord):
+    if not chord:
+        return None
+    head = str(chord).split("/")[0].strip()
+    if head in CHORD_ROOT:
+        return CHORD_ROOT[head]
+    if len(head) >= 1:
+        guess = head[0].upper() + head[1:]
+        return CHORD_ROOT.get(guess)
+    return None
+
+
+def _bass_highlights(highlights):
+    out = []
+    for h in highlights or []:
+        if not isinstance(h, dict) or not isinstance(h.get("step"), int):
+            continue
+        if h.get("kind") in ("kick", "snare", "hat", "chord") or h.get("chord"):
+            continue
+        if h.get("midi") is None:
+            continue
+        out.append(h)
+    return out
+
+
+def _degree_ok(interval, allowed, midi, highlights):
+    if allowed is None:
+        pc = int(midi) % 12
+        return any(
+            isinstance(o.get("midi"), int) and o["midi"] != midi and o["midi"] % 12 == pc and abs(o["midi"] - midi) == 12
+            for o in highlights
+        )
+    return interval in allowed
+
+
+def _check_insight(body, ins, highlights, window, chord_at, bass, drums, where, fail):
+    """Degree, beat, and kick claims must be true of the MIDI and, for Figure, the highlights."""
+    if not body:
+        fail(where, "card has no takeaway")
+        return
+    layer = (ins.get("layer") or "").lower()
+    bass_hi = _bass_highlights(highlights)
+    clauses = re.split(r"\s*(?:,|—|;|\bthen\b)\s*", body)
+    for clause in clauses:
+        if not clause.strip():
+            continue
+        beats = []
+        for pat, step in BEAT_PHRASES:
+            if pat.search(clause):
+                beats.append(step)
+        degrees = []
+        low = clause.lower()
+        for name, allowed in DEGREE_PHRASES:
+            if re.search(r"\b" + re.escape(name) + r"\b", low):
+                degrees.append((name, allowed))
+        wants_kick = bool(re.search(r"\bkick\b", low)) and bool(re.search(r"lock", low))
+        up = "up to" in low
+        down = "down to" in low
+        pairs = _pair_degree_beats(clause)
+        if pairs:
+            for name, allowed, beat in pairs:
+                if beat is None:
+                    if layer == "figure" and not any(
+                        _highlight_degree(h, bass_hi, window, chord_at, allowed, name) for h in bass_hi
+                    ):
+                        fail(where, f"claim {name!r} is not in the highlighted notes")
+                    continue
+                if not _claim_supported(name, allowed, beat, None, bass_hi, window, chord_at, bass, layer):
+                    fail(where, f"claim {name!r} {_beat_name(beat)} is not demonstrated")
+        elif degrees and layer == "figure":
+            for name, allowed in degrees:
+                if not any(_highlight_degree(h, bass_hi, window, chord_at, allowed, name) for h in bass_hi):
+                    fail(where, f"claim {name!r} is not in the highlighted notes")
+        elif beats and layer != "figure" and wants_kick:
+            for beat in beats:
+                if not _kick_at(drums, window, beat, highlights):
+                    fail(where, f"kick claim {_beat_name(beat)} is not in the drum hits")
+        if wants_kick and layer == "figure":
+            targets = beats or [h["step"] % 16 for h in bass_hi]
+            if not any(_kick_at(drums, window, b, highlights) and any((h["step"] % 16) == b for h in bass_hi) for b in targets):
+                # Clause-local: if this clause names beats, those highlighted beats need a kick.
+                if beats and not all(
+                    any((h["step"] % 16) == b for h in bass_hi) and _kick_at(drums, window, b, highlights)
+                    for b in beats
+                ):
+                    fail(where, "locks-with-the-kick is not true of the highlighted notes")
+        if layer == "figure" and (up or down) and bass_hi:
+            ordered = sorted(bass_hi, key=lambda h: h["step"])
+            for i in range(1, len(ordered)):
+                if up and ordered[i]["midi"] <= ordered[i - 1]["midi"] and any(
+                    name in low for name, _a in degrees
+                ):
+                    # Only flag when this clause is the one that says up-to and the later note is not higher.
+                    pass
+            if up or down:
+                _check_direction(clause, ordered, up, down, where, fail)
+    if layer == "figure":
+        if not re.search(r"\b(root|third|fifth|seventh|octave|fourth)\b", body, re.I):
+            fail(where, "figure card never names a scale degree")
+        if not any(pat.search(body) for pat, _s in BEAT_PHRASES):
+            fail(where, "figure card never names a beat")
+        if re.search(r"anchors the downbeat", body, re.I):
+            if not any(h["step"] % 16 == 0 and _is_root(h, bass_hi, window, chord_at) for h in bass_hi):
+                fail(where, "anchors-the-downbeat is not a highlighted root on beat 1")
+        if re.search(r"root[–-]fifth", body, re.I):
+            if not any(_highlight_degree(h, bass_hi, window, chord_at, {0}, "root") for h in bass_hi):
+                fail(where, "root–fifth figure has no highlighted root")
+            if not any(_highlight_degree(h, bass_hi, window, chord_at, {7}, "fifth") for h in bass_hi):
+                fail(where, "root–fifth figure has no highlighted fifth")
+
+
+def _beat_name(step):
+    for pat, s in BEAT_PHRASES:
+        if s == step:
+            return pat.pattern
+    return f"step {step}"
+
+
+def _pair_degree_beats(clause):
+    """Pair each degree word with the next beat phrase in the same clause."""
+    marks = []
+    for name, allowed in DEGREE_PHRASES:
+        for m in re.finditer(r"\b" + re.escape(name) + r"\b", clause, re.I):
+            marks.append((m.start(), m.end(), "deg", name, allowed))
+    occupied = []
+    for pat, step in BEAT_PHRASES:
+        for m in pat.finditer(clause):
+            span = (m.start(), m.end())
+            if any(span[0] >= a and span[1] <= b for a, b in occupied):
+                continue
+            occupied.append(span)
+            marks.append((m.start(), m.end(), "beat", step, None))
+    marks.sort(key=lambda row: (row[0], 0 if row[2] == "deg" else 1))
+    pairs = []
+    pending = None
+    for _start, _end, kind, a, b in marks:
+        if kind == "deg":
+            if pending:
+                pairs.append((pending[0], pending[1], None))
+            pending = (a, b)
+        elif pending:
+            pairs.append((pending[0], pending[1], a))
+            pending = None
+    if pending:
+        pairs.append((pending[0], pending[1], None))
+    return pairs
+
+
+def _song_bar(window, step):
+    return int(window) + int(step) // 16
+
+
+def _is_root(h, highlights, window, chord_at):
+    return _highlight_degree(h, highlights, window, chord_at, {0}, "root")
+
+
+def _highlight_degree(h, highlights, window, chord_at, allowed, name):
+    chord = chord_at.get(_song_bar(window, h["step"]))
+    root = _chord_root(chord)
+    if root is None or h.get("midi") is None:
+        return False
+    interval = (int(h["midi"]) % 12 - root) % 12
+    if name == "octave":
+        return _degree_ok(interval, None, int(h["midi"]), highlights)
+    if interval not in (allowed or set()):
+        return False
+    # An upper octave of the root is named "octave", not "root".
+    if name == "root" and any(
+        isinstance(o.get("midi"), int) and int(h["midi"]) - int(o["midi"]) == 12 and o["midi"] % 12 == int(h["midi"]) % 12
+        for o in highlights
+    ):
+        return False
+    return True
+
+
+def _kick_at(drums, window, beat, highlights):
+    bars = {_song_bar(window, h["step"]) for h in highlights if isinstance(h, dict) and isinstance(h.get("step"), int)}
+    if not bars:
+        bars = {int(window)}
+    return any(
+        h.get("kind") == "kick" and h.get("step") == beat and h.get("bar") in bars
+        for h in drums or []
+    )
+
+
+def _claim_supported(name, allowed, beat, pool, bass_hi, window, chord_at, bass, layer):
+    if layer == "figure":
+        return any(
+            (h["step"] % 16) == beat and _highlight_degree(h, bass_hi, window, chord_at, allowed, name)
+            for h in bass_hi
+        )
+    bars = {_song_bar(window, h["step"]) for h in (bass_hi or []) if isinstance(h.get("step"), int)}
+    if not bars:
+        bars = {int(window)}
+    for hit in bass or []:
+        if hit.get("bar") not in bars or hit.get("step") != beat or hit.get("midi") is None:
+            continue
+        fake = {"step": (hit["bar"] - int(window)) * 16 + hit["step"], "midi": hit["midi"]}
+        mates = [fake]
+        for other in bass or []:
+            if other.get("bar") in bars and other.get("midi") is not None:
+                mates.append({"step": 0, "midi": other["midi"]})
+        if _highlight_degree(fake, mates, window, chord_at, allowed, name):
+            return True
+    return False
+
+
+def _check_direction(clause, ordered, up, down, where, fail):
+    low = clause.lower()
+    for i in range(1, len(ordered)):
+        prev, cur = ordered[i - 1], ordered[i]
+        mentioned = False
+        root_pc_skip = True
+        for name, allowed in DEGREE_PHRASES:
+            if re.search(r"\b" + re.escape(name) + r"\b", low):
+                mentioned = True
+        if not mentioned:
+            return
+        if up and "up to" in low and cur["midi"] <= prev["midi"]:
+            # The clause may describe a later note than this pair. Only fail when
+            # no ascending pair exists among highlighted notes named here.
+            if not any(ordered[j]["midi"] > ordered[j - 1]["midi"] for j in range(1, len(ordered))):
+                fail(where, "up-to claim does not rise in the highlighted notes")
+            return
+        if down and "down to" in low and cur["midi"] >= prev["midi"]:
+            if not any(ordered[j]["midi"] < ordered[j - 1]["midi"] for j in range(1, len(ordered))):
+                fail(where, "down-to claim does not fall in the highlighted notes")
+            return
+        return
 
 
 def _check_window(bar_range, highlights, where, fail):
