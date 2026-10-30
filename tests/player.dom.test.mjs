@@ -3942,7 +3942,8 @@ describe("insight-card MIDI + two-staff schematic", () => {
     expect(hole.querySelector('[data-insight-step="16"]')).toBeNull();
     expect([...hole.querySelectorAll('[data-insight-staff="bass"]')].map((n) => n.getAttribute("data-insight-step"))).toEqual(["0", "32"]);
     const harm = pf.cards.intro.find((c) => c.label === "Harmony");
-    expect(harm.body).toMatch(/Pedal Am7 \(i7\)/);
+    expect(harm.body).toMatch(/Am7/);
+    expect(harm.body).toMatch(/i7/);
     expect(harm.body).toMatch(/A–C–E–G/);
     expect(harm.body).not.toMatch(/Bb|foreign chord/);
   });

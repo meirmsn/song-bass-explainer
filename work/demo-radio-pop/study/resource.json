@@ -7451,11 +7451,11 @@
     "intro": [
       {
         "label": "Pocket",
-        "body": "Four-on-the-floor kick and 8th hats for two bars. Bass enters on beat 1 of bar 3 with long C roots \u2014 don\u2019t rush it.",
+        "body": "Kick on every quarter and 8th hats from the top. Bass is silent for two bars, then enters with halves.",
         "insight": {
           "layer": "pocket",
           "patternId": "intro_bass",
-          "title": "Intro pocket",
+          "title": "Four-on-the-floor, bass waits",
           "barRange": [
             0,
             0
@@ -7464,19 +7464,19 @@
             {
               "step": 0,
               "midi": 36,
-              "text": "with the kick"
+              "text": "kick/bass 1"
             },
             {
               "step": 8,
               "midi": 43,
-              "text": "backbeat"
+              "text": "backbeat pocket"
             }
           ]
         }
       },
       {
         "label": "Figure",
-        "body": "In the intro, the root on 1 locks with the kick and up to the fifth on 3 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
+        "body": "Halves, not the verse 8ths that come later. Root on 1 sits under the downbeat kick. Up to the fifth on 3 sits under the beat-3 kick.",
         "insight": {
           "layer": "figure",
           "patternId": "intro_bass",
@@ -7501,11 +7501,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Intro is C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
+        "body": "The intro never leaves C. Bass states the root and the fifth only, in half notes, after the kit has already set the floor.",
         "insight": {
           "layer": "harmony",
           "patternId": "intro_bass",
-          "title": "C",
+          "title": "C alone, then the bass",
           "barRange": [
             0,
             0
@@ -7523,25 +7523,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Intro, leave the root on 1 and the fifth on 3 alone \u2014 a fill on top of them covers the figure.",
+        "body": "The entrance is two halves. Playing the verse's root-fifth 8ths on bar 3 rushes a moment that is supposed to be long.",
         "insight": {
           "layer": "missable",
           "patternId": "intro_bass",
-          "title": "Pocket discipline",
+          "title": "Don't start the verse 8ths early",
           "barRange": [
-            1,
-            1
+            0,
+            0
           ],
           "highlights": [
             {
-              "step": 16,
+              "step": 0,
               "midi": 36,
-              "text": "hold the line"
+              "text": "C"
             },
             {
-              "step": 24,
+              "step": 8,
               "midi": 43,
-              "text": "don\u2019t chase"
+              "text": "G"
             }
           ]
         }
@@ -7550,11 +7550,11 @@
     "v1": [
       {
         "label": "Pocket",
-        "body": "Pop verse pocket: kick on every quarter, snare on 2 and 4. Bass is quarters and 8ths (root, fifth, octave), not funk 16ths.",
+        "body": "Kick remains four-on-the-floor and snare is on 2 and 4. Bass leaves the halves behind for quarters plus 8ths, root then fifth.",
         "insight": {
           "layer": "pocket",
           "patternId": "v1_bass",
-          "title": "Verse pocket",
+          "title": "Quarters and 8ths on the floor",
           "barRange": [
             0,
             0
@@ -7563,19 +7563,19 @@
             {
               "step": 0,
               "midi": 36,
-              "text": "with the kick"
+              "text": "kick/bass 1"
             },
             {
               "step": 8,
               "midi": 36,
-              "text": "backbeat"
+              "text": "backbeat pocket"
             }
           ]
         }
       },
       {
         "label": "Figure",
-        "body": "In the verse, the root on 1 locks with the kick, the root again on 2 locks with the kick, and up to the fifth on the and of 2 \u2014 a root\u2013fifth figure that anchors the downbeat.",
+        "body": "Order is root, root, fifth. Root on 1 is a quarter with the downbeat. Root on 2 meets the next kick. The fifth on the and of 2 falls in the gap.",
         "insight": {
           "layer": "figure",
           "patternId": "v1_bass",
@@ -7605,14 +7605,14 @@
       },
       {
         "label": "Harmony",
-        "body": "Verse is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
+        "body": "Harmony walks C, G, Am, then F, each chord lasting two bars. Bass roots every change instead of pedaling C.",
         "insight": {
           "layer": "harmony",
           "patternId": "v1_bass",
-          "title": "C \u2013 G \u2013 Am \u2013 F",
+          "title": "Two bars per chord",
           "barRange": [
             0,
-            1
+            3
           ],
           "highlights": [
             {
@@ -7623,50 +7623,48 @@
               "midi": 36
             },
             {
-              "step": 8,
+              "step": 16,
               "kind": "chord",
               "chord": "G",
               "text": "G = V",
               "midi": 36
             },
             {
-              "step": 16,
+              "step": 32,
               "kind": "chord",
               "chord": "Am",
-              "text": "Am = vi",
-              "midi": 36
+              "text": "Am = vi"
             },
             {
-              "step": 24,
+              "step": 48,
               "kind": "chord",
               "chord": "F",
-              "text": "F = IV",
-              "midi": 36
+              "text": "F = IV"
             }
           ]
         }
       },
       {
         "label": "Missable",
-        "body": "In Verse, leave the root on 1 and the root on the and of 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "Each chord owns two bars. Changing bass root after one bar anticipates G, Am, or F before the harmony does.",
         "insight": {
           "layer": "missable",
           "patternId": "v1_bass",
-          "title": "Pocket discipline",
+          "title": "Don't jump chords early",
           "barRange": [
-            1,
-            1
+            0,
+            0
           ],
           "highlights": [
             {
-              "step": 16,
+              "step": 0,
               "midi": 36,
-              "text": "hold the line"
+              "text": "C"
             },
             {
-              "step": 30,
-              "midi": 36,
-              "text": "don\u2019t chase"
+              "step": 6,
+              "midi": 43,
+              "text": "G"
             }
           ]
         }
@@ -7675,11 +7673,11 @@
     "verse": [
       {
         "label": "Pocket",
-        "body": "Same four-on-the-floor pocket. Verse 2 adds a chord-tone on beat 3; don\u2019t turn it into a fill.",
+        "body": "Four-on-the-floor and snare on 2 and 4 return. Unlike verse 1, beat 3 splits into 8ths and the second one is a chord tone.",
         "insight": {
           "layer": "pocket",
           "patternId": "v2_bass",
-          "title": "Verse 2 pocket",
+          "title": "Verse grid plus a chord tone on 3",
           "barRange": [
             0,
             0
@@ -7688,19 +7686,19 @@
             {
               "step": 0,
               "midi": 36,
-              "text": "with the kick"
+              "text": "kick/bass 1"
             },
             {
               "step": 8,
               "midi": 36,
-              "text": "backbeat"
+              "text": "backbeat pocket"
             }
           ]
         }
       },
       {
         "label": "Figure",
-        "body": "In verse 2, the root on 1 locks with the kick, the root again on 2 locks with the kick, and up to the fifth on the and of 2 \u2014 a root\u2013fifth figure that anchors the downbeat.",
+        "body": "Opening matches verse 1; the added chord tone is not in these three attacks. Root on 1, root on 2, then the fifth on the and of 2.",
         "insight": {
           "layer": "figure",
           "patternId": "v2_bass",
@@ -7730,14 +7728,14 @@
       },
       {
         "label": "Harmony",
-        "body": "Verse 2 is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
+        "body": "Harmony repeats the verse order, two bars apiece, from C through F. New inside the bar: a chord tone on the and of 3, E when the chord is C.",
         "insight": {
           "layer": "harmony",
           "patternId": "v2_bass",
-          "title": "C \u2013 G \u2013 Am \u2013 F",
+          "title": "Verse chords, beat 3 filled",
           "barRange": [
             0,
-            1
+            3
           ],
           "highlights": [
             {
@@ -7748,50 +7746,48 @@
               "midi": 36
             },
             {
-              "step": 8,
+              "step": 16,
               "kind": "chord",
               "chord": "G",
               "text": "G = V",
               "midi": 36
             },
             {
-              "step": 16,
+              "step": 32,
               "kind": "chord",
               "chord": "Am",
-              "text": "Am = vi",
-              "midi": 36
+              "text": "Am = vi"
             },
             {
-              "step": 24,
+              "step": 48,
               "kind": "chord",
               "chord": "F",
-              "text": "F = IV",
-              "midi": 36
+              "text": "F = IV"
             }
           ]
         }
       },
       {
         "label": "Missable",
-        "body": "In Verse 2, leave the root on 1 and the root on the and of 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "The and of 3 is a chord tone (E on the C bars), one 8th. Running a longer lick there overplays a single added note.",
         "insight": {
           "layer": "missable",
           "patternId": "v2_bass",
-          "title": "Pocket discipline",
+          "title": "Don't turn beat 3 into a fill",
           "barRange": [
-            1,
-            1
+            0,
+            0
           ],
           "highlights": [
             {
-              "step": 16,
-              "midi": 36,
-              "text": "hold the line"
+              "step": 10,
+              "midi": 40,
+              "text": "E"
             },
             {
-              "step": 30,
+              "step": 8,
               "midi": 36,
-              "text": "don\u2019t chase"
+              "text": "C"
             }
           ]
         }
@@ -7800,11 +7796,11 @@
     "pre": [
       {
         "label": "Pocket",
-        "body": "Pre-chorus walks the chord: Dm arpeggio then G7 (the F on top is the 7th). Lock those quarters to the kick.",
+        "body": "The floor stays four kicks a bar. Bass stops vamping and plays a quarter-note arpeggio, one chord tone per beat.",
         "insight": {
           "layer": "pocket",
           "patternId": "pre_bass",
-          "title": "Pre-chorus pocket",
+          "title": "Quarters outline the chord",
           "barRange": [
             0,
             0
@@ -7813,19 +7809,19 @@
             {
               "step": 0,
               "midi": 38,
-              "text": "with the kick"
+              "text": "kick/bass 1"
             },
             {
               "step": 8,
               "midi": 45,
-              "text": "backbeat"
+              "text": "backbeat pocket"
             }
           ]
         }
       },
       {
         "label": "Figure",
-        "body": "In the pre-chorus, the root on 1 locks with the kick, up to the minor third on 2 locks with the kick, and up to the fifth on 3 locks with the kick \u2014 an arpeggio of the chord that anchors the downbeat.",
+        "body": "Quarters climb the Dm triad, and the floor has a kick on every beat so each tone lands in one. Root on 1, then the minor third on 2, then the fifth on 3.",
         "insight": {
           "layer": "figure",
           "patternId": "pre_bass",
@@ -7855,14 +7851,14 @@
       },
       {
         "label": "Harmony",
-        "body": "Pre-chorus is Dm (ii) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
+        "body": "Two bars of Dm, then two of G7. The G7 bar's last quarter is F, the seventh, which the Dm arpeggio did not have.",
         "insight": {
           "layer": "harmony",
           "patternId": "pre_bass",
-          "title": "Dm \u2013 G7",
+          "title": "Dm then G7",
           "barRange": [
             0,
-            0
+            1
           ],
           "highlights": [
             {
@@ -7873,36 +7869,36 @@
               "midi": 38
             },
             {
-              "step": 8,
+              "step": 16,
               "kind": "chord",
               "chord": "G7",
               "text": "G7 = V7",
-              "midi": 45
+              "midi": 38
             }
           ]
         }
       },
       {
         "label": "Missable",
-        "body": "In Pre-chorus, leave the root on 1 and the minor seventh on 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "Beat 2 is the minor third, F, a full quarter. The verse's root-then-fifth 8ths skip that Dm arpeggio.",
         "insight": {
           "layer": "missable",
           "patternId": "pre_bass",
-          "title": "Pocket discipline",
+          "title": "Don't play the verse 8ths here",
           "barRange": [
-            1,
-            1
+            0,
+            0
           ],
           "highlights": [
             {
-              "step": 16,
-              "midi": 38,
-              "text": "hold the line"
+              "step": 4,
+              "midi": 41,
+              "text": "F"
             },
             {
-              "step": 28,
-              "midi": 48,
-              "text": "don\u2019t chase"
+              "step": 0,
+              "midi": 38,
+              "text": "D"
             }
           ]
         }
@@ -7911,11 +7907,11 @@
     "ch1": [
       {
         "label": "Pocket",
-        "body": "Chorus hook: root on 1, octave pop on the last 16th of beat 1, fifth on 2. Changes are one bar each \u2014 C G Am F.",
+        "body": "Still four-on-the-floor. Bass adds an octave on the last 16th of beat 1, then the fifth on 2, and the chord lasts only one bar.",
         "insight": {
           "layer": "pocket",
           "patternId": "ch1_bass",
-          "title": "Chorus pocket",
+          "title": "One bar per chord, plus an octave pop",
           "barRange": [
             0,
             0
@@ -7924,19 +7920,19 @@
             {
               "step": 0,
               "midi": 36,
-              "text": "with the kick"
+              "text": "kick/bass 1"
             },
             {
               "step": 8,
               "midi": 48,
-              "text": "backbeat"
+              "text": "backbeat pocket"
             }
           ]
         }
       },
       {
         "label": "Figure",
-        "body": "In the chorus, the root on 1 locks with the kick, the octave on the a of 1, and down to the fifth on 2 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
+        "body": "The hook's 16th pop is the new event. Root on 1, octave on the a of 1, then down to the fifth on 2. Kicks catch the root and the fifth. The pop is between them.",
         "insight": {
           "layer": "figure",
           "patternId": "ch1_bass",
@@ -7966,11 +7962,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Chorus is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
+        "body": "Harmony flips every bar: C then G then Am then F, and that loop runs twice. The verse had given each of those chords two bars.",
         "insight": {
           "layer": "harmony",
           "patternId": "ch1_bass",
-          "title": "C \u2013 G \u2013 Am \u2013 F \u2013 C \u2013 G \u2013 Am \u2013 F",
+          "title": "One bar per change",
           "barRange": [
             0,
             3
@@ -7984,46 +7980,20 @@
               "midi": 36
             },
             {
-              "step": 8,
+              "step": 16,
               "kind": "chord",
               "chord": "G",
               "text": "G = V",
-              "midi": 48
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "Am",
-              "text": "Am = vi",
               "midi": 43
             },
             {
-              "step": 24,
-              "kind": "chord",
-              "chord": "F",
-              "text": "F = IV",
-              "midi": 55
-            },
-            {
               "step": 32,
-              "kind": "chord",
-              "chord": "C",
-              "text": "C = I"
-            },
-            {
-              "step": 40,
-              "kind": "chord",
-              "chord": "G",
-              "text": "G = V"
-            },
-            {
-              "step": 48,
               "kind": "chord",
               "chord": "Am",
               "text": "Am = vi"
             },
             {
-              "step": 56,
+              "step": 48,
               "kind": "chord",
               "chord": "F",
               "text": "F = IV"
@@ -8033,25 +8003,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Chorus, leave the root on 1 and the color tone on the and of 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "Beat 4 is the fifth, but the and of 4 steps outside the chord (F# when the bar is C). Holding G there misses the hook's exit.",
         "insight": {
           "layer": "missable",
           "patternId": "ch1_bass",
-          "title": "Pocket discipline",
+          "title": "Don't stay on the fifth at the end of the bar",
           "barRange": [
-            1,
-            1
+            0,
+            0
           ],
           "highlights": [
             {
-              "step": 16,
+              "step": 12,
               "midi": 43,
-              "text": "hold the line"
+              "text": "G"
             },
             {
-              "step": 30,
-              "midi": 44,
-              "text": "don\u2019t chase"
+              "step": 14,
+              "midi": 42,
+              "text": "F#"
             }
           ]
         }
@@ -8060,11 +8030,11 @@
     "chorus": [
       {
         "label": "Pocket",
-        "body": "Chorus returns. Sit the octave pop in the pocket; the kit does not syncopate with you.",
+        "body": "The octave pop and one-bar changes return, but the last four bars stop changing and sit on C. The kit never syncopates with that pop.",
         "insight": {
           "layer": "pocket",
           "patternId": "ch2_bass",
-          "title": "Chorus out pocket",
+          "title": "Chorus hook, then a C pedal",
           "barRange": [
             0,
             0
@@ -8073,19 +8043,19 @@
             {
               "step": 0,
               "midi": 36,
-              "text": "with the kick"
+              "text": "kick/bass 1"
             },
             {
               "step": 8,
               "midi": 48,
-              "text": "backbeat"
+              "text": "backbeat pocket"
             }
           ]
         }
       },
       {
         "label": "Figure",
-        "body": "When the chorus returns, the root on 1 locks with the kick, the octave on the a of 1, and down to the fifth on 2 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
+        "body": "Exit uses the hook, then the harmony parks. Root on 1, the octave on the a of 1 pops once more, and fifth on 2 answers underneath the following kick.",
         "insight": {
           "layer": "figure",
           "patternId": "ch2_bass",
@@ -8115,14 +8085,14 @@
       },
       {
         "label": "Harmony",
-        "body": "Chorus out is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
+        "body": "The one-bar chord changes return, and unlike the first chorus the phrase stops by holding C instead of repeating the loop.",
         "insight": {
           "layer": "harmony",
           "patternId": "ch2_bass",
-          "title": "C \u2013 G \u2013 Am \u2013 F \u2013 C",
+          "title": "Chorus changes, then hold C",
           "barRange": [
             0,
-            2
+            3
           ],
           "highlights": [
             {
@@ -8133,56 +8103,48 @@
               "midi": 36
             },
             {
-              "step": 8,
+              "step": 16,
               "kind": "chord",
               "chord": "G",
               "text": "G = V",
-              "midi": 48
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "Am",
-              "text": "Am = vi",
               "midi": 43
-            },
-            {
-              "step": 24,
-              "kind": "chord",
-              "chord": "F",
-              "text": "F = IV",
-              "midi": 55
             },
             {
               "step": 32,
               "kind": "chord",
-              "chord": "C",
-              "text": "C = I"
+              "chord": "Am",
+              "text": "Am = vi"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "F",
+              "text": "F = IV"
             }
           ]
         }
       },
       {
         "label": "Missable",
-        "body": "In Chorus out, leave the root on 1 and the color tone on the and of 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "After the loop, the harmony parks on C. Another G or F in those bars invents a change the outro does not make.",
         "insight": {
           "layer": "missable",
           "patternId": "ch2_bass",
-          "title": "Pocket discipline",
+          "title": "Don't keep changing chords in the last four bars",
           "barRange": [
-            1,
-            1
+            0,
+            0
           ],
           "highlights": [
             {
-              "step": 16,
-              "midi": 43,
-              "text": "hold the line"
+              "step": 0,
+              "midi": 36,
+              "text": "C"
             },
             {
-              "step": 30,
-              "midi": 44,
-              "text": "don\u2019t chase"
+              "step": 14,
+              "midi": 42,
+              "text": "F#"
             }
           ]
         }
@@ -8191,11 +8153,11 @@
     "v2": [
       {
         "label": "Pocket",
-        "body": "Same four-on-the-floor pocket. Verse 2 adds a chord-tone on beat 3; don\u2019t turn it into a fill.",
+        "body": "Four-on-the-floor and snare on 2 and 4 return. Unlike verse 1, beat 3 splits into 8ths and the second one is a chord tone.",
         "insight": {
           "layer": "pocket",
           "patternId": "v2_bass",
-          "title": "Verse 2 pocket",
+          "title": "Verse grid plus a chord tone on 3",
           "barRange": [
             0,
             0
@@ -8204,19 +8166,19 @@
             {
               "step": 0,
               "midi": 36,
-              "text": "with the kick"
+              "text": "kick/bass 1"
             },
             {
               "step": 8,
               "midi": 36,
-              "text": "backbeat"
+              "text": "backbeat pocket"
             }
           ]
         }
       },
       {
         "label": "Figure",
-        "body": "In verse 2, the root on 1 locks with the kick, the root again on 2 locks with the kick, and up to the fifth on the and of 2 \u2014 a root\u2013fifth figure that anchors the downbeat.",
+        "body": "Opening matches verse 1; the added chord tone is not in these three attacks. Root on 1, root on 2, then the fifth on the and of 2.",
         "insight": {
           "layer": "figure",
           "patternId": "v2_bass",
@@ -8246,14 +8208,14 @@
       },
       {
         "label": "Harmony",
-        "body": "Verse 2 is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
+        "body": "Harmony repeats the verse order, two bars apiece, from C through F. New inside the bar: a chord tone on the and of 3, E when the chord is C.",
         "insight": {
           "layer": "harmony",
           "patternId": "v2_bass",
-          "title": "C \u2013 G \u2013 Am \u2013 F",
+          "title": "Verse chords, beat 3 filled",
           "barRange": [
             0,
-            1
+            3
           ],
           "highlights": [
             {
@@ -8264,50 +8226,48 @@
               "midi": 36
             },
             {
-              "step": 8,
+              "step": 16,
               "kind": "chord",
               "chord": "G",
               "text": "G = V",
               "midi": 36
             },
             {
-              "step": 16,
+              "step": 32,
               "kind": "chord",
               "chord": "Am",
-              "text": "Am = vi",
-              "midi": 36
+              "text": "Am = vi"
             },
             {
-              "step": 24,
+              "step": 48,
               "kind": "chord",
               "chord": "F",
-              "text": "F = IV",
-              "midi": 36
+              "text": "F = IV"
             }
           ]
         }
       },
       {
         "label": "Missable",
-        "body": "In Verse 2, leave the root on 1 and the root on the and of 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "The and of 3 is a chord tone (E on the C bars), one 8th. Running a longer lick there overplays a single added note.",
         "insight": {
           "layer": "missable",
           "patternId": "v2_bass",
-          "title": "Pocket discipline",
+          "title": "Don't turn beat 3 into a fill",
           "barRange": [
-            1,
-            1
+            0,
+            0
           ],
           "highlights": [
             {
-              "step": 16,
-              "midi": 36,
-              "text": "hold the line"
+              "step": 10,
+              "midi": 40,
+              "text": "E"
             },
             {
-              "step": 30,
+              "step": 8,
               "midi": 36,
-              "text": "don\u2019t chase"
+              "text": "C"
             }
           ]
         }
@@ -8316,11 +8276,11 @@
     "br": [
       {
         "label": "Pocket",
-        "body": "Bridge opens the notes up (root, fifth, octave) under the same kick grid. Leave the 16th grid alone.",
+        "body": "The kick grid does not change. Bass slows to a dotted quarter, a short fifth, then a half-note octave, and leaves the 16ths alone.",
         "insight": {
           "layer": "pocket",
           "patternId": "br_bass",
-          "title": "Bridge pocket",
+          "title": "Half-note roots, fifth on the and of 2",
           "barRange": [
             0,
             0
@@ -8329,19 +8289,19 @@
             {
               "step": 0,
               "midi": 45,
-              "text": "with the kick"
+              "text": "kick/bass 1"
             },
             {
               "step": 8,
               "midi": 57,
-              "text": "backbeat"
+              "text": "backbeat pocket"
             }
           ]
         }
       },
       {
         "label": "Figure",
-        "body": "In the bridge, the root on 1 locks with the kick, up to the fifth on the and of 2, and the octave on 3 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
+        "body": "Slow, and wide, next to the chorus hook. Root on 1 is long. The fifth on the and of 2 is the short note. Octave on 3 is a half note under the beat-3 kick.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
@@ -8371,14 +8331,14 @@
       },
       {
         "label": "Harmony",
-        "body": "Bridge is Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
+        "body": "Harmony leaves the chorus loop. It opens on Am, passes F and C, and cadences on G7, two bars each.",
         "insight": {
           "layer": "harmony",
           "patternId": "br_bass",
-          "title": "Am \u2013 F \u2013 C \u2013 G7",
+          "title": "Opens on Am",
           "barRange": [
             0,
-            1
+            3
           ],
           "highlights": [
             {
@@ -8389,50 +8349,48 @@
               "midi": 45
             },
             {
-              "step": 8,
+              "step": 16,
               "kind": "chord",
               "chord": "F",
               "text": "F = IV",
-              "midi": 57
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "C",
-              "text": "C = I",
               "midi": 45
             },
             {
-              "step": 24,
+              "step": 32,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I"
+            },
+            {
+              "step": 48,
               "kind": "chord",
               "chord": "G7",
-              "text": "G7 = V7",
-              "midi": 57
+              "text": "G7 = V7"
             }
           ]
         }
       },
       {
         "label": "Missable",
-        "body": "In Bridge, leave the root on 1 and the octave on 3 alone \u2014 a fill on top of them covers the figure.",
+        "body": "The chorus 16th pop on the a of 1 is absent. The octave arrives on 3, as a half note, so an early pop belongs only to the chorus.",
         "insight": {
           "layer": "missable",
           "patternId": "br_bass",
-          "title": "Pocket discipline",
+          "title": "Don't import the chorus octave pop",
           "barRange": [
-            1,
-            1
+            0,
+            0
           ],
           "highlights": [
             {
-              "step": 16,
+              "step": 0,
               "midi": 45,
-              "text": "hold the line"
+              "text": "A"
             },
             {
-              "step": 24,
+              "step": 8,
               "midi": 57,
-              "text": "don\u2019t chase"
+              "text": "A"
             }
           ]
         }
@@ -8441,11 +8399,11 @@
     "bridge": [
       {
         "label": "Pocket",
-        "body": "Bridge opens the notes up (root, fifth, octave) under the same kick grid. Leave the 16th grid alone.",
+        "body": "The kick grid does not change. Bass slows to a dotted quarter, a short fifth, then a half-note octave, and leaves the 16ths alone.",
         "insight": {
           "layer": "pocket",
           "patternId": "br_bass",
-          "title": "Bridge pocket",
+          "title": "Half-note roots, fifth on the and of 2",
           "barRange": [
             0,
             0
@@ -8454,19 +8412,19 @@
             {
               "step": 0,
               "midi": 45,
-              "text": "with the kick"
+              "text": "kick/bass 1"
             },
             {
               "step": 8,
               "midi": 57,
-              "text": "backbeat"
+              "text": "backbeat pocket"
             }
           ]
         }
       },
       {
         "label": "Figure",
-        "body": "In the bridge, the root on 1 locks with the kick, up to the fifth on the and of 2, and the octave on 3 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
+        "body": "Slow, and wide, next to the chorus hook. Root on 1 is long. The fifth on the and of 2 is the short note. Octave on 3 is a half note under the beat-3 kick.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
@@ -8496,14 +8454,14 @@
       },
       {
         "label": "Harmony",
-        "body": "Bridge is Am (vi) \u2013 F (IV) \u2013 C (I) \u2013 G7 (V7) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
+        "body": "Harmony leaves the chorus loop. It opens on Am, passes F and C, and cadences on G7, two bars each.",
         "insight": {
           "layer": "harmony",
           "patternId": "br_bass",
-          "title": "Am \u2013 F \u2013 C \u2013 G7",
+          "title": "Opens on Am",
           "barRange": [
             0,
-            1
+            3
           ],
           "highlights": [
             {
@@ -8514,50 +8472,48 @@
               "midi": 45
             },
             {
-              "step": 8,
+              "step": 16,
               "kind": "chord",
               "chord": "F",
               "text": "F = IV",
-              "midi": 57
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "C",
-              "text": "C = I",
               "midi": 45
             },
             {
-              "step": 24,
+              "step": 32,
+              "kind": "chord",
+              "chord": "C",
+              "text": "C = I"
+            },
+            {
+              "step": 48,
               "kind": "chord",
               "chord": "G7",
-              "text": "G7 = V7",
-              "midi": 57
+              "text": "G7 = V7"
             }
           ]
         }
       },
       {
         "label": "Missable",
-        "body": "In Bridge, leave the root on 1 and the octave on 3 alone \u2014 a fill on top of them covers the figure.",
+        "body": "The chorus 16th pop on the a of 1 is absent. The octave arrives on 3, as a half note, so an early pop belongs only to the chorus.",
         "insight": {
           "layer": "missable",
           "patternId": "br_bass",
-          "title": "Pocket discipline",
+          "title": "Don't import the chorus octave pop",
           "barRange": [
-            1,
-            1
+            0,
+            0
           ],
           "highlights": [
             {
-              "step": 16,
+              "step": 0,
               "midi": 45,
-              "text": "hold the line"
+              "text": "A"
             },
             {
-              "step": 24,
+              "step": 8,
               "midi": 57,
-              "text": "don\u2019t chase"
+              "text": "A"
             }
           ]
         }
@@ -8566,11 +8522,11 @@
     "ch2": [
       {
         "label": "Pocket",
-        "body": "Chorus returns. Sit the octave pop in the pocket; the kit does not syncopate with you.",
+        "body": "The octave pop and one-bar changes return, but the last four bars stop changing and sit on C. The kit never syncopates with that pop.",
         "insight": {
           "layer": "pocket",
           "patternId": "ch2_bass",
-          "title": "Chorus out pocket",
+          "title": "Chorus hook, then a C pedal",
           "barRange": [
             0,
             0
@@ -8579,19 +8535,19 @@
             {
               "step": 0,
               "midi": 36,
-              "text": "with the kick"
+              "text": "kick/bass 1"
             },
             {
               "step": 8,
               "midi": 48,
-              "text": "backbeat"
+              "text": "backbeat pocket"
             }
           ]
         }
       },
       {
         "label": "Figure",
-        "body": "When the chorus returns, the root on 1 locks with the kick, the octave on the a of 1, and down to the fifth on 2 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
+        "body": "Exit uses the hook, then the harmony parks. Root on 1, the octave on the a of 1 pops once more, and fifth on 2 answers underneath the following kick.",
         "insight": {
           "layer": "figure",
           "patternId": "ch2_bass",
@@ -8621,14 +8577,14 @@
       },
       {
         "label": "Harmony",
-        "body": "Chorus out is C (I) \u2013 G (V) \u2013 Am (vi) \u2013 F (IV) \u2013 C (I) \u2014 the same symbols as the main chord-name row. Bass roots those changes.",
+        "body": "The one-bar chord changes return, and unlike the first chorus the phrase stops by holding C instead of repeating the loop.",
         "insight": {
           "layer": "harmony",
           "patternId": "ch2_bass",
-          "title": "C \u2013 G \u2013 Am \u2013 F \u2013 C",
+          "title": "Chorus changes, then hold C",
           "barRange": [
             0,
-            2
+            3
           ],
           "highlights": [
             {
@@ -8639,56 +8595,48 @@
               "midi": 36
             },
             {
-              "step": 8,
+              "step": 16,
               "kind": "chord",
               "chord": "G",
               "text": "G = V",
-              "midi": 48
-            },
-            {
-              "step": 16,
-              "kind": "chord",
-              "chord": "Am",
-              "text": "Am = vi",
               "midi": 43
-            },
-            {
-              "step": 24,
-              "kind": "chord",
-              "chord": "F",
-              "text": "F = IV",
-              "midi": 55
             },
             {
               "step": 32,
               "kind": "chord",
-              "chord": "C",
-              "text": "C = I"
+              "chord": "Am",
+              "text": "Am = vi"
+            },
+            {
+              "step": 48,
+              "kind": "chord",
+              "chord": "F",
+              "text": "F = IV"
             }
           ]
         }
       },
       {
         "label": "Missable",
-        "body": "In Chorus out, leave the root on 1 and the color tone on the and of 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "After the loop, the harmony parks on C. Another G or F in those bars invents a change the outro does not make.",
         "insight": {
           "layer": "missable",
           "patternId": "ch2_bass",
-          "title": "Pocket discipline",
+          "title": "Don't keep changing chords in the last four bars",
           "barRange": [
-            1,
-            1
+            0,
+            0
           ],
           "highlights": [
             {
-              "step": 16,
-              "midi": 43,
-              "text": "hold the line"
+              "step": 0,
+              "midi": 36,
+              "text": "C"
             },
             {
-              "step": 30,
-              "midi": 44,
-              "text": "don\u2019t chase"
+              "step": 14,
+              "midi": 42,
+              "text": "F#"
             }
           ]
         }

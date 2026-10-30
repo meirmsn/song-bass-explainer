@@ -25,6 +25,11 @@ Rules, per insight card:
    demonstrated by that card's highlights against bassHits, drumHits, and the
    chord at that bar. Other cards' degree/beat claims must be true of the MIDI.
    Two cards may not share the same body.
+6. Stock phrasing: within one song, an n-gram of 5 or more words (section names,
+   pitches, degrees, beats, and chord symbols normalized to placeholders) may
+   occur in at most two cards of the same kind. Two bodies of the same kind
+   whose token sets are more than 0.7 similar after that normalization fail.
+   Meta phrases such as "main chord-name row" and "same symbols as" fail.
 
 Default targets: Pocket Funk, Radio Pop, Backbeat Rock.
 """
@@ -58,6 +63,14 @@ META = (
     re.compile(r"\bmatch(?:es|ed|ing)? the MIDI\b", re.I),
     re.compile(r"\bMIDI stem\b", re.I),
     re.compile(r"\bverification\b", re.I),
+    re.compile(r"\bMIDI\b"),
+    re.compile(r"main chord", re.I),
+    re.compile(r"same symbols", re.I),
+)
+STOCK_META = (
+    re.compile(r"main chord-name row", re.I),
+    re.compile(r"same symbols as", re.I),
+    re.compile(r"main chord row", re.I),
 )
 ROLE = re.compile(
     r"\b(root|thirds?|fifths?|sevenths?|octaves?|fourths?|leading|approach|anchors?|downbeat|"
@@ -128,6 +141,7 @@ def review_demo(demo: dict, label: str = "demo") -> list[str]:
         if row and len(row) > 2 and row[2]:
             chord_at[row[0]] = row[2]
     seen_bodies = {}
+    by_kind = {}
 
     def fail(where, msg):
         errors.append(f"{label}: {where}: {msg}")
@@ -153,11 +167,79 @@ def review_demo(demo: dict, label: str = "demo") -> list[str]:
                 fail(where, f"duplicates the point of {seen_bodies[norm]}")
             elif norm:
                 seen_bodies[norm] = where
+            kind = card.get("label") or ins.get("layer") or "card"
+            by_kind.setdefault(kind, []).append((where, body, ins.get("title") or ""))
             _check_window(ins.get("barRange"), highlights, where, fail)
             _check_title(ins, highlights, where, fail)
             for i, h in enumerate(highlights):
                 _check_highlight(h, i, window, bass_key, drum_key, chords, where, fail)
+    names = [sec.get("name") or "" for sec in (demo.get("secs") or [])]
+    chords = sorted({c for c in chord_at.values() if c}, key=len, reverse=True)
+    _check_stock(by_kind, names, chords, label, errors)
     return errors
+
+
+def _normalize_stock(text, section_names, chords):
+    """Collapse names, chords, degrees, and beats so templates compare equal."""
+    t = text or ""
+    for name in sorted((n for n in section_names if n), key=len, reverse=True):
+        t = re.sub(re.escape(name), " SECTION ", t, flags=re.I)
+    for ch in chords:
+        t = re.sub(r"\b" + re.escape(str(ch)) + r"\b", " CHORD ", t, flags=re.I)
+    t = re.sub(
+        r"\b(?:minor seventh|major seventh|minor third|major third|seventh|third|fifth|fourth|octave|root)s?\b",
+        " DEGREE ",
+        t,
+        flags=re.I,
+    )
+    t = re.sub(r"\bon the and of [1-4]\b", " BEAT ", t, flags=re.I)
+    t = re.sub(r"\bon the [ae] of [1-4]\b", " BEAT ", t, flags=re.I)
+    t = re.sub(r"\bon [1-4]\b", " BEAT ", t, flags=re.I)
+    t = re.sub(r"\b[A-G](?:#|b)?\b", " PITCH ", t)
+    t = t.lower()
+    t = re.sub(r"\b\d+\b", " n ", t)
+    t = re.sub(r"[^a-z\s]", " ", t)
+    return [tok for tok in t.split() if tok]
+
+
+def _jaccard(a, b):
+    sa, sb = set(a), set(b)
+    if not sa or not sb:
+        return 0.0
+    return len(sa & sb) / len(sa | sb)
+
+
+def _check_stock(by_kind, section_names, chords, label, errors):
+    for kind, rows in by_kind.items():
+        grams = {}
+        norms = []
+        for where, body, _title in rows:
+            for pat in STOCK_META:
+                if pat.search(body or ""):
+                    errors.append(f"{label}: {where}: meta phrase {pat.pattern!r}")
+            tokens = _normalize_stock(body, section_names, chords)
+            norms.append((where, tokens))
+            for i in range(0, max(0, len(tokens) - 4)):
+                gram = " ".join(tokens[i:i + 5])
+                grams.setdefault(gram, []).append(where)
+        for gram, wheres in grams.items():
+            uniq = []
+            for w in wheres:
+                if w not in uniq:
+                    uniq.append(w)
+            if len(uniq) > 2:
+                shown = ", ".join(uniq[:6])
+                errors.append(
+                    f"{label}: {uniq[0]}: stock phrase {gram!r} in {len(uniq)} {kind} cards ({shown})"
+                )
+        for i in range(len(norms)):
+            for j in range(i + 1, len(norms)):
+                score = _jaccard(norms[i][1], norms[j][1])
+                if score > 0.7:
+                    errors.append(
+                        f"{label}: {norms[i][0]}: near-duplicate of {norms[j][0]} "
+                        f"(similarity {score:.2f})"
+                    )
 
 
 def _check_copy(body, title, card_label, highlights, where, fail):

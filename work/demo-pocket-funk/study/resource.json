@@ -7663,11 +7663,11 @@
     "intro": [
       {
         "label": "Pocket",
-        "body": "Hats roll in; bass waits two bars then drops into the A pocket.",
+        "body": "Hats run alone for two bars. Bass enters only on bar 3, and the kick under it is just beats 1 and 3.",
         "insight": {
           "layer": "pocket",
           "patternId": "intro_bass",
-          "title": "Intro pocket",
+          "title": "Hats, then a late kick",
           "barRange": [
             0,
             0
@@ -7688,7 +7688,7 @@
       },
       {
         "label": "Figure",
-        "body": "In the intro, the root on 1, the root again on the and of 2, and down to the minor seventh on the a of 2 \u2014 it anchors the downbeat.",
+        "body": "After the empty opening, three notes arrive: the root on 1, the root again on the and of 2, and down to the minor seventh on the a of 2. None of those attacks has a kick yet.",
         "insight": {
           "layer": "figure",
           "patternId": "intro_bass",
@@ -7718,11 +7718,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Intro.",
+        "body": "Am7 (i7) is the only chord in the intro. Its color is A\u2013C\u2013E\u2013G, and the bass does not state it until bar 3.",
         "insight": {
           "layer": "harmony",
           "patternId": "intro_bass",
-          "title": "Am7 (= main row)",
+          "title": "Am7 from the first hat",
           "barRange": [
             0,
             0
@@ -7740,25 +7740,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Intro, leave the root on 3 and the fifth on 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "Bars 1 and 2 are hats with no bass. Playing the funk line early covers the silence that makes the entrance.",
         "insight": {
           "layer": "missable",
           "patternId": "intro_bass",
-          "title": "Pocket discipline",
+          "title": "Don't fill the hat bars",
           "barRange": [
             0,
             0
           ],
           "highlights": [
             {
-              "step": 8,
+              "step": 0,
               "midi": 33,
-              "text": "don\u2019t chase"
+              "text": "A"
             },
             {
-              "step": 12,
-              "midi": 28,
-              "text": "don\u2019t chase"
+              "step": 8,
+              "midi": 33,
+              "text": "A"
             }
           ]
         }
@@ -7767,11 +7767,11 @@
     "a1": [
       {
         "label": "Pocket",
-        "body": "Four-feel kit under an A-center funk line. Sit behind the kick; hats mark the 8ths.",
+        "body": "Groove A keeps the 8th hats but adds a kick on the and of 2 and another on the last 16th. Snare stays on 2 and 4.",
         "insight": {
           "layer": "pocket",
           "patternId": "a1_bass",
-          "title": "Groove A pocket",
+          "title": "Kick joins the and of 2",
           "barRange": [
             0,
             0
@@ -7792,7 +7792,7 @@
       },
       {
         "label": "Figure",
-        "body": "In Groove A, the root on 1 locks with the kick, the root again on the and of 2 locks with the kick, and down to the minor seventh on the a of 2 \u2014 it anchors the downbeat.",
+        "body": "Offbeat kicks are the new partner. Downbeat root meets one. So does the root on the and of 2. The minor seventh on the a of 2 is the attack left in the crack between those kicks.",
         "insight": {
           "layer": "figure",
           "patternId": "a1_bass",
@@ -7822,11 +7822,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Groove A.",
+        "body": "Harmony does not move for these eight bars. Am7 keeps the A\u2013C\u2013E\u2013G color while the rhythm section gets busier.",
         "insight": {
           "layer": "harmony",
           "patternId": "a1_bass",
-          "title": "Am7 (= main row)",
+          "title": "Eight bars, still Am7",
           "barRange": [
             0,
             0
@@ -7844,25 +7844,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Groove A, leave the root on 3 and the fifth on 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "The and-of-2 kick is the new event. Leaving it out turns Groove A back into the sparser intro grid.",
         "insight": {
           "layer": "missable",
           "patternId": "a1_bass",
-          "title": "Pocket discipline",
+          "title": "Don't drop the and-of-2 kick",
           "barRange": [
             0,
             0
           ],
           "highlights": [
             {
-              "step": 8,
+              "step": 6,
               "midi": 33,
-              "text": "don\u2019t chase"
+              "text": "A"
             },
             {
-              "step": 12,
-              "midi": 28,
-              "text": "don\u2019t chase"
+              "step": 0,
+              "midi": 33,
+              "text": "A"
             }
           ]
         }
@@ -7871,11 +7871,11 @@
     "verse": [
       {
         "label": "Pocket",
-        "body": "Back to Am7 pocket \u2014 lock the written syncopations.",
+        "body": "After D7 the and-of-2 kick and the 8th hats come back with A in the bass. Six bars, not the eight of Groove A.",
         "insight": {
           "layer": "pocket",
           "patternId": "a3_bass",
-          "title": "Groove back pocket",
+          "title": "Am7 grid returns",
           "barRange": [
             0,
             0
@@ -7896,7 +7896,7 @@
       },
       {
         "label": "Figure",
-        "body": "When the groove returns, the root on 1 locks with the kick, the root again on the and of 2 locks with the kick, and down to the minor seventh on the a of 2 \u2014 it anchors the downbeat.",
+        "body": "After D7, the first groove's shape is back. Kick shares the downbeat root and the and-of-2 root. Between those, the minor seventh on the a of 2 is unchanged.",
         "insight": {
           "layer": "figure",
           "patternId": "a3_bass",
@@ -7926,11 +7926,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Groove back.",
+        "body": "D7 lasts through the lift only. Harmony here is Am7 again, so F# from the third no longer belongs.",
         "insight": {
           "layer": "harmony",
           "patternId": "a3_bass",
-          "title": "Am7 (= main row)",
+          "title": "Back to Am7",
           "barRange": [
             0,
             0
@@ -7948,25 +7948,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Groove back, leave the root on 3 and the fifth on 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "F# belonged to D7. On the return the downbeat is A, and keeping the third from the lift fights Am7.",
         "insight": {
           "layer": "missable",
           "patternId": "a3_bass",
-          "title": "Pocket discipline",
+          "title": "Don't hold the F#",
           "barRange": [
             0,
             0
           ],
           "highlights": [
             {
-              "step": 8,
+              "step": 0,
               "midi": 33,
-              "text": "don\u2019t chase"
+              "text": "A"
             },
             {
-              "step": 12,
-              "midi": 28,
-              "text": "don\u2019t chase"
+              "step": 7,
+              "midi": 31,
+              "text": "G"
             }
           ]
         }
@@ -7975,11 +7975,11 @@
     "a2": [
       {
         "label": "Pocket",
-        "body": "Same pocket with denser octave pops \u2014 don\u2019t rush the ghost notes: quiet snares into the backbeat, and the soft bass 16ths.",
+        "body": "Same kick grid, denser bass. Ghost snares sit just before the backbeat, and soft bass 16ths answer them. Don't rush a ghost.",
         "insight": {
           "layer": "pocket",
           "patternId": "a2_bass",
-          "title": "Groove A\u2032 pocket",
+          "title": "Ghosts and octave pops",
           "barRange": [
             0,
             0
@@ -8013,7 +8013,7 @@
       },
       {
         "label": "Figure",
-        "body": "In Groove A\u2032, the root on 1 locks with the kick, the octave on the a of 1, and the root again on the and of 2 locks with the kick \u2014 it anchors the downbeat.",
+        "body": "Register is the story: low root on 1, octave on the a of 1, then the low root returns on the and of 2. Outer notes share kicks. The pop in the middle does not.",
         "insight": {
           "layer": "figure",
           "patternId": "a2_bass",
@@ -8043,11 +8043,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Groove A\u2032.",
+        "body": "The octave pops are still Am7. Nothing in the chord stack changes; only the register and the ghosts are new.",
         "insight": {
           "layer": "harmony",
           "patternId": "a2_bass",
-          "title": "Am7 (= main row)",
+          "title": "Am7 under the pops",
           "barRange": [
             0,
             0
@@ -8065,25 +8065,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Groove A\u2032, leave the root on 3 and the root on 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "The bass ghosts are the quiet 16ths after beat 2, not the downbeat. Playing them as loud as the root on 1 kills the pocket.",
         "insight": {
           "layer": "missable",
           "patternId": "a2_bass",
-          "title": "Pocket discipline",
+          "title": "Don't accent the ghost 16ths",
           "barRange": [
             0,
             0
           ],
           "highlights": [
             {
-              "step": 8,
-              "midi": 33,
-              "text": "don\u2019t chase"
+              "step": 10,
+              "midi": 36,
+              "text": "C"
             },
             {
-              "step": 12,
+              "step": 0,
               "midi": 33,
-              "text": "don\u2019t chase"
+              "text": "A"
             }
           ]
         }
@@ -8092,11 +8092,11 @@
     "b1": [
       {
         "label": "Pocket",
-        "body": "Lift to D7; keep the kick 1 + syncopation while the root moves.",
+        "body": "The kick pattern stays the Groove A grid, including the and of 2. What moves is the bass root, up to D.",
         "insight": {
           "layer": "pocket",
           "patternId": "b1_bass",
-          "title": "Lift pocket",
+          "title": "Same kick, new root",
           "barRange": [
             0,
             0
@@ -8117,7 +8117,7 @@
       },
       {
         "label": "Figure",
-        "body": "On the lift, the root on 1 locks with the kick, up to the major third on 2, and the root again on the and of 2 locks with the kick \u2014 an arpeggio of the chord that anchors the downbeat.",
+        "body": "A is gone. D is the root on 1 and it locks with the kick. Up to the major third on 2 is F#, the announcement. D returns as the root on the and of 2, and that one locks with the kick too.",
         "insight": {
           "layer": "figure",
           "patternId": "b1_bass",
@@ -8147,11 +8147,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Lift sits on D7 (IV7 in Am) \u2014 matches the main chord row. Bass roots on D.",
+        "body": "This is the first chord change: D7, IV7 in A minor. Bass roots on D and uses F# as the third, not the old A pedal.",
         "insight": {
           "layer": "harmony",
           "patternId": "b1_bass",
-          "title": "D7 (= main row)",
+          "title": "Lift to D7",
           "barRange": [
             0,
             0
@@ -8169,25 +8169,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Lift, leave the root on 3 and the root on 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "The D7 bar moves to F# on 2. Easy to play the A from the groove by habit and miss the third.",
         "insight": {
           "layer": "missable",
           "patternId": "b1_bass",
-          "title": "Pocket discipline",
+          "title": "Don't keep the A from Groove A",
           "barRange": [
             0,
             0
           ],
           "highlights": [
             {
-              "step": 8,
-              "midi": 38,
-              "text": "don\u2019t chase"
+              "step": 4,
+              "midi": 42,
+              "text": "F#"
             },
             {
-              "step": 12,
+              "step": 0,
               "midi": 38,
-              "text": "don\u2019t chase"
+              "text": "D"
             }
           ]
         }
@@ -8196,11 +8196,11 @@
     "chorus": [
       {
         "label": "Pocket",
-        "body": "Lift to D7; keep the kick 1 + syncopation while the root moves.",
+        "body": "The kick pattern stays the Groove A grid, including the and of 2. What moves is the bass root, up to D.",
         "insight": {
           "layer": "pocket",
           "patternId": "b1_bass",
-          "title": "Lift pocket",
+          "title": "Same kick, new root",
           "barRange": [
             0,
             0
@@ -8221,7 +8221,7 @@
       },
       {
         "label": "Figure",
-        "body": "On the lift, the root on 1 locks with the kick, up to the major third on 2, and the root again on the and of 2 locks with the kick \u2014 an arpeggio of the chord that anchors the downbeat.",
+        "body": "A is gone. D is the root on 1 and it locks with the kick. Up to the major third on 2 is F#, the announcement. D returns as the root on the and of 2, and that one locks with the kick too.",
         "insight": {
           "layer": "figure",
           "patternId": "b1_bass",
@@ -8251,11 +8251,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Lift sits on D7 (IV7 in Am) \u2014 matches the main chord row. Bass roots on D.",
+        "body": "This is the first chord change: D7, IV7 in A minor. Bass roots on D and uses F# as the third, not the old A pedal.",
         "insight": {
           "layer": "harmony",
           "patternId": "b1_bass",
-          "title": "D7 (= main row)",
+          "title": "Lift to D7",
           "barRange": [
             0,
             0
@@ -8273,25 +8273,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Lift, leave the root on 3 and the root on 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "The D7 bar moves to F# on 2. Easy to play the A from the groove by habit and miss the third.",
         "insight": {
           "layer": "missable",
           "patternId": "b1_bass",
-          "title": "Pocket discipline",
+          "title": "Don't keep the A from Groove A",
           "barRange": [
             0,
             0
           ],
           "highlights": [
             {
-              "step": 8,
-              "midi": 38,
-              "text": "don\u2019t chase"
+              "step": 4,
+              "midi": 42,
+              "text": "F#"
             },
             {
-              "step": 12,
+              "step": 0,
               "midi": 38,
-              "text": "don\u2019t chase"
+              "text": "D"
             }
           ]
         }
@@ -8300,11 +8300,11 @@
     "a3": [
       {
         "label": "Pocket",
-        "body": "Back to Am7 pocket \u2014 lock the written syncopations.",
+        "body": "After D7 the and-of-2 kick and the 8th hats come back with A in the bass. Six bars, not the eight of Groove A.",
         "insight": {
           "layer": "pocket",
           "patternId": "a3_bass",
-          "title": "Groove back pocket",
+          "title": "Am7 grid returns",
           "barRange": [
             0,
             0
@@ -8325,7 +8325,7 @@
       },
       {
         "label": "Figure",
-        "body": "When the groove returns, the root on 1 locks with the kick, the root again on the and of 2 locks with the kick, and down to the minor seventh on the a of 2 \u2014 it anchors the downbeat.",
+        "body": "After D7, the first groove's shape is back. Kick shares the downbeat root and the and-of-2 root. Between those, the minor seventh on the a of 2 is unchanged.",
         "insight": {
           "layer": "figure",
           "patternId": "a3_bass",
@@ -8355,11 +8355,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Groove back.",
+        "body": "D7 lasts through the lift only. Harmony here is Am7 again, so F# from the third no longer belongs.",
         "insight": {
           "layer": "harmony",
           "patternId": "a3_bass",
-          "title": "Am7 (= main row)",
+          "title": "Back to Am7",
           "barRange": [
             0,
             0
@@ -8377,25 +8377,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Groove back, leave the root on 3 and the fifth on 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "F# belonged to D7. On the return the downbeat is A, and keeping the third from the lift fights Am7.",
         "insight": {
           "layer": "missable",
           "patternId": "a3_bass",
-          "title": "Pocket discipline",
+          "title": "Don't hold the F#",
           "barRange": [
             0,
             0
           ],
           "highlights": [
             {
-              "step": 8,
+              "step": 0,
               "midi": 33,
-              "text": "don\u2019t chase"
+              "text": "A"
             },
             {
-              "step": 12,
-              "midi": 28,
-              "text": "don\u2019t chase"
+              "step": 7,
+              "midi": 31,
+              "text": "G"
             }
           ]
         }
@@ -8404,11 +8404,11 @@
     "br": [
       {
         "label": "Pocket",
-        "body": "Break: sparse kicks. Leave space.",
+        "body": "Hats drop from every 8th to quarters, and the kick leaves the offbeats. Snare clusters at the end of the bar instead of a plain 2 and 4.",
         "insight": {
           "layer": "pocket",
           "patternId": "br_bass",
-          "title": "Break pocket",
+          "title": "Kicks thin to 1 and 3",
           "barRange": [
             0,
             0
@@ -8429,7 +8429,7 @@
       },
       {
         "label": "Figure",
-        "body": "In the break, the fourth on 1 locks with the kick, the fourth again on 3 locks with the kick, and the octave on 4 \u2014 a pedal on the fourth of the chord.",
+        "body": "E7 is the chord and the bass will not play E. Fourth on 1 sits in a kick. Fourth on 3 sits in the other kick. The octave on 4 is the only higher A, and it is kickless.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
@@ -8459,11 +8459,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Break on E7 (V7) \u2014 matches the main chord row. Sparse bass; dominant tension before the return.",
+        "body": "Three bars of E7, the V7. The bass pedals A, the fourth, so the dominant is in the chord while the bass refuses the root.",
         "insight": {
           "layer": "harmony",
           "patternId": "br_bass",
-          "title": "E7 (= main row)",
+          "title": "E7 with an A pedal",
           "barRange": [
             0,
             0
@@ -8481,25 +8481,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Break, leave the fourth on 3 and the octave on 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "E7 wants an E in your ear. The written bass stays on A, the fourth, on 1 and on 3. An early E jumps the return.",
         "insight": {
           "layer": "missable",
           "patternId": "br_bass",
-          "title": "Pocket discipline",
+          "title": "Don't resolve to E yet",
           "barRange": [
             0,
             0
           ],
           "highlights": [
             {
-              "step": 8,
+              "step": 0,
               "midi": 33,
-              "text": "don\u2019t chase"
+              "text": "A"
             },
             {
-              "step": 12,
-              "midi": 45,
-              "text": "don\u2019t chase"
+              "step": 8,
+              "midi": 33,
+              "text": "A"
             }
           ]
         }
@@ -8508,11 +8508,11 @@
     "bridge": [
       {
         "label": "Pocket",
-        "body": "Break: sparse kicks. Leave space.",
+        "body": "Hats drop from every 8th to quarters, and the kick leaves the offbeats. Snare clusters at the end of the bar instead of a plain 2 and 4.",
         "insight": {
           "layer": "pocket",
           "patternId": "br_bass",
-          "title": "Break pocket",
+          "title": "Kicks thin to 1 and 3",
           "barRange": [
             0,
             0
@@ -8533,7 +8533,7 @@
       },
       {
         "label": "Figure",
-        "body": "In the break, the fourth on 1 locks with the kick, the fourth again on 3 locks with the kick, and the octave on 4 \u2014 a pedal on the fourth of the chord.",
+        "body": "E7 is the chord and the bass will not play E. Fourth on 1 sits in a kick. Fourth on 3 sits in the other kick. The octave on 4 is the only higher A, and it is kickless.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
@@ -8563,11 +8563,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Break on E7 (V7) \u2014 matches the main chord row. Sparse bass; dominant tension before the return.",
+        "body": "Three bars of E7, the V7. The bass pedals A, the fourth, so the dominant is in the chord while the bass refuses the root.",
         "insight": {
           "layer": "harmony",
           "patternId": "br_bass",
-          "title": "E7 (= main row)",
+          "title": "E7 with an A pedal",
           "barRange": [
             0,
             0
@@ -8585,25 +8585,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Break, leave the fourth on 3 and the octave on 4 alone \u2014 a fill on top of them covers the figure.",
+        "body": "E7 wants an E in your ear. The written bass stays on A, the fourth, on 1 and on 3. An early E jumps the return.",
         "insight": {
           "layer": "missable",
           "patternId": "br_bass",
-          "title": "Pocket discipline",
+          "title": "Don't resolve to E yet",
           "barRange": [
             0,
             0
           ],
           "highlights": [
             {
-              "step": 8,
+              "step": 0,
               "midi": 33,
-              "text": "don\u2019t chase"
+              "text": "A"
             },
             {
-              "step": 12,
-              "midi": 45,
-              "text": "don\u2019t chase"
+              "step": 8,
+              "midi": 33,
+              "text": "A"
             }
           ]
         }
@@ -8612,11 +8612,11 @@
     "out": [
       {
         "label": "Pocket",
-        "body": "Ride out on the root; leave space where the kit is sparse.",
+        "body": "The offbeat kick grid returns, but the bass shrinks to three long notes a bar. Let the kit carry the 16ths.",
         "insight": {
           "layer": "pocket",
           "patternId": "out_bass",
-          "title": "Outro pocket",
+          "title": "Long roots, busy kick",
           "barRange": [
             0,
             0
@@ -8637,7 +8637,7 @@
       },
       {
         "label": "Figure",
-        "body": "In the outro, the root on 1 locks with the kick, the root again on 3 locks with the kick, and the octave on the and of 4 \u2014 it anchors the downbeat.",
+        "body": "Only A, and plenty of space around it. The root on 1 is a long one, the root again on 3 answers it, and the octave on the and of 4 is a short tag. The first two share the kick; the tag does not.",
         "insight": {
           "layer": "figure",
           "patternId": "out_bass",
@@ -8667,11 +8667,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Outro.",
+        "body": "E7 is over. The outro sits on Am7 with long A roots and no further chord move.",
         "insight": {
           "layer": "harmony",
           "patternId": "out_bass",
-          "title": "Am7 (= main row)",
+          "title": "Am7 to the end",
           "barRange": [
             0,
             0
@@ -8689,25 +8689,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Outro, leave the root on 3 and the root on 1 alone \u2014 a fill on top of them covers the figure.",
+        "body": "Groove A's subdivisions do not belong in the outro. Three A attacks are the whole bar; a fill between them crowds the ending.",
         "insight": {
           "layer": "missable",
           "patternId": "out_bass",
-          "title": "Pocket discipline",
+          "title": "Don't restart the busy 16ths",
           "barRange": [
             0,
             0
           ],
           "highlights": [
             {
-              "step": 8,
-              "midi": 33,
-              "text": "don\u2019t chase"
-            },
-            {
               "step": 0,
               "midi": 33,
-              "text": "don\u2019t chase"
+              "text": "A"
+            },
+            {
+              "step": 14,
+              "midi": 45,
+              "text": "A"
             }
           ]
         }
@@ -8716,11 +8716,11 @@
     "tag": [
       {
         "label": "Pocket",
-        "body": "Ride out on the root; leave space where the kit is sparse.",
+        "body": "The offbeat kick grid returns, but the bass shrinks to three long notes a bar. Let the kit carry the 16ths.",
         "insight": {
           "layer": "pocket",
           "patternId": "out_bass",
-          "title": "Outro pocket",
+          "title": "Long roots, busy kick",
           "barRange": [
             0,
             0
@@ -8741,7 +8741,7 @@
       },
       {
         "label": "Figure",
-        "body": "In the outro, the root on 1 locks with the kick, the root again on 3 locks with the kick, and the octave on the and of 4 \u2014 it anchors the downbeat.",
+        "body": "Only A, and plenty of space around it. The root on 1 is a long one, the root again on 3 answers it, and the octave on the and of 4 is a short tag. The first two share the kick; the tag does not.",
         "insight": {
           "layer": "figure",
           "patternId": "out_bass",
@@ -8771,11 +8771,11 @@
       },
       {
         "label": "Harmony",
-        "body": "Pedal Am7 (i7) \u2014 same as the main chord-name row. Bass outlines A\u2013C\u2013E\u2013G color tones through Outro.",
+        "body": "E7 is over. The outro sits on Am7 with long A roots and no further chord move.",
         "insight": {
           "layer": "harmony",
           "patternId": "out_bass",
-          "title": "Am7 (= main row)",
+          "title": "Am7 to the end",
           "barRange": [
             0,
             0
@@ -8793,25 +8793,25 @@
       },
       {
         "label": "Missable",
-        "body": "In Outro, leave the root on 3 and the root on 1 alone \u2014 a fill on top of them covers the figure.",
+        "body": "Groove A's subdivisions do not belong in the outro. Three A attacks are the whole bar; a fill between them crowds the ending.",
         "insight": {
           "layer": "missable",
           "patternId": "out_bass",
-          "title": "Pocket discipline",
+          "title": "Don't restart the busy 16ths",
           "barRange": [
             0,
             0
           ],
           "highlights": [
             {
-              "step": 8,
-              "midi": 33,
-              "text": "don\u2019t chase"
-            },
-            {
               "step": 0,
               "midi": 33,
-              "text": "don\u2019t chase"
+              "text": "A"
+            },
+            {
+              "step": 14,
+              "midi": 45,
+              "text": "A"
             }
           ]
         }

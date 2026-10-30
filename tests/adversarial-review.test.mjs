@@ -107,4 +107,44 @@ describe("adversarial insight review", () => {
     expect(result.out).toMatch(/s\/Pocket/);
     expect(result.out).toMatch(/not demonstrated/);
   });
+
+  it("rejects a stock phrase reused on a third card of the same kind", () => {
+    const dir = mkdtempSync(join(tmpdir(), "adv-stock-"));
+    const path = join(dir, "stock.json");
+    const phrase = "please remember this exact phrase always";
+    const card = (sid) => ({
+      label: "Pocket",
+      body: `${phrase} while the kick still marks the downbeat in ${sid}.`,
+      insight: {
+        layer: "pocket",
+        title: sid,
+        barRange: [0, 0],
+        highlights: [{ step: 0, midi: 33, text: "kick/bass 1" }],
+      },
+    });
+    writeFileSync(path, JSON.stringify({
+      secs: [
+        { id: "a", name: "Alpha", first: 0, end: 1 },
+        { id: "b", name: "Beta", first: 1, end: 2 },
+        { id: "c", name: "Gamma", first: 2, end: 3 },
+      ],
+      bassHits: [
+        { bar: 0, step: 0, midi: 33 },
+        { bar: 1, step: 0, midi: 33 },
+        { bar: 2, step: 0, midi: 33 },
+      ],
+      drumHits: [],
+      raw: [[0, 0, "Am7", "A"], [1, 1, "Am7", "A"], [2, 2, "Am7", "A"]],
+      patterns: {
+        a: [{ notes: [{ step: 0, midi: 33 }], sectionBars: [0, 0] }],
+        b: [{ notes: [{ step: 0, midi: 33 }], sectionBars: [1, 1] }],
+        c: [{ notes: [{ step: 0, midi: 33 }], sectionBars: [2, 2] }],
+      },
+      cards: { a: [card("a")], b: [card("b")], c: [card("c")] },
+    }));
+    const result = run([path]);
+    expect(result.status).not.toBe(0);
+    expect(result.out).toMatch(/stock phrase/);
+    expect(result.out).toMatch(/a\/Pocket/);
+  });
 });
