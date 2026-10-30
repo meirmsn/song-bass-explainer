@@ -127,8 +127,10 @@ describe("Pocket Funk public demo artifacts (MIDI-authored hero)", () => {
       const harm = demo.cards[sec.id].find((c) => c.label === "Harmony");
       expect(harm.body, sec.id).not.toMatch(/foreign chord/);
       expect(harm.body, sec.id).not.toMatch(/\bBb\b/);
-      if (/^Pedal Am7/.test(harm.body)) {
-        expect(harm.body).toMatch(/main chord-name row/);
+      expect(harm.body, sec.id).not.toMatch(/main chord-name row|same symbols as/i);
+      if (sec.id === "intro") {
+        expect(harm.body).toMatch(/Am7/);
+        expect(harm.body).toMatch(/i7/);
         expect(harm.body).toMatch(/A–C–E–G/);
       }
     }
