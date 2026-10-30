@@ -7476,7 +7476,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are C \u00b7 G (C+G). They match the MIDI stem.",
+        "body": "In the intro, the root on 1 locks with the kick and up to the fifth on 3 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "intro_bass",
@@ -7523,7 +7523,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss in Intro (bars 0\u20133): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "body": "In Intro, leave the root on 1 and the fifth on 3 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "intro_bass",
@@ -7575,7 +7575,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
+        "body": "In the verse, the root on 1 locks with the kick, the root again on 2 locks with the kick, and up to the fifth on the and of 2 \u2014 a root\u2013fifth figure that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "v1_bass",
@@ -7648,7 +7648,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss in Verse (bars 4\u201311): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "body": "In Verse, leave the root on 1 and the root on the and of 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "v1_bass",
@@ -7700,7 +7700,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
+        "body": "In verse 2, the root on 1 locks with the kick, the root again on 2 locks with the kick, and up to the fifth on the and of 2 \u2014 a root\u2013fifth figure that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "v2_bass",
@@ -7773,7 +7773,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss in Verse 2 (bars 24\u201331): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "body": "In Verse 2, leave the root on 1 and the root on the and of 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "v2_bass",
@@ -7825,7 +7825,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are D \u00b7 F \u00b7 A (D+F+A). They match the MIDI stem.",
+        "body": "In the pre-chorus, the root on 1 locks with the kick, up to the minor third on 2 locks with the kick, and up to the fifth on 3 locks with the kick \u2014 an arpeggio of the chord that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "pre_bass",
@@ -7884,7 +7884,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss in Pre-chorus (bars 12\u201315): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "body": "In Pre-chorus, leave the root on 1 and the minor seventh on 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "pre_bass",
@@ -7936,7 +7936,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
+        "body": "In the chorus, the root on 1 locks with the kick, the octave on the a of 1, and down to the fifth on 2 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "ch1_bass",
@@ -8033,7 +8033,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss in Chorus (bars 16\u201323): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "body": "In Chorus, leave the root on 1 and the color tone on the and of 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "ch1_bass",
@@ -8085,7 +8085,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
+        "body": "When the chorus returns, the root on 1 locks with the kick, the octave on the a of 1, and down to the fifth on 2 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "ch2_bass",
@@ -8164,7 +8164,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss in Chorus out (bars 40\u201347): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "body": "In Chorus out, leave the root on 1 and the color tone on the and of 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "ch2_bass",
@@ -8216,7 +8216,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
+        "body": "In verse 2, the root on 1 locks with the kick, the root again on 2 locks with the kick, and up to the fifth on the and of 2 \u2014 a root\u2013fifth figure that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "v2_bass",
@@ -8289,7 +8289,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss in Verse 2 (bars 24\u201331): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "body": "In Verse 2, leave the root on 1 and the root on the and of 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "v2_bass",
@@ -8341,7 +8341,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are A \u00b7 E \u00b7 A (A+E). They match the MIDI stem.",
+        "body": "In the bridge, the root on 1 locks with the kick, up to the fifth on the and of 2, and the octave on 3 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
@@ -8414,7 +8414,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss in Bridge (bars 32\u201339): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "body": "In Bridge, leave the root on 1 and the octave on 3 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "br_bass",
@@ -8466,7 +8466,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are A \u00b7 E \u00b7 A (A+E). They match the MIDI stem.",
+        "body": "In the bridge, the root on 1 locks with the kick, up to the fifth on the and of 2, and the octave on 3 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "br_bass",
@@ -8539,7 +8539,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss in Bridge (bars 32\u201339): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "body": "In Bridge, leave the root on 1 and the octave on 3 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "br_bass",
@@ -8591,7 +8591,7 @@
       },
       {
         "label": "Figure",
-        "body": "Lit pitches are C \u00b7 C \u00b7 G (C+G). They match the MIDI stem.",
+        "body": "When the chorus returns, the root on 1 locks with the kick, the octave on the a of 1, and down to the fifth on 2 locks with the kick \u2014 a root\u2013fifth figure that anchors the downbeat.",
         "insight": {
           "layer": "figure",
           "patternId": "ch2_bass",
@@ -8670,7 +8670,7 @@
       },
       {
         "label": "Missable",
-        "body": "Easy miss in Chorus out (bars 40\u201347): ornamenting past the written line. Play the MIDI pocket before adding notes.",
+        "body": "In Chorus out, leave the root on 1 and the color tone on the and of 4 alone \u2014 a fill on top of them covers the figure.",
         "insight": {
           "layer": "missable",
           "patternId": "ch2_bass",

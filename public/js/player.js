@@ -1457,7 +1457,223 @@
     return [bars[0], bars[bars.length - 1]];
   }
 
-  function makeCardInsight(insight, pattern, voiceModes) {
+  /**
+   * Insight bass staff: real durations from note.dur (MIDI sixteenths) or the
+   * gap to the next onset. One notehead per attack so a long gap does not
+   * invent tied heads outside the claim. Eighths/sixteenths in one beat beam.
+   */
+  function drawInsightBassHeads(svg, o) {
+    const notes = (o.notes || []).filter((n) => n && Number.isFinite(n.step) && o.inClaim(n.step));
+    notes.sort((a, b) => a.step - b.step || (a.midi || 0) - (b.midi || 0));
+    const events = notes.map((n, i) => {
+      const dur = noteDurationSteps(notes, i, 16);
+      return { type: "note", step: n.step, dur: dur, midi: n.midi, style: durationStyle(dur) };
+    });
+    let litCount = 0;
+    let dimCount = 0;
+    const yy = o.yy;
+    const sx = o.sx;
+    let cursor = null;
+    for (let i = 0; i < events.length; i++) {
+      const ev = events[i];
+      if (cursor != null && ev.step > cursor) {
+        const rests = restsForGap(cursor, ev.step);
+        for (let r = 0; r < rests.length; r++) {
+          if (!o.inClaim(rests[r].step)) continue;
+          const cx = sx(rests[r].step);
+          const cy = yy(4);
+          const ink = "#6b7280";
+          const g = svgEl("g", {
+            "data-rhythm": "rest",
+            "data-dur": String(rests[r].dur),
+            "data-label": rests[r].style.label,
+            "data-insight-rest": "1",
+          });
+          const u = rests[r].style.unit;
+          if (u >= 8) {
+            g.appendChild(svgEl("rect", {
+              x: cx - 3.5, y: u >= 16 ? cy - 3.5 : cy + 0.5, width: 7, height: 2.4, fill: ink,
+            }));
+          } else {
+            g.appendChild(svgEl("text", {
+              x: cx, y: cy + 3, "text-anchor": "middle", "font-size": 8, fill: ink,
+            }, [document.createTextNode(u >= 4 ? "𝄽" : "𝄽")]));
+          }
+          if (rests[r].style.dots) g.appendChild(svgEl("circle", { cx: cx + 6, cy: cy, r: 1, fill: ink }));
+          svg.appendChild(g);
+        }
+      }
+      cursor = ev.step + ev.dur;
+    }
+    function flagPath(x, yEnd, up, beams) {
+      const dir = up ? 1 : -1;
+      let d = "";
+      for (let b = 0; b < beams; b++) {
+        const y = yEnd + dir * b * 3.4;
+        if (up) d += "M" + x + " " + y + " q4 1.2 5.2 5 q-4 -1 -5.2 -.5z ";
+        else d += "M" + x + " " + y + " q4 -1.2 5.2 -5 q-4 1 -5.2 .5z ";
+      }
+      return d.trim();
+    }
+    const groups = beamGroups(events);
+    groups.forEach((group) => {
+      const beamable = group.length >= 2 && group.every((e) => e.style.unit <= 2);
+      const laid = group.map((ev) => {
+        const sp = staffPos(ev.midi);
+        return { ev: ev, sp: sp, cx: sx(ev.step), cy: yy(sp.pos) };
+      });
+      const avg = laid.reduce((sum, L) => sum + L.sp.pos, 0) / Math.max(1, laid.length);
+      const up = avg < 4;
+      const stemLen = 11;
+      laid.forEach((L) => {
+        L.stemX = up ? L.cx + 3.1 : L.cx - 3.1;
+        L.stemEnd = up ? L.cy - stemLen : L.cy + stemLen;
+      });
+      laid.forEach((L) => {
+        const ev = L.ev;
+        const isLit = insightBassClaimAt(o.highlights, ev.step);
+        if (isLit) litCount++; else dimCount++;
+        const kind = (o.highlights || []).some((h) => h && (h.step | 0) === ev.step && h.kind === "bass") ? "bass" : "note";
+        const open = ev.style.unit >= 8;
+        const headFill = open ? "none" : (isLit ? "#3b82f6" : "#4b5563");
+        const headStroke = open ? (isLit ? "#3b82f6" : "#6b7280") : (isLit ? "#93c5fd" : "none");
+        const stemInk = isLit ? "#93c5fd" : "#9ca3af";
+        if (L.sp.pos < 0) {
+          for (let p = -2; p >= L.sp.pos; p -= 2) {
+            svg.appendChild(svgEl("line", { x1: L.cx - 5, x2: L.cx + 5, y1: yy(p), y2: yy(p), stroke: "#6b7280", "stroke-width": 1 }));
+          }
+        } else if (L.sp.pos > 8) {
+          for (let p = 10; p <= L.sp.pos; p += 2) {
+            svg.appendChild(svgEl("line", { x1: L.cx - 5, x2: L.cx + 5, y1: yy(p), y2: yy(p), stroke: "#6b7280", "stroke-width": 1 }));
+          }
+        }
+        if (isLit && o.bassClaimRing) {
+          svg.appendChild(svgEl("ellipse", {
+            cx: L.cx, cy: L.cy, rx: 6.4, ry: 4.8,
+            fill: "none", stroke: o.claimRing, "stroke-width": 1.5,
+            transform: "rotate(-18 " + L.cx + " " + L.cy + ")",
+            "data-insight-claim-ring": "bass",
+            "data-insight-step": String(ev.step),
+            "pointer-events": "none",
+          }));
+        }
+        svg.appendChild(svgEl("ellipse", {
+          cx: L.cx, cy: L.cy,
+          rx: open ? 4.3 : (isLit ? 4.6 : 3.5),
+          ry: open ? 3.1 : (isLit ? 3.3 : 2.5),
+          fill: headFill,
+          stroke: headStroke,
+          "stroke-width": open || isLit ? 1.25 : 0,
+          transform: "rotate(-18 " + L.cx + " " + L.cy + ")",
+          "data-insight-step": String(ev.step),
+          "data-insight-kind": kind,
+          "data-insight-midi": String(ev.midi),
+          "data-insight-lit": isLit ? "1" : "0",
+          "data-insight-staff": "bass",
+          "data-rhythm": "note",
+          "data-dur": String(ev.dur),
+          "data-label": ev.style.label,
+        }));
+        if (L.sp.flat) {
+          svg.appendChild(svgEl("text", {
+            x: L.cx - 8, y: L.cy + 3, "font-size": 8, fill: isLit ? "#93c5fd" : "#6b7280",
+          }, [document.createTextNode("♭")]));
+        }
+        if (ev.style.unit < 16) {
+          svg.appendChild(svgEl("line", {
+            x1: L.stemX, x2: L.stemX, y1: L.cy, y2: L.stemEnd,
+            stroke: stemInk, "stroke-width": 1.15,
+            "data-insight-stem": up ? "up" : "down",
+          }));
+        }
+        if (ev.style.dots) {
+          svg.appendChild(svgEl("circle", {
+            cx: L.cx + 7,
+            cy: L.cy - (L.sp.pos % 2 === 0 ? 2 : 0),
+            r: 1.15,
+            fill: isLit ? "#93c5fd" : "#9ca3af",
+            "data-insight-dot": "1",
+          }));
+        }
+        if (!beamable && ev.style.unit <= 2) {
+          const beams = ev.style.unit === 1 ? 2 : 1;
+          svg.appendChild(svgEl("path", {
+            d: flagPath(L.stemX, L.stemEnd, up, beams),
+            fill: stemInk,
+            "data-insight-flag": beams === 2 ? "16" : "8",
+          }));
+        }
+      });
+      if (beamable) {
+        const yBeam = up
+          ? Math.min.apply(null, laid.map((L) => L.stemEnd))
+          : Math.max.apply(null, laid.map((L) => L.stemEnd));
+        svg.appendChild(svgEl("line", {
+          x1: laid[0].stemX, x2: laid[laid.length - 1].stemX, y1: yBeam, y2: yBeam,
+          stroke: "#9ca3af", "stroke-width": 2.2, "stroke-linecap": "square",
+          "data-rhythm": "beam",
+        }));
+        if (laid.some((L) => L.ev.style.unit === 1)) {
+          const y2 = up ? yBeam + 3.3 : yBeam - 3.3;
+          let run = null;
+          for (let i = 0; i <= laid.length; i++) {
+            const is16 = i < laid.length && laid[i].ev.style.unit === 1;
+            if (is16 && run == null) run = i;
+            if ((!is16 || i === laid.length) && run != null) {
+              const a = laid[run];
+              const b = laid[i - 1];
+              let xb = b.stemX;
+              if (run === i - 1) xb = a.stemX + (a === laid[0] ? 6 : -6);
+              svg.appendChild(svgEl("line", {
+                x1: a.stemX, x2: xb, y1: y2, y2: y2,
+                stroke: "#9ca3af", "stroke-width": 2, "stroke-linecap": "square",
+                "data-rhythm": "beam16",
+              }));
+              run = null;
+            }
+          }
+        }
+      }
+    });
+    (o.highlights || []).forEach((h) => {
+      if (!h || !Number.isFinite(h.step)) return;
+      if (insightHighlightDrumKind(h) || String(h.kind || "").toLowerCase() === "chord") return;
+      const st = h.step | 0;
+      if (!o.inClaim(st)) return;
+      if (notes.some((n) => n.step === st)) return;
+      const m = Number.isFinite(h.midi) ? h.midi : 33;
+      const sp = staffPos(m);
+      const cx = sx(st);
+      const cy = yy(sp.pos);
+      litCount++;
+      if (o.bassClaimRing) {
+        svg.appendChild(svgEl("ellipse", {
+          cx: cx, cy: cy, rx: 6.4, ry: 4.8,
+          fill: "none", stroke: o.claimRing, "stroke-width": 1.5,
+          transform: "rotate(-18 " + cx + " " + cy + ")",
+          "data-insight-claim-ring": "bass",
+          "data-insight-step": String(st),
+          "pointer-events": "none",
+        }));
+      }
+      svg.appendChild(svgEl("ellipse", {
+        cx: cx, cy: cy, rx: 4.6, ry: 3.3,
+        fill: "#3b82f6", stroke: "#93c5fd", "stroke-width": 1.2,
+        transform: "rotate(-18 " + cx + " " + cy + ")",
+        "data-insight-step": String(st),
+        "data-insight-kind": h.kind || "note",
+        "data-insight-midi": String(m),
+        "data-insight-lit": "1",
+        "data-insight-staff": "bass",
+        "data-rhythm": "note",
+        "data-dur": "4",
+        "data-label": "quarter",
+      }));
+    });
+    return { litCount: litCount, dimCount: dimCount };
+  }
+
+  function makeCardInsight(insight, pattern, voiceModes, timeSig) {
     if (!insight || typeof insight !== "object") return null;
     const layer = insight.layer || "figure";
     const isPocket = layer === "pocket" || layer === "drums";
@@ -1578,6 +1794,10 @@
     const VW = 320;
     const VH = 186;
     const gx0 = 36, gw = VW - 48;
+    // Room for bass clef + time signature before the shared grid. Drums use the
+    // same origin so kick/snare stay aligned with the bass beats.
+    const staffX = gx0 + 16;
+    const staffW = gw - 16;
     const bassY = 58;   // center of bass staff band (staff notation)
     const drumY = 132;  // center of drums staff band
     const svg = svgEl("svg", {
@@ -1593,21 +1813,21 @@
     });
     const sx = (s) => {
       const slot = slotOf(s);
-      if (slot == null) return gx0;
-      return gx0 + ((slot + 0.5) / totalSteps) * gw;
+      if (slot == null) return staffX;
+      return staffX + ((slot + 0.5) / totalSteps) * staffW;
     };
 
     function drawStaffBand(y0, h, label) {
       for (let b = 0; b < nBars; b++) {
-        const x = gx0 + (b / nBars) * gw;
+        const x = staffX + (b / nBars) * staffW;
         svg.appendChild(svgEl("rect", {
-          x: x, y: y0, width: gw / nBars, height: h,
+          x: x, y: y0, width: staffW / nBars, height: h,
           fill: b % 2 === 0 ? "#111827" : "#0f172a", rx: 3,
         }));
       }
       for (let s = 0; s <= totalSteps; s++) {
         if (s % 4 !== 0) continue;
-        const x = gx0 + (s / totalSteps) * gw;
+        const x = staffX + (s / totalSteps) * staffW;
         const barline = s % 16 === 0;
         svg.appendChild(svgEl("line", {
           x1: x, x2: x, y1: y0, y2: y0 + h,
@@ -1625,7 +1845,7 @@
     // Very light quarter guides on drum band
     for (let s = 0; s <= totalSteps; s++) {
       if (s % 4 !== 0) continue;
-      const x = gx0 + (s / totalSteps) * gw;
+      const x = staffX + (s / totalSteps) * staffW;
       const barline = s % 16 === 0;
       svg.appendChild(svgEl("line", {
         x1: x, x2: x, y1: drumY - 22, y2: drumY + 22,
@@ -1680,7 +1900,7 @@
       }));
       for (let s = 0; s <= totalSteps; s++) {
         if (s % 4 !== 0) continue;
-        const x = gx0 + (s / totalSteps) * gw;
+        const x = staffX + (s / totalSteps) * staffW;
         const barline = s % 16 === 0;
         svg.appendChild(svgEl("line", {
           x1: x, x2: x, y1: staffTop - 4, y2: staffTop + 40,
@@ -1693,16 +1913,18 @@
       const yyB = (pos) => staffTop + 26 - pos * (lineGap / 2);
       for (let p = 0; p <= 8; p += 2) {
         svg.appendChild(svgEl("line", {
-          x1: gx0, x2: gx0 + gw, y1: yyB(p), y2: yyB(p),
+          x1: staffX, x2: staffX + staffW, y1: yyB(p), y2: yyB(p),
           stroke: "#6b7280", "stroke-width": 1, "data-insight-staff-line": "1",
         }));
       }
       const f = yyB(6);
-      svg.appendChild(svgEl("circle", { cx: gx0 - 14, cy: f, r: 2.4, fill: "#9ca3af", "data-insight-clef": "bass" }));
+      const clefX = gx0 - 10;
+      svg.appendChild(svgEl("circle", { cx: clefX, cy: f, r: 2.2, fill: "#9ca3af", "data-insight-clef": "bass" }));
       svg.appendChild(svgEl("path", {
-        d: "M" + (gx0 - 14) + " " + f + " C " + (gx0 - 14) + " " + (f - 8) + ", " + (gx0 - 4) + " " + (f - 5) + ", " + (gx0 - 4) + " " + (f + 4) + " C " + (gx0 - 4) + " " + (f + 12) + ", " + (gx0 - 10) + " " + (f + 16) + ", " + (gx0 - 18) + " " + (f + 20),
-        fill: "none", stroke: "#9ca3af", "stroke-width": 1.4,
+        d: "M" + clefX + " " + f + " C " + clefX + " " + (f - 7) + ", " + (clefX + 8) + " " + (f - 4) + ", " + (clefX + 8) + " " + (f + 3) + " C " + (clefX + 8) + " " + (f + 10) + ", " + (clefX - 2) + " " + (f + 14) + ", " + (clefX - 8) + " " + (f + 18),
+        fill: "none", stroke: "#9ca3af", "stroke-width": 1.3,
       }));
+      appendTimeSignature(svg, gx0 + 6, yyB(6) + 3, yyB(2) + 3, parseTimeSig(timeSig), "#d1d5db", 8);
       svg.appendChild(svgEl("text", {
         x: 2, y: bassY + 3, "font-size": 8, "font-weight": 700, fill: "#9ca3af",
       }, [document.createTextNode("Bass")]));
@@ -1718,87 +1940,17 @@
         }
       } else {
         const inRange = patNotes.filter((n) => inClaim(n.step));
-        inRange.forEach((n) => {
-          const arr = hiByStep.get(n.step) || [];
-          const litBass = insightBassClaimAt(highlights, n.step);
-          const bassHi = arr.find((h) => h.kind === "bass");
-          const isLit = Boolean(litBass);
-          if (isLit) litCount++; else dimCount++;
-          const kind = bassHi ? "bass" : "note";
-          const sp = staffPos(n.midi);
-          const cy = yyB(sp.pos);
-          const cx = sx(n.step);
-          if (sp.pos < 0) {
-            for (let p = -2; p >= sp.pos; p -= 2) {
-              svg.appendChild(svgEl("line", { x1: cx - 6, x2: cx + 6, y1: yyB(p), y2: yyB(p), stroke: "#6b7280", "stroke-width": 1 }));
-            }
-          } else if (sp.pos > 8) {
-            for (let p = 10; p <= sp.pos; p += 2) {
-              svg.appendChild(svgEl("line", { x1: cx - 6, x2: cx + 6, y1: yyB(p), y2: yyB(p), stroke: "#6b7280", "stroke-width": 1 }));
-            }
-          }
-          const bassRx = isLit ? 5.2 : 3.6;
-          const bassRy = isLit ? 3.8 : 2.6;
-          if (isLit && bassClaimRing) {
-            svg.appendChild(svgEl("ellipse", {
-              cx: cx, cy: cy, rx: bassRx + 2.4, ry: bassRy + 2.2,
-              fill: "none", stroke: CLAIM_RING, "stroke-width": 1.5,
-              transform: "rotate(-18 " + cx + " " + cy + ")",
-              "data-insight-claim-ring": "bass",
-              "data-insight-step": String(n.step),
-              "pointer-events": "none",
-            }));
-          }
-          svg.appendChild(svgEl("ellipse", {
-            cx: cx, cy: cy, rx: bassRx, ry: bassRy,
-            fill: isLit ? "#3b82f6" : "#4b5563",
-            stroke: isLit ? "#93c5fd" : "none",
-            "stroke-width": isLit ? 1.2 : 0,
-            transform: "rotate(-18 " + cx + " " + cy + ")",
-            "data-insight-step": String(n.step),
-            "data-insight-kind": kind,
-            "data-insight-midi": String(n.midi),
-            "data-insight-lit": isLit ? "1" : "0",
-            "data-insight-staff": "bass",
-          }));
-          if (sp.flat) {
-            svg.appendChild(svgEl("text", {
-              x: cx - 9, y: cy + 3, "font-size": 9, fill: isLit ? "#93c5fd" : "#6b7280",
-            }, [document.createTextNode("♭")]));
-          }
+        const drawn = drawInsightBassHeads(svg, {
+          notes: inRange,
+          highlights: highlights,
+          sx: sx,
+          yy: yyB,
+          inClaim: inClaim,
+          bassClaimRing: bassClaimRing,
+          claimRing: CLAIM_RING,
         });
-        highlights.forEach((h) => {
-          if (!h || !Number.isFinite(h.step)) return;
-          if (insightHighlightDrumKind(h) || String(h.kind || "").toLowerCase() === "chord") return;
-          const st = h.step | 0;
-          if (!inClaim(st)) return;
-          if (inRange.some((n) => n.step === st)) return;
-          const m = Number.isFinite(h.midi) ? h.midi : 33;
-          const sp = staffPos(m);
-          const cy = yyB(sp.pos);
-          const cx = sx(st);
-          litCount++;
-          if (bassClaimRing) {
-            svg.appendChild(svgEl("ellipse", {
-              cx: cx, cy: cy, rx: 7.4, ry: 5.8,
-              fill: "none", stroke: CLAIM_RING, "stroke-width": 1.5,
-              transform: "rotate(-18 " + cx + " " + cy + ")",
-              "data-insight-claim-ring": "bass",
-              "data-insight-step": String(st),
-              "pointer-events": "none",
-            }));
-          }
-          svg.appendChild(svgEl("ellipse", {
-            cx: cx, cy: cy, rx: 5, ry: 3.6,
-            fill: "#3b82f6", stroke: "#93c5fd", "stroke-width": 1.2,
-            transform: "rotate(-18 " + cx + " " + cy + ")",
-            "data-insight-step": String(st),
-            "data-insight-kind": h.kind || "note",
-            "data-insight-midi": String(m),
-            "data-insight-lit": "1",
-            "data-insight-staff": "bass",
-          }));
-        });
+        litCount += drawn.litCount;
+        dimCount += drawn.dimCount;
         if (!inRange.length && !highlights.some((h) => h && !insightHighlightDrumKind(h) && String(h.kind || "").toLowerCase() !== "chord" && (h.kind === "bass" || h.kind === "note" || !h.kind))) {
           for (let bar = 0; bar < nBars; bar++) {
             const cx = gx0 + ((bar + 0.5) / nBars) * gw;
@@ -1947,7 +2099,7 @@
     const mapBits = labelSlots.map((h) => h.text).filter(Boolean);
     if (mapBits.length) {
       const map = el("div", { className: "card-insight-map", "data-insight-map": "1" });
-      map.appendChild(document.createTextNode("Lit on the staff (= this card’s point): "));
+      map.appendChild(document.createTextNode("Highlighted on the staff (= this card’s point): "));
       mapBits.forEach((t, i) => {
         if (i) map.appendChild(document.createTextNode(" · "));
         map.appendChild(el("span", { className: "card-insight-map-hit", "data-insight-map-hit": t }, [t]));
@@ -1959,7 +2111,7 @@
       wrap.appendChild(el("div", {
         className: "card-insight-legend",
         "data-insight-legend": "1",
-      }, ["dim = other hits in the figure · lit = this card’s point"]));
+      }, ["dim = other hits in the figure · highlighted = this card’s point"]));
     } else if (patternEmpty) {
       wrap.appendChild(el("div", {
         className: "card-insight-legend",
@@ -2574,6 +2726,54 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       if (midiDrumsGain) midiDrumsGain.gain.value = midiDrums ? 1 : 0;
       if (midiChordsGain) midiChordsGain.gain.value = midiChords ? 1 : 0;
     }
+    // One-sample WAV (silence). play()+pause on the first gesture lets iOS
+    // honor Web Audio even when the ring/silent switch is on.
+    const SILENT_WAV = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+    let audioUnlockEl = null;
+    let audioUnlockElUsed = false;
+    /**
+     * Must run synchronously inside the user gesture, before any await.
+     * Creates the context, resumes it, and starts a 1-sample silent buffer
+     * so Safari/Chrome autoplay policies leave the context running.
+     */
+    function unlockAudio() {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return audioCtx;
+      if (!audioCtx) {
+        try { audioCtx = new AC(); } catch (e) { return audioCtx; }
+      }
+      if (audioCtx.resume) {
+        try {
+          const pending = audioCtx.resume();
+          if (pending && typeof pending.catch === "function") pending.catch(() => {});
+        } catch (e) { /* already running or unavailable */ }
+      }
+      try {
+        const rate = audioCtx.sampleRate || 44100;
+        const buf = audioCtx.createBuffer(1, 1, rate);
+        const src = audioCtx.createBufferSource();
+        src.buffer = buf;
+        src.connect(audioCtx.destination);
+        src.start(0);
+      } catch (e) { /* context not ready for a buffer yet */ }
+      if (!audioUnlockElUsed) {
+        audioUnlockElUsed = true;
+        try {
+          if (!audioUnlockEl) {
+            audioUnlockEl = document.createElement("audio");
+            audioUnlockEl.setAttribute("playsinline", "");
+            audioUnlockEl.setAttribute("webkit-playsinline", "");
+            audioUnlockEl.preload = "auto";
+            audioUnlockEl.src = SILENT_WAV;
+          }
+          const played = audioUnlockEl.play();
+          const stopEl = () => { try { audioUnlockEl.pause(); } catch (e2) {} };
+          if (played && typeof played.then === "function") played.then(stopEl).catch(() => {});
+          else stopEl();
+        } catch (e) { /* HTML audio unlock is optional */ }
+      }
+      return audioCtx;
+    }
     function ensureMidiGraph() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (!midiBassGain) {
@@ -2755,6 +2955,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       }
     }
     function setMidi(which, on) {
+      unlockAudio();
       if (which === "bass") midiBass = Boolean(on);
       else if (which === "drums") midiDrums = Boolean(on);
       else if (which === "chords" || which === "chord") midiChords = Boolean(on);
@@ -3066,6 +3267,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
      * Highlights mutes that voice's non-lit notes via gain and does not restart the loop.
      */
     function playInsightMidi(voice) {
+      unlockAudio();
       const sec = SECS[secIdx];
       const deck = CARDS_EFF[sec.id] || CARDS_EFF[sec.kind] || CARDS[sec.id] || CARDS[sec.kind] || CARDS.intro;
       const card = deck[cardIdx % deck.length];
@@ -3139,6 +3341,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       };
     }
     function toggleInsightMidiPlay() {
+      unlockAudio();
       if (insightMidiPlaying) {
         cancelInsightMidi();
         render();
@@ -3155,6 +3358,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       }, extra || {});
     }
     function toggleInsightMidiVoice(voice) {
+      unlockAudio();
       const v = String(voice || "");
       if (v === "bass") insightMidiBassState = cycleInsightVoiceState(insightMidiBassState);
       else if (v === "drums") insightMidiDrumsState = cycleInsightVoiceState(insightMidiDrumsState);
@@ -3185,6 +3389,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       });
     }
     function setListenMode(mode) {
+      unlockAudio();
       const next = mode === listenMode ? "full" : mode;
       if ((next === "db" || next === "drums") && !drumsSupported) return listenMode;
       listenMode = next;
@@ -3264,6 +3469,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       beginStemFetch();
       const warmDecode = () => {
         document.removeEventListener("pointerdown", warmDecode, true);
+        unlockAudio();
         ensureAudio().catch(() => {});
       };
       document.addEventListener("pointerdown", warmDecode, true);
@@ -3550,6 +3756,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       t = audioOffset + (audioCtx.currentTime - audioStartedAt) * rate;
     }
     function setPlaybackRate(rate) {
+      unlockAudio();
       const r = Number(rate);
       if (!PLAYBACK_RATES.includes(r)) return;
       // Keep song position continuous across rate changes.
@@ -3731,6 +3938,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       render();
     }
     function onPlay() {
+      unlockAudio();
       // Toggle: while playing (or kick in flight), pause must win for Safari.
       if (playing) { onPause(); return; }
       if (insightMidiPlaying) cancelInsightMidi();
@@ -3747,7 +3955,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
             await ensureAudio();
             if (myGen === playGen) render();
             if (myGen !== playGen || !playing) return;
-            if (audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
+            if (audioCtx && audioCtx.state !== "running" && audioCtx.resume) await audioCtx.resume();
             if (myGen !== playGen || !playing) return;
             startStemNodes(t);
           } catch (err) {
@@ -3758,7 +3966,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         if ((midiBass || midiDrums || midiChords) && !usingAudio) {
           try {
             ensureMidiGraph();
-            if (audioCtx.state === "suspended" && audioCtx.resume) await audioCtx.resume();
+            if (audioCtx.state !== "running" && audioCtx.resume) await audioCtx.resume();
             if (myGen === playGen && playing) scheduleMidi(t);
           } catch (err) { console.warn("midi schedule failed", err); }
         }
@@ -4509,6 +4717,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         if (e.target && e.target.isContentEditable) return;
         if (e.key === " ") {
           e.preventDefault();
+          unlockAudio();
           onPlay();
           return;
         }
@@ -4616,12 +4825,20 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       let blurTimer = 0;
       let blurGen = 0;
 
+      function blurPicker() {
+        // Leave the field so the next tap is a fresh focus and opens the list.
+        // A focused combobox swallows that second tap (no focus event).
+        try { input.blur(); } catch (_) { /* jsdom */ }
+        if (document.activeElement === input && document.activeElement.blur) {
+          try { document.activeElement.blur(); } catch (_) { /* ignore */ }
+        }
+      }
+
       function goToSong(id) {
         const next = String(id || "").trim();
-        if (!next || next === activeSongId) {
-          closeList(true);
-          return;
-        }
+        closeList(true);
+        blurPicker();
+        if (!next || next === activeSongId) return;
         // Full navigation. The next document boots at the first bar with loop off.
         const u = new URL(location.href);
         u.searchParams.set("song", next);
@@ -4724,6 +4941,23 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         renderList(seedQuery != null ? seedQuery : input.value);
       }
 
+      let gestureWasOpen = false;
+      let gestureWasFocused = false;
+      input.addEventListener("pointerdown", () => {
+        gestureWasFocused = document.activeElement === input;
+        gestureWasOpen = open;
+      });
+      input.addEventListener("click", () => {
+        // Focus already opened the list on the first tap. A later tap on the
+        // still-focused field must toggle, and a tap while closed must reopen.
+        if (!gestureWasFocused) return;
+        if (gestureWasOpen) {
+          closeList(true);
+          blurPicker();
+        } else {
+          openList("");
+        }
+      });
       input.addEventListener("focus", () => {
         if (row.__picker && row.__picker.holdFocus) {
           row.__picker.holdFocus = false;
@@ -4766,7 +5000,9 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         if (key === "Escape") {
           if (!open) return;
           e.preventDefault();
+          e.stopPropagation();
           closeList(true);
+          blurPicker();
           return;
         }
       });
@@ -4779,11 +5015,21 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
           closeList(true);
         }, 120);
       });
+      function onOutsidePointer(e) {
+        if (!open) return;
+        if (wrap.contains(e.target)) return;
+        closeList(true);
+        blurPicker();
+      }
+      document.addEventListener("pointerdown", onOutsidePointer, true);
       row.__picker = {
         holdFocus: false,
         cancelBlur() {
           blurGen += 1;
           if (blurTimer) { clearTimeout(blurTimer); blurTimer = 0; }
+        },
+        destroy() {
+          document.removeEventListener("pointerdown", onOutsidePointer, true);
         },
       };
       return row;
@@ -5048,7 +5294,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       const insightView = makeCardInsight(card.insight, insightPat, {
         bass: insightMidiBassState,
         drums: insightMidiDrumsState,
-      });
+      }, demo && demo.timeSig);
       if (insightView) {
         const playBtn = insightView.querySelector("[data-insight-play]");
         if (playBtn) {
@@ -5209,6 +5455,7 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
         };
       },
       play: onPlay,
+      unlockAudio,
       pause: onPause,
       stop: onStop,
       getAudioCtxState: () => (audioCtx ? audioCtx.state : null),
@@ -5293,6 +5540,9 @@ html, body { margin:0; height:100%; background:#0b0f14; color:#e5e7eb; font-fami
       beginStemFetch: () => beginStemFetch(),
       destroy: () => {
         destroyed = true;
+        if (songPickerRow && songPickerRow.__picker && songPickerRow.__picker.destroy) {
+          songPickerRow.__picker.destroy();
+        }
         cardsDrawerOpen = false;
         document.body.classList.remove("cards-drawer-open");
         cancelInsightMidi();

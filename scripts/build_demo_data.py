@@ -110,7 +110,7 @@ def figure_highlights(pat_notes, sec_hits, limit=3):
 
 
 def figure_claim_name(highlights):
-    """Distinct lit pitches in attack order. A, A, G → A+G. Never an unlit pitch."""
+    """Distinct highlighted pitches in attack order. A, A, G → A+G."""
     names = []
     for h in highlights or []:
         name = h.get("text") or ""
@@ -119,10 +119,180 @@ def figure_claim_name(highlights):
     return "+".join(names) if names else "figure"
 
 
-def figure_body(highlights):
-    lit = " · ".join(h.get("text") or midi_name(h["midi"]) for h in highlights)
-    claim = figure_claim_name(highlights)
-    return f"Lit pitches are {lit} ({claim}). They match the MIDI stem."
+# Pitch-class of a chord root. Used only to name the job of a highlighted note.
+_CHORD_ROOT = {
+    "C": 0, "G": 7, "G7": 7, "Am": 9, "Am7": 9, "F": 5, "Dm": 2, "Dm7": 2,
+    "Em": 4, "E7": 4, "E": 4, "D": 2, "D7": 2, "A": 9, "B7": 11, "Bb": 10,
+    "Ab": 8, "Gm": 7, "C7": 0,
+}
+_DEGREE = {
+    0: "root",
+    3: "minor third",
+    4: "major third",
+    5: "fourth",
+    7: "fifth",
+    10: "minor seventh",
+    11: "major seventh",
+}
+_BEAT = {
+    0: "on 1",
+    1: "on the e of 1",
+    2: "on the and of 1",
+    3: "on the a of 1",
+    4: "on 2",
+    5: "on the e of 2",
+    6: "on the and of 2",
+    7: "on the a of 2",
+    8: "on 3",
+    9: "on the e of 3",
+    10: "on the and of 3",
+    11: "on the a of 3",
+    12: "on 4",
+    13: "on the e of 4",
+    14: "on the and of 4",
+    15: "on the a of 4",
+}
+
+
+def _chord_root_pc(chord):
+    if not chord:
+        return None
+    head = str(chord).split("/")[0].strip()
+    if head in _CHORD_ROOT:
+        return _CHORD_ROOT[head]
+    name = head[0].upper() + head[1:] if head else ""
+    return _CHORD_ROOT.get(name)
+
+
+def figure_degree(midi, chord, highlights):
+    """Scale degree of one highlighted note, or octave when it doubles another."""
+    root = _chord_root_pc(chord)
+    pc = int(midi) % 12
+    if root is None:
+        return None
+    interval = (pc - root) % 12
+    higher = any(
+        (o.get("midi") % 12) == pc and int(midi) - int(o["midi"]) == 12
+        for o in (highlights or [])
+        if o is not None and o.get("midi") is not None
+    )
+    # An octave double of another highlighted pitch is named octave, even when
+    # that pitch is not the chord root (the upper A over E7 is still the octave).
+    if higher:
+        return "octave"
+    return _DEGREE.get(interval)
+
+
+def figure_lead(section_name):
+    key = (section_name or "this section").strip().lower().replace("′", "'").replace("’", "'")
+    return {
+        "intro": "In the intro, ",
+        "groove a": "In Groove A, ",
+        "groove a'": "In Groove A′, ",
+        "groove back": "When the groove returns, ",
+        "lift": "On the lift, ",
+        "break": "In the break, ",
+        "outro": "In the outro, ",
+        "verse": "In the verse, ",
+        "verse 2": "In verse 2, ",
+        "pre-chorus": "In the pre-chorus, ",
+        "chorus": "In the chorus, ",
+        "chorus out": "When the chorus returns, ",
+        "bridge": "In the bridge, ",
+        "turnaround": "In the turnaround, ",
+        "breakdown": "In the breakdown, ",
+    }.get(key, f"In {section_name}, ")
+
+
+def figure_body(highlights, chord=None, kick_steps=None, section_name=None):
+    """Learner-facing figure: degree, beat, and job. Facts come from the highlights."""
+    rows = []
+    kicks = set(kick_steps or [])
+    for h in highlights or []:
+        if not isinstance(h.get("step"), int) or h.get("midi") is None:
+            continue
+        deg = figure_degree(h["midi"], chord, highlights)
+        if not deg:
+            continue
+        step = h["step"]
+        rows.append({
+            "step": step,
+            "midi": int(h["midi"]),
+            "deg": deg,
+            "beat": _BEAT[step % 16],
+            "kick": (step % 16) in kicks,
+        })
+    if not rows:
+        return "Hold the written figure and listen for where it sits against the kick."
+    clauses = []
+    for i, r in enumerate(rows):
+        if i == 0:
+            bit = f"the {r['deg']} {r['beat']}"
+        elif r["deg"] == "octave":
+            bit = f"the octave {r['beat']}"
+        elif any(p["deg"] == r["deg"] for p in rows[:i]):
+            bit = f"the {r['deg']} again {r['beat']}"
+        elif r["midi"] > rows[i - 1]["midi"]:
+            bit = f"up to the {r['deg']} {r['beat']}"
+        elif r["midi"] < rows[i - 1]["midi"]:
+            bit = f"down to the {r['deg']} {r['beat']}"
+        else:
+            bit = f"the {r['deg']} {r['beat']}"
+        if r["kick"]:
+            bit += " locks with the kick"
+        clauses.append(bit)
+    if len(clauses) == 1:
+        sentence = clauses[0]
+    elif len(clauses) == 2:
+        sentence = clauses[0] + " and " + clauses[1]
+    else:
+        sentence = ", ".join(clauses[:-1]) + ", and " + clauses[-1]
+    degs = {r["deg"] for r in rows}
+    roots_downbeat = any(r["deg"] == "root" and r["step"] % 16 == 0 for r in rows)
+    triad = ("minor third" in degs or "major third" in degs) and "fifth" in degs and "root" in degs
+    if triad:
+        tail = "an arpeggio of the chord"
+        if roots_downbeat:
+            tail += " that anchors the downbeat"
+    elif "root" in degs and "fifth" in degs:
+        tail = "a root–fifth figure"
+        if roots_downbeat:
+            tail += " that anchors the downbeat"
+    elif "minor third" in degs or "major third" in degs:
+        tail = "an arpeggio of the chord"
+        if roots_downbeat:
+            tail += " that anchors the downbeat"
+    elif "fourth" in degs:
+        tail = "a pedal on the fourth of the chord"
+    elif roots_downbeat:
+        tail = "it anchors the downbeat"
+    else:
+        tail = "that is the figure to learn before adding notes"
+    return figure_lead(section_name) + sentence + " — " + tail + "."
+
+
+def missable_body(highlights, chord, section_name, chord_for_bar=None, window=0):
+    """One takeaway: which highlighted notes to leave alone."""
+    bits = []
+    for h in highlights or []:
+        if not isinstance(h.get("step"), int) or h.get("midi") is None:
+            continue
+        bar = int(window) + h["step"] // 16
+        ch = chord
+        if callable(chord_for_bar):
+            got = chord_for_bar(bar)
+            ch = got[0] if isinstance(got, tuple) else got
+        deg = figure_degree(h["midi"], ch, highlights) or "color tone"
+        bits.append(f"the {deg} {_BEAT[h['step'] % 16]}")
+    if not bits:
+        return f"In {section_name}, hold the written pocket and leave space instead of adding a fill."
+    if len(bits) == 1:
+        joined = bits[0]
+    elif len(bits) == 2:
+        joined = bits[0] + " and " + bits[1]
+    else:
+        joined = ", ".join(bits[:-1]) + ", and " + bits[-1]
+    return f"In {section_name}, leave {joined} alone — a fill on top of them covers the figure."
 
 
 def midi_at(pat_notes, step, fallback=None):
@@ -175,7 +345,7 @@ def missable_highlights(pat_notes, home):
     return out[:2]
 
 
-def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar=None, patterns=None):
+def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar=None, patterns=None, drum_hits=None):
     """Lean-B cards. Harmony chips must match the main chord-name row."""
     cards = {}
 
@@ -203,7 +373,7 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
             return (
                 f"Pedal {ch}"
                 + (f" ({rn})" if rn else "")
-                + " — same as the main chord-name row. Bass outlines A–C–E–G color tones."
+                + f" — same as the main chord-name row. Bass outlines A–C–E–G color tones through {sec['name']}."
             )
         if ch == "D7":
             return (
@@ -229,6 +399,19 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
             if bucket:
                 pat_notes = bucket[0].get("notes") or []
         highlights_fig = figure_highlights(pat_notes, sec_hits)
+        window = sec["first"]
+        if patterns:
+            bucket = patterns.get(sec["id"]) or []
+            if bucket and bucket[0].get("sectionBars"):
+                window = bucket[0]["sectionBars"][0]
+        fig_bar = window + ((highlights_fig[0]["step"] // 16) if highlights_fig else 0)
+        fig_chord = section_chord(sec)
+        if callable(chord_for_bar):
+            fig_chord = chord_for_bar(fig_bar)[0]
+        kick_steps = {
+            h["step"] for h in (drum_hits or [])
+            if h.get("kind") == "kick" and h.get("bar") == fig_bar
+        }
         pocket_hi = pocket_highlights(pat_notes, home, has_drums)
         pocket_body = pocket_bodies.get(sec["id"]) or pocket_bodies.get(sec["kind"]) or (
             "Lock with the kit; sit behind the kick a hair." if has_drums else
@@ -257,7 +440,7 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
             },
             {
                 "label": "Figure",
-                "body": figure_body(highlights_fig),
+                "body": figure_body(highlights_fig, fig_chord, kick_steps, sec["name"]),
                 "insight": {
                     "layer": "figure",
                     "patternId": pattern_id,
@@ -279,7 +462,7 @@ def build_cards(secs, bass_hits, *, key, has_drums, pocket_bodies, chord_for_bar
             },
             {
                 "label": "Missable",
-                "body": f"Easy miss: overplaying fills. Bars {lo}–{hi - 1} — hold the written pocket before ornamental notes.",
+                "body": missable_body(miss_hi, fig_chord, sec["name"], chord_for_bar, window),
                 "insight": {
                     "layer": "missable",
                     "patternId": pattern_id,
@@ -448,13 +631,13 @@ def build_pocket_funk():
         "b1": "Lift to D7; keep the kick 1 + syncopation while the root moves.",
         "a3": "Back to Am7 pocket — lock the written syncopations.",
         "br": "Break: sparse kicks. Leave space.",
-        "out": "Ride out on A; don’t invent fills the kit isn’t giving you.",
+        "out": "Ride out on the root; leave space where the kit is sparse.",
         "verse": "Four-feel kit under an A-center funk line.",
         "chorus": "Lift pocket — root moves, groove stays.",
         "bridge": "Sparse break pocket.",
         "tag": "Outro pocket.",
     }
-    cards = build_cards(secs, bass, key="Am", has_drums=True, pocket_bodies=pocket_bodies, chord_for_bar=chord_for_bar, patterns=patterns)
+    cards = build_cards(secs, bass, key="Am", has_drums=True, pocket_bodies=pocket_bodies, chord_for_bar=chord_for_bar, patterns=patterns, drum_hits=drums)
     beat = build_beat(bpm, nbars, duration)
     slug = "pocket-funk"
     demo = {
@@ -811,7 +994,15 @@ def apply_style_insights(demo, song):
         by_label["Figure"]["insight"]["highlights"] = fig
         by_label["Figure"]["insight"]["barRange"] = claim_bar_range(fig)
         by_label["Figure"]["insight"]["title"] = figure_claim_name(fig)
-        by_label["Figure"]["body"] = figure_body(fig)
+        fig_bar = (pat.get("sectionBars") or [sec["first"]])[0]
+        if fig:
+            fig_bar += fig[0]["step"] // 16
+        fig_chord = chord_for(fig_bar)[0]
+        kick_steps = {
+            h["step"] for h in (demo.get("drumHits") or [])
+            if h.get("kind") == "kick" and h.get("bar") == fig_bar
+        }
+        by_label["Figure"]["body"] = figure_body(fig, fig_chord, kick_steps, sec["name"])
         by_label["Harmony"]["body"] = (
             f"{sec['name']} is {labeled} — the same symbols as the main chord-name row. "
             "Bass roots those changes."
@@ -831,9 +1022,9 @@ def apply_style_insights(demo, song):
         ]
         by_label["Missable"]["insight"]["highlights"] = miss_hi
         by_label["Missable"]["insight"]["barRange"] = claim_bar_range(miss_hi)
-        by_label["Missable"]["body"] = (
-            f"Easy miss in {sec['name']} (bars {sec['first']}–{sec['end'] - 1}): "
-            "ornamenting past the written line. Play the MIDI pocket before adding notes."
+        miss_window = (pat.get("sectionBars") or [sec["first"]])[0]
+        by_label["Missable"]["body"] = missable_body(
+            miss_hi, fig_chord, sec["name"], chord_for, miss_window,
         )
         demo["cards"][sec["kind"]] = cards
 

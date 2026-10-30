@@ -1640,7 +1640,8 @@ describe("flashcard insight panel", () => {
     expect(node.querySelectorAll("[data-insight-staff-line]").length).toBeGreaterThanOrEqual(5);
     expect(node.querySelector("[data-insight-clef='bass'], [data-insight-clef=\"bass\"]")).toBeTruthy();
     expect(node.querySelector("[data-insight-playhead]")).toBeTruthy();
-    expect(node.querySelector("[data-insight-map]")?.textContent).toMatch(/Lit on the staff/i);
+    expect(node.querySelector("[data-insight-map]")?.textContent).toMatch(/Highlighted on the staff/i);
+    expect(node.querySelector("[data-time-sig]")?.getAttribute("data-time-sig")).toBe("4/4");
     expect(node.querySelectorAll("ellipse[data-insight-staff='bass']").length).toBeGreaterThan(0);
   });
 
@@ -2809,7 +2810,7 @@ describe("playback rate + public CC0 stems", () => {
 
     const ctx = window.__LAST_AUDIO_CTX__;
     expect(ctx).toBeTruthy();
-    const started = (ctx._sources || []).filter((s) => s.buffer && s.startedAt != null);
+    const started = (ctx._sources || []).filter((s) => s.buffer && s.startedAt != null && s.buffer.length > 1);
     expect(started.length).toBeGreaterThanOrEqual(2);
     for (const s of started) {
       expect(s.playbackRate.value).toBe(1);
@@ -3133,6 +3134,98 @@ describe("public has no Private link + private song typeahead", () => {
     } finally {
       delete window.__BASS_SONG_NAV__;
     }
+  });
+});
+
+describe("audio unlock + song picker reopen", () => {
+  afterEach(() => teardownPlayer());
+
+  it("unlockAudio resumes a suspended context and starts a 1-sample buffer synchronously", async () => {
+    const api = await bootPlayer({ privateMode: false, withStems: true });
+    expect(api.unlockAudio).toBeTypeOf("function");
+    api.unlockAudio();
+    const ctx = window.__LAST_AUDIO_CTX__;
+    expect(ctx).toBeTruthy();
+    ctx.state = "suspended";
+    const before = ctx._sources.length;
+    let resumed = false;
+    const orig = ctx.resume.bind(ctx);
+    ctx.resume = () => {
+      resumed = true;
+      return orig();
+    };
+    api.unlockAudio();
+    expect(resumed).toBe(true);
+    expect(ctx.state).toBe("running");
+    const added = ctx._sources.slice(before);
+    expect(added.some((s) => s.buffer && s.buffer.length === 1 && s.startedAt != null)).toBe(true);
+  });
+
+  it("song picker reopens after selecting the current song, Escape, and an outside click", async () => {
+    await bootPlayer({ privateMode: false, withStems: true });
+    const input = document.querySelector("[data-song-typeahead-input]");
+    const list = document.querySelector("[data-song-listbox]");
+    const open = () => {
+      input.focus();
+      input.dispatchEvent(new Event("focus", { bubbles: true }));
+    };
+    open();
+    expect(list.hasAttribute("hidden")).toBe(false);
+    const current = list.querySelector('[data-song-id="pocket-funk"]');
+    expect(current).toBeTruthy();
+    current.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
+    expect(list.hasAttribute("hidden")).toBe(true);
+    expect(document.activeElement).not.toBe(input);
+    open();
+    expect(list.hasAttribute("hidden")).toBe(false);
+    expect(list.querySelector('[data-song-id="radio-pop"]')).toBeTruthy();
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+    expect(list.hasAttribute("hidden")).toBe(true);
+    expect(document.activeElement).not.toBe(input);
+    open();
+    expect(list.hasAttribute("hidden")).toBe(false);
+    document.body.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }));
+    expect(list.hasAttribute("hidden")).toBe(true);
+    open();
+    expect(list.hasAttribute("hidden")).toBe(false);
+    expect(input.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("insight bass staff engraves duration, beams sixteenths, and shows 4/4", async () => {
+    await bootPlayer();
+    const N = window.__BASS_NOTATION__;
+    const node = N.makeCardInsight({
+      layer: "figure",
+      title: "Durations",
+      barRange: [0, 0],
+      highlights: [
+        { step: 8, midi: 36, text: "C" },
+      ],
+    }, {
+      id: "dur",
+      notes: [
+        { step: 0, midi: 38, dur: 1 },
+        { step: 1, midi: 36, dur: 1 },
+        { step: 4, midi: 43, dur: 3 },
+        { step: 8, midi: 36, dur: 8 },
+      ],
+    }, null, "4/4");
+    document.body.appendChild(node);
+    const head = (step) => node.querySelector(`ellipse[data-insight-staff="bass"][data-insight-step="${step}"]`);
+    expect(head(8).getAttribute("data-label")).toBe("half");
+    expect(head(8).getAttribute("fill")).toBe("none");
+    expect(head(8).getAttribute("data-insight-lit")).toBe("1");
+    expect(head(4).getAttribute("data-label")).toBe("dotted-eighth");
+    expect(head(4).getAttribute("fill")).toBe("#4b5563");
+    expect(node.querySelector('[data-insight-dot="1"]')).toBeTruthy();
+    expect(head(0).getAttribute("data-label")).toBe("sixteenth");
+    expect(head(1).getAttribute("data-label")).toBe("sixteenth");
+    expect(node.querySelector('[data-rhythm="beam16"]')).toBeTruthy();
+    expect(node.querySelectorAll('[data-insight-stem="up"], [data-insight-stem="down"]').length).toBeGreaterThan(0);
+    expect(node.querySelector('[data-time-sig="4/4"]')).toBeTruthy();
+    expect(node.querySelector("[data-insight-clef='bass']")).toBeTruthy();
+    const lit = [...node.querySelectorAll('[data-insight-staff="bass"][data-insight-lit="1"]')].map((n) => n.getAttribute("data-insight-step"));
+    expect(lit).toEqual(["8"]);
   });
 });
 

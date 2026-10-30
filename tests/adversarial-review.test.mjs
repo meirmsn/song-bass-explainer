@@ -64,4 +64,47 @@ describe("adversarial insight review", () => {
     expect(result.out).toMatch(/title names pitch/);
     expect(result.out).toMatch(/denial copy/);
   });
+
+  it("rejects a pitch list, meta copy, and a degree the highlights do not play", () => {
+    const dir = mkdtempSync(join(tmpdir(), "adv-review-"));
+    const path = join(dir, "list.json");
+    writeFileSync(path, JSON.stringify({
+      secs: [{ id: "s", name: "S", first: 0, end: 1 }],
+      bassHits: [{ bar: 0, step: 0, midi: 33, dur: 4 }],
+      drumHits: [{ bar: 0, step: 0, kind: "kick", midi: 36 }],
+      raw: [[0, 0, "Am7", "A.C.E.G"]],
+      patterns: { s: [{ notes: [{ step: 0, midi: 33, dur: 4 }], sectionBars: [0, 0] }] },
+      cards: {
+        s: [
+          {
+            label: "Figure",
+            body: "The highlighted notes are A · A · G. They match the MIDI stem.",
+            insight: {
+              layer: "figure",
+              title: "A",
+              barRange: [0, 0],
+              highlights: [{ step: 0, midi: 33, text: "A" }],
+            },
+          },
+          {
+            label: "Pocket",
+            body: "In S, the fifth on 2 locks with the kick — a root–fifth figure.",
+            insight: {
+              layer: "pocket",
+              title: "S pocket",
+              barRange: [0, 0],
+              highlights: [{ step: 0, midi: 33, text: "root" }],
+            },
+          },
+        ],
+      },
+    }));
+    const result = run([path]);
+    expect(result.status).not.toBe(0);
+    expect(result.out).toMatch(/s\/Figure/);
+    expect(result.out).toMatch(/meta copy/);
+    expect(result.out).toMatch(/never says what they do|never names a scale degree/);
+    expect(result.out).toMatch(/s\/Pocket/);
+    expect(result.out).toMatch(/not demonstrated/);
+  });
 });
