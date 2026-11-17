@@ -1,10 +1,22 @@
-# Song Bass Explainer
+<div align="center">
 
-A practice player for learning a song and its bass line, and understanding the music theory behind it: what makes this song unique and what makes its bass line work.
+<a href="https://bass.meirmsn.dev">
+  <img src="docs/analysis-view.png" alt="song-bass-explainer analysis view" width="720">
+</a>
+
+# song-bass-explainer
+
+**Interactive bass study player: synced staves, bass and drums mute/solo, soft MIDI, and insight flashcards.**
+
+[Live player](https://bass.meirmsn.dev) · [What it does](#what-it-does) · [Run it](#run-it) · [Build log](#build-log)
+
+![Status](https://img.shields.io/badge/status-live-green)
+![Last commit](https://img.shields.io/github/last-commit/meirmsn/song-bass-explainer)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+</div>
 
 The song timeline and sections allow you to see the song at a high level, and selecting a section quickly jumps to it. The main view shows the song chords and their harmonic function, the bass tab and staff, and the drum staff so you can see how the rhythm and harmony are tied together by the bass line. Insight cards highlight parts of that view to make it easier to discover and better understand the song's inner workings. Looping and pitch-preserving tempo make a difficult line easier to learn; keyboard shortcuts keep transport under your fingers.
-
-![Analysis view](docs/analysis-view.png)
 
 ## Approach
 
@@ -57,7 +69,6 @@ No CI. A Cloudflare deploy token ships this personal tool. To harden a personal 
 - No CI (by design, see Approach above).
 
 ## Run it
-- Open the live demo: https://bass.meirmsn.dev
 - Local play needs Node, `npm install`, and Wrangler. `npm run dev` (`wrangler dev`) uses the bindings in `wrangler.toml`: `DEMO_BUCKET` → `bass-demo`, `PRIVATE_BUCKET` → `bass-private`, and static assets from `./public`. Those buckets and a Cloudflare API token have to exist; this repo does not include the audio. `npm test` runs vitest with no deploy, including the adversarial insight review (`scripts/adversarial_review.py`) that a study must pass before ship. `npm run deploy` runs the tests, then `wrangler deploy`, and expects `CLOUDFLARE_API_TOKEN` or `CLOUDFLARE_BUILD_TOKEN`.
 
 ## Feedback
