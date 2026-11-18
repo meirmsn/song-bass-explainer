@@ -1,14 +1,44 @@
+<a id="readme-top"></a>
+
+<div align="center">
+
+<a href="https://bass.meirmsn.dev">
+  <img src="docs/analysis-view.png" alt="song-bass-explainer analysis view" width="720">
+</a>
+
 # Song Bass Explainer
 
-A practice player for learning a song and its bass line, and understanding the music theory behind it: what makes this song unique and what makes its bass line work.
+**Interactive bass study player: synced staves, bass and drums mute/solo, soft MIDI, and insight flashcards.**
+
+[Live player](https://bass.meirmsn.dev) · [What it does](#what-it-does) · [Run it](#run-it) · [Build log](#build-log)
+
+![Status](https://img.shields.io/badge/status-live-green)
+![Last commit](https://img.shields.io/github/last-commit/meirmsn/song-bass-explainer)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+</div>
+
+<details>
+<summary>Contents</summary>
+
+- [Approach](#approach)
+- [What it does](#what-it-does)
+- [How it works](#how-it-works)
+- [Build log](#build-log)
+- [Known limitations](#known-limitations)
+- [Run it](#run-it)
+- [Feedback](#feedback)
+- [License](#license)
+
+</details>
 
 The song timeline and sections allow you to see the song at a high level, and selecting a section quickly jumps to it. The main view shows the song chords and their harmonic function, the bass tab and staff, and the drum staff so you can see how the rhythm and harmony are tied together by the bass line. Insight cards highlight parts of that view to make it easier to discover and better understand the song's inner workings. Looping and pitch-preserving tempo make a difficult line easier to learn; keyboard shortcuts keep transport under your fingers.
-
-![Analysis view](docs/analysis-view.png)
 
 ## Approach
 
 This was built by talking to Grok Bot through voice chat, raw screenshot feedback, and rapid-fire instructions. The goal was to learn how a personal desktop agent works out of the box, with no custom guardrails, workflows, or checks. It is not the detailed method used in the [devshop](https://github.com/meirmsn/abra-kadabra). There is no CI and no PR-gated workflow by design. The loop was barebones: ask, the agent ships, feedback, the next ask. I requested the agent to set up a simple request queue after rapid-fire instructions piled up.
+
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
 
 ## What it does
 - Bass and drum staves and a song chord row, all synced in time.
@@ -17,6 +47,8 @@ This was built by talking to Grok Bot through voice chat, raw screenshot feedbac
 - Keyboard shortcuts for transport controls and looping, and drag to select a subsection to loop.
 - Insight flashcards (Pocket, Figure, Harmony, Missable) with a bass-drum schematic. Play loops the claim window. Figure and pocket cards each have an icon-only Bass control and Drums control: blue is the full line, yellow is highlights only (and rings that voice’s claim notes in yellow), gray is off. Harmony cards are Play only and always sound the chord pads.
 - Public demo: Pocket Funk (CC0, MIDI-authored). Make Funk, Komiku, and Maple Leaf Rag stay off the public picker. Private Access holds processed personal tracks.
+
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
 
 ## How it works
 
@@ -43,7 +75,13 @@ Runtime
 
 No CI. A Cloudflare deploy token ships this personal tool. To harden a personal deploy, add pull-request CI, short-lived deploy credentials, and a secrets scan — advice, not a feature of this site.
 
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
+
 ## Build log
+
+<details>
+<summary>Show all 7 entries</summary>
+
 - 2026-10-24 — first version: R2, Worker, domain, and the player shell live at bass.meirmsn.dev (in agent workspace, not yet in repo).
 - 2026-10-25 — player and Worker copied into this repo (imported to GitHub for backup in case the agent workspace got nuked or I lost access in the future).
 - 2026-10-26 — insight cards (Pocket, Figure, Harmony, Missable), phone flashcards in a bottom drawer, and Komiku “A good bass for gambling” (CC0) on `/` with tempo steps.
@@ -52,16 +90,28 @@ No CI. A Cloudflare deploy token ships this personal tool. To harden a personal 
 - 2026-10-26 — chords and cards were hard to hear and see → bass key and time signatures (drums keep time only), bass-drum claim-window schematics, and card Play with Bass, Drums, and Chords icons.
 - 2026-10-28 — Harmony cards are Play only. Non-harmony cards can mute everything that isn’t lit. Insight drum rows always show hi-hat, and the main drum staff is labeled K / S / H. Maple Leaf Rag left the public picker. Pocket Funk ghost notes in Groove A′ play quieter.
 
+</details>
+
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
+
 ## Known limitations
 - There is no current way for a non-host to upload and process a custom track.
 - No CI (by design, see Approach above).
 
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
+
 ## Run it
-- Open the live demo: https://bass.meirmsn.dev
 - Local play needs Node, `npm install`, and Wrangler. `npm run dev` (`wrangler dev`) uses the bindings in `wrangler.toml`: `DEMO_BUCKET` → `bass-demo`, `PRIVATE_BUCKET` → `bass-private`, and static assets from `./public`. Those buckets and a Cloudflare API token have to exist; this repo does not include the audio. `npm test` runs vitest with no deploy, including the adversarial insight review (`scripts/adversarial_review.py`) that a study must pass before ship. `npm run deploy` runs the tests, then `wrangler deploy`, and expects `CLOUDFLARE_API_TOKEN` or `CLOUDFLARE_BUILD_TOKEN`.
+
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
 
 ## Feedback
 Suggestions and critiques welcome — open an issue or a discussion.
 
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
+
 ## License
 MIT
+
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
+
